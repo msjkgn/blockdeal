@@ -1,2 +1,0 @@
-# hedge-your-pool
-.
