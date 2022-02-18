@@ -18,7 +18,7 @@ import Web3Status from '../Web3Status'
 
 const HeaderFrame = styled.div<{ showBackground: boolean }>`
   display: grid;
-  grid-template-columns: 120px 1fr 120px;
+  grid-template-columns: 160px 1fr 120px;
   align-items: center;
   justify-content: space-between;
   align-items: center;
@@ -182,19 +182,20 @@ const Title = styled.a`
   pointer-events: auto;
   justify-self: flex-start;
   margin-right: 12px;
+  text-decoration: none;
+  color: #ff007a;
+  font-weight: 700;
+  font-size: 1.1rem;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     justify-self: center;
   `};
   :hover {
     cursor: pointer;
   }
-`
-
-const SorbetIcon = styled.div`
   transition: transform 0.3s ease;
-  // :hover {
-  //   transform: rotate(-5deg);
-  // }
+   :hover {
+     transform: rotate(-5deg);
+   }
 `
 
 const activeClassName = 'ACTIVE'
@@ -310,15 +311,11 @@ export default function Header() {
       <HeaderRow>
         {isMobile ? (
           <Title href=".">
-            <SorbetIcon>
-              <img width={'46px'} src={SorbetLogoOnly} alt="logo" />
-            </SorbetIcon>
+            hedge your Pool
           </Title>
         ) : (
           <Title href=".">
-            <SorbetIcon>
-              <img width={'174px'} src={SorbetLogo} alt="logo" />
-            </SorbetIcon>
+            hedge your Pool
           </Title>
         )}
       </HeaderRow>

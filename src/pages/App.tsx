@@ -9,9 +9,8 @@ import Web3ReactManager from '../components/Web3ReactManager'
 import ErrorBoundary from '../components/ErrorBoundary'
 // import PoweredByGelato from '../components/PoweredByGelato'
 import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
-import LimitOrder from './LimitOrder'
 import Pools from './Pools'
-import { RedirectPathToSwapOnly, RedirectToSwap } from './LimitOrder/redirects'
+import { RedirectPathToPoolsOnly } from './Pools/RedirectToPoolsOnly'
 import { ThemedBackground } from '../theme'
 
 const AppWrapper = styled.div`
@@ -65,13 +64,8 @@ export default function App() {
             {/* <PoweredByGelato /> */}
             <Web3ReactManager>
               <Switch>
-                <Route exact strict path="/send" component={RedirectPathToSwapOnly} />
-                <Route exact strict path="/swap" component={RedirectPathToSwapOnly} />
-                <Route exact strict path="/limit-order/:outputCurrency" component={RedirectToSwap} />
-                <Route exact strict path="/limit-order" component={LimitOrder} />
                 <Route exact strict path="/pools" component={Pools} />
-
-                <Route component={RedirectPathToSwapOnly} />
+                <Route component={RedirectPathToPoolsOnly} />
               </Switch>
             </Web3ReactManager>
             <Marginer />
