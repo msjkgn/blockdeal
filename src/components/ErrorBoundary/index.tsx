@@ -1,10 +1,12 @@
+import { Trans } from '@lingui/macro'
 import React, { ErrorInfo } from 'react'
-import store, { AppState } from '../../state'
-import { ExternalLink, ThemedBackground, TYPE } from '../../theme'
-import { AutoColumn } from '../Column'
-import styled from 'styled-components/macro'
 import ReactGA from 'react-ga'
-import { getUserAgent } from '../../utils/getUserAgent'
+import styled from 'styled-components/macro'
+
+import store, { AppState } from '../../state'
+import { ExternalLink, ThemedText } from '../../theme'
+import { userAgent } from '../../utils/userAgent'
+import { AutoColumn } from '../Column'
 import { AutoRow } from '../Row'
 
 const FallbackWrapper = styled.div`
@@ -45,6 +47,8 @@ type ErrorBoundaryState = {
   error: Error | null
 }
 
+const IS_UNISWAP = window.location.hostname === 'app.uniswap.org'
+
 export default class ErrorBoundary extends React.Component<unknown, ErrorBoundaryState> {
   constructor(props: unknown) {
     super(props)
@@ -65,47 +69,49 @@ export default class ErrorBoundary extends React.Component<unknown, ErrorBoundar
 
   render() {
     const { error } = this.state
+
     if (error !== null) {
       const encodedBody = encodeURIComponent(issueBody(error))
       return (
         <FallbackWrapper>
-          <ThemedBackground />
           <BodyWrapper>
             <AutoColumn gap={'md'}>
               <SomethingWentWrongWrapper>
-                <TYPE.label fontSize={24} fontWeight={600}>
-                  Something went wrong
-                </TYPE.label>
+                <ThemedText.Label fontSize={24} fontWeight={600}>
+                  <Trans>Something went wrong</Trans>
+                </ThemedText.Label>
               </SomethingWentWrongWrapper>
               <CodeBlockWrapper>
                 <code>
-                  <TYPE.main fontSize={10}>{error.stack}</TYPE.main>
+                  <ThemedText.Main fontSize={10}>{error.stack}</ThemedText.Main>
                 </code>
               </CodeBlockWrapper>
-              <AutoRow>
-                <LinkWrapper>
-                  <ExternalLink
-                    id="create-github-issue-link"
-                    href={`https://github.com/gelatodigital/sorbet-finance-v3/issues/new?assignees=&labels=bug&body=${encodedBody}&title=${encodeURIComponent(
-                      `Crash report: \`${error.name}${error.message && `: ${error.message}`}\``
-                    )}`}
-                    target="_blank"
-                  >
-                    <TYPE.link fontSize={16}>
-                      Create an issue on GitHub
-                      <span>↗</span>
-                    </TYPE.link>
-                  </ExternalLink>
-                </LinkWrapper>
-                <LinkWrapper>
-                  <ExternalLink id="get-support-on-discord" href="https://discord.gg/ApbA39BKyJ" target="_blank">
-                    <TYPE.link fontSize={16}>
-                      Get support on Discord
-                      <span>↗</span>
-                    </TYPE.link>
-                  </ExternalLink>
-                </LinkWrapper>
-              </AutoRow>
+              {IS_UNISWAP ? (
+                <AutoRow>
+                  <LinkWrapper>
+                    <ExternalLink
+                      id="create-github-issue-link"
+                      href={`https://github.com/Uniswap/uniswap-interface/issues/new?assignees=&labels=bug&body=${encodedBody}&title=${encodeURIComponent(
+                        `Crash report: \`${error.name}${error.message && `: ${error.message}`}\``
+                      )}`}
+                      target="_blank"
+                    >
+                      <ThemedText.Link fontSize={16}>
+                        <Trans>Create an issue on GitHub</Trans>
+                        <span>↗</span>
+                      </ThemedText.Link>
+                    </ExternalLink>
+                  </LinkWrapper>
+                  <LinkWrapper>
+                    <ExternalLink id="get-support-on-discord" href="https://discord.gg/FCfyBSbCU5" target="_blank">
+                      <ThemedText.Link fontSize={16}>
+                        <Trans>Get support on Discord</Trans>
+                        <span>↗</span>
+                      </ThemedText.Link>
+                    </ExternalLink>
+                  </LinkWrapper>
+                </AutoRow>
+              ) : null}
             </AutoColumn>
           </BodyWrapper>
         </FallbackWrapper>
@@ -116,27 +122,27 @@ export default class ErrorBoundary extends React.Component<unknown, ErrorBoundar
 }
 
 function getRelevantState(): null | keyof AppState {
-  // const path = window.location.hash
-  // if (!path.startsWith('#/')) {
-  //   return null
-  // }
-  // const pieces = path.substring(2).split(/[\/\\?]/)
-  // switch (pieces[0]) {
-  //   case 'swap':
-  //     return 'swap'
-  //   case 'add':
-  //     if (pieces[1] === 'v2') return 'mint'
-  //     else return 'mintV3'
-  //   case 'remove':
-  //     if (pieces[1] === 'v2') return 'burn'
-  //     else return 'burnV3'
-  // }
+  const path = window.location.hash
+  if (!path.startsWith('#/')) {
+    return null
+  }
+  const pieces = path.substring(2).split(/[/\\?]/)
+  switch (pieces[0]) {
+    case 'swap':
+      return 'swap'
+    case 'add':
+      if (pieces[1] === 'v2') return 'mint'
+      else return 'mintV3'
+    case 'remove':
+      if (pieces[1] === 'v2') return 'burn'
+      else return 'burnV3'
+  }
   return null
 }
 
 function issueBody(error: Error): string {
   const relevantState = getRelevantState()
-  const deviceData = getUserAgent()
+  const deviceData = userAgent
   return `## URL
   
 ${window.location.href}

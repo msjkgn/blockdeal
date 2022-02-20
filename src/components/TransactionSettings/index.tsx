@@ -1,14 +1,18 @@
-import React, { useState, useContext } from 'react'
+import { Trans } from '@lingui/macro'
 import { Percent } from '@uniswap/sdk-core'
-import styled, { ThemeContext } from 'styled-components'
-
-import QuestionHelper from '../QuestionHelper'
-import { TYPE } from '../../theme'
-import { AutoColumn } from '../Column'
-import { RowBetween, RowFixed } from '../Row'
+import { L2_CHAIN_IDS } from 'constants/chains'
 import { DEFAULT_DEADLINE_FROM_NOW } from 'constants/misc'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import ms from 'ms.macro'
 import { darken } from 'polished'
+import { useContext, useState } from 'react'
 import { useSetUserSlippageTolerance, useUserSlippageTolerance, useUserTransactionTTL } from 'state/user/hooks'
+import styled, { ThemeContext } from 'styled-components/macro'
+
+import { ThemedText } from '../../theme'
+import { AutoColumn } from '../Column'
+import QuestionHelper from '../QuestionHelper'
+import { RowBetween, RowFixed } from '../Row'
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',
@@ -82,15 +86,18 @@ const OptionCustom = styled(FancyButton)<{ active?: boolean; warning?: boolean }
 const SlippageEmojiContainer = styled.span`
   color: #f3841e;
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    display: none;  
+    display: none;
   `}
 `
 
-export interface TransactionSettingsProps {
+interface TransactionSettingsProps {
   placeholderSlippage: Percent // varies according to the context in which the settings dialog is placed
 }
 
+const THREE_DAYS_IN_SECONDS = ms`3 days` / 1000
+
 export default function TransactionSettings({ placeholderSlippage }: TransactionSettingsProps) {
+  const { chainId } = useActiveWeb3React()
   const theme = useContext(ThemeContext)
 
   const userSlippageTolerance = useUserSlippageTolerance()
@@ -138,7 +145,7 @@ export default function TransactionSettings({ placeholderSlippage }: Transaction
     } else {
       try {
         const parsed: number = Math.floor(Number.parseFloat(value) * 60)
-        if (!Number.isInteger(parsed) || parsed < 60 || parsed > 180 * 60) {
+        if (!Number.isInteger(parsed) || parsed < 60 || parsed > THREE_DAYS_IN_SECONDS) {
           setDeadlineError(DeadlineError.InvalidInput)
         } else {
           setDeadline(parsed)
@@ -150,14 +157,20 @@ export default function TransactionSettings({ placeholderSlippage }: Transaction
     }
   }
 
+  const showCustomDeadlineRow = Boolean(chainId && !L2_CHAIN_IDS.includes(chainId))
+
   return (
     <AutoColumn gap="md">
       <AutoColumn gap="sm">
         <RowFixed>
-          <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>
-            Slippage tolerance
-          </TYPE.black>
-          <QuestionHelper text="Your transaction will revert if the price changes unfavorably by more than this percentage." />
+          <ThemedText.Black fontWeight={400} fontSize={14} color={theme.text2}>
+            <Trans>Slippage tolerance</Trans>
+          </ThemedText.Black>
+          <QuestionHelper
+            text={
+              <Trans>Your transaction will revert if the price changes unfavorably by more than this percentage.</Trans>
+            }
+          />
         </RowFixed>
         <RowBetween>
           <Option
@@ -166,7 +179,7 @@ export default function TransactionSettings({ placeholderSlippage }: Transaction
             }}
             active={userSlippageTolerance === 'auto'}
           >
-            Auto
+            <Trans>Auto</Trans>
           </Option>
           <OptionCustom active={userSlippageTolerance !== 'auto'} warning={!!slippageError} tabIndex={-1}>
             <RowBetween>
@@ -205,46 +218,52 @@ export default function TransactionSettings({ placeholderSlippage }: Transaction
               color: slippageError ? 'red' : '#F3841E',
             }}
           >
-            {slippageError
-              ? 'Enter a valid slippage percentage'
-              : tooLow
-              ? 'Your transaction may fail'
-              : 'Your transaction may be frontrun'}
+            {slippageError ? (
+              <Trans>Enter a valid slippage percentage</Trans>
+            ) : tooLow ? (
+              <Trans>Your transaction may fail</Trans>
+            ) : (
+              <Trans>Your transaction may be frontrun</Trans>
+            )}
           </RowBetween>
         ) : null}
       </AutoColumn>
 
-      <AutoColumn gap="sm">
-        <RowFixed>
-          <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
-            Transaction deadline
-          </TYPE.black>
-          <QuestionHelper text="Your transaction will revert if it is pending for more than this period of time." />
-        </RowFixed>
-        <RowFixed>
-          <OptionCustom style={{ width: '80px' }} warning={!!deadlineError} tabIndex={-1}>
-            <Input
-              placeholder={(DEFAULT_DEADLINE_FROM_NOW / 60).toString()}
-              value={
-                deadlineInput.length > 0
-                  ? deadlineInput
-                  : deadline === DEFAULT_DEADLINE_FROM_NOW
-                  ? ''
-                  : (deadline / 60).toString()
-              }
-              onChange={(e) => parseCustomDeadline(e.target.value)}
-              onBlur={() => {
-                setDeadlineInput('')
-                setDeadlineError(false)
-              }}
-              color={deadlineError ? 'red' : ''}
+      {showCustomDeadlineRow && (
+        <AutoColumn gap="sm">
+          <RowFixed>
+            <ThemedText.Black fontSize={14} fontWeight={400} color={theme.text2}>
+              <Trans>Transaction deadline</Trans>
+            </ThemedText.Black>
+            <QuestionHelper
+              text={<Trans>Your transaction will revert if it is pending for more than this period of time.</Trans>}
             />
-          </OptionCustom>
-          <TYPE.body style={{ paddingLeft: '8px' }} fontSize={14}>
-            minutes
-          </TYPE.body>
-        </RowFixed>
-      </AutoColumn>
+          </RowFixed>
+          <RowFixed>
+            <OptionCustom style={{ width: '80px' }} warning={!!deadlineError} tabIndex={-1}>
+              <Input
+                placeholder={(DEFAULT_DEADLINE_FROM_NOW / 60).toString()}
+                value={
+                  deadlineInput.length > 0
+                    ? deadlineInput
+                    : deadline === DEFAULT_DEADLINE_FROM_NOW
+                    ? ''
+                    : (deadline / 60).toString()
+                }
+                onChange={(e) => parseCustomDeadline(e.target.value)}
+                onBlur={() => {
+                  setDeadlineInput('')
+                  setDeadlineError(false)
+                }}
+                color={deadlineError ? 'red' : ''}
+              />
+            </OptionCustom>
+            <ThemedText.Body style={{ paddingLeft: '8px' }} fontSize={14}>
+              <Trans>minutes</Trans>
+            </ThemedText.Body>
+          </RowFixed>
+        </AutoColumn>
+      )}
     </AutoColumn>
   )
 }

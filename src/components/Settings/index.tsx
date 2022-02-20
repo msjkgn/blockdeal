@@ -1,13 +1,19 @@
-import React, { useContext, useRef, useState } from 'react'
+// eslint-disable-next-line no-restricted-imports
+import { t, Trans } from '@lingui/macro'
+import { Percent } from '@uniswap/sdk-core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { AUTO_ROUTER_SUPPORTED_CHAINS } from 'lib/hooks/routing/clientSideSmartOrderRouter'
+import { useContext, useRef, useState } from 'react'
 import { Settings, X } from 'react-feather'
 import ReactGA from 'react-ga'
 import { Text } from 'rebass'
-import styled, { ThemeContext } from 'styled-components'
+import styled, { ThemeContext } from 'styled-components/macro'
+
 import { useOnClickOutside } from '../../hooks/useOnClickOutside'
-import { ApplicationModal } from '../../state/application/actions'
 import { useModalOpen, useToggleSettingsMenu } from '../../state/application/hooks'
-import { useExpertModeManager, useUserSingleHopOnly } from '../../state/user/hooks'
-import { TYPE } from '../../theme'
+import { ApplicationModal } from '../../state/application/reducer'
+import { useClientSideRouter, useExpertModeManager } from '../../state/user/hooks'
+import { ThemedText } from '../../theme'
 import { ButtonError } from '../Button'
 import { AutoColumn } from '../Column'
 import Modal from '../Modal'
@@ -15,14 +21,13 @@ import QuestionHelper from '../QuestionHelper'
 import { RowBetween, RowFixed } from '../Row'
 import Toggle from '../Toggle'
 import TransactionSettings from '../TransactionSettings'
-import { Percent } from '@uniswap/sdk-core'
 
 const StyledMenuIcon = styled(Settings)`
   height: 20px;
   width: 20px;
 
   > * {
-    stroke: ${({ theme }) => theme.text2};
+    stroke: ${({ theme }) => theme.text1};
   }
 
   :hover {
@@ -114,6 +119,8 @@ const ModalContentWrapper = styled.div`
 `
 
 export default function SettingsTab({ placeholderSlippage }: { placeholderSlippage: Percent }) {
+  const { chainId } = useActiveWeb3React()
+
   const node = useRef<HTMLDivElement>()
   const open = useModalOpen(ApplicationModal.SETTINGS)
   const toggle = useToggleSettingsMenu()
@@ -122,7 +129,7 @@ export default function SettingsTab({ placeholderSlippage }: { placeholderSlippa
 
   const [expertMode, toggleExpertMode] = useExpertModeManager()
 
-  const [singleHopOnly, setSingleHopOnly] = useUserSingleHopOnly()
+  const [clientSideRouter, setClientSideRouter] = useClientSideRouter()
 
   // show confirmation view before turning on
   const [showConfirmation, setShowConfirmation] = useState(false)
@@ -138,38 +145,41 @@ export default function SettingsTab({ placeholderSlippage }: { placeholderSlippa
             <RowBetween style={{ padding: '0 2rem' }}>
               <div />
               <Text fontWeight={500} fontSize={20}>
-                Are you sure?
+                <Trans>Are you sure?</Trans>
               </Text>
               <StyledCloseIcon onClick={() => setShowConfirmation(false)} />
             </RowBetween>
             <Break />
             <AutoColumn gap="lg" style={{ padding: '0 2rem' }}>
               <Text fontWeight={500} fontSize={20}>
-                Expert mode turns off the confirm transaction prompt and allows high slippage trades that often result
-                in bad rates and lost funds.
+                <Trans>
+                  Expert mode turns off the confirm transaction prompt and allows high slippage trades that often result
+                  in bad rates and lost funds.
+                </Trans>
               </Text>
               <Text fontWeight={600} fontSize={20}>
-                ONLY USE THIS MODE IF YOU KNOW WHAT YOU ARE DOING.
+                <Trans>ONLY USE THIS MODE IF YOU KNOW WHAT YOU ARE DOING.</Trans>
               </Text>
               <ButtonError
                 error={true}
                 padding={'12px'}
                 onClick={() => {
-                  if (window.prompt(`Please type the word "confirm" to enable expert mode.`) === 'confirm') {
+                  const confirmWord = t`confirm`
+                  if (window.prompt(t`Please type the word "${confirmWord}" to enable expert mode.`) === confirmWord) {
                     toggleExpertMode()
                     setShowConfirmation(false)
                   }
                 }}
               >
                 <Text fontSize={20} fontWeight={500} id="confirm-expert-mode">
-                  Turn On Expert Mode
+                  <Trans>Turn On Expert Mode</Trans>
                 </Text>
               </ButtonError>
             </AutoColumn>
           </AutoColumn>
         </ModalContentWrapper>
       </Modal>
-      <StyledMenuButton onClick={toggle} id="open-settings-dialog-button">
+      <StyledMenuButton onClick={toggle} id="open-settings-dialog-button" aria-label={t`Transaction Settings`}>
         <StyledMenuIcon />
         {expertMode ? (
           <EmojiWrapper>
@@ -183,18 +193,43 @@ export default function SettingsTab({ placeholderSlippage }: { placeholderSlippa
         <MenuFlyout>
           <AutoColumn gap="md" style={{ padding: '1rem' }}>
             <Text fontWeight={600} fontSize={14}>
-              Transaction Settings
+              <Trans>Transaction Settings</Trans>
             </Text>
             <TransactionSettings placeholderSlippage={placeholderSlippage} />
             <Text fontWeight={600} fontSize={14}>
-              Interface Settings
+              <Trans>Interface Settings</Trans>
             </Text>
+            {chainId && AUTO_ROUTER_SUPPORTED_CHAINS.includes(chainId) && (
+              <RowBetween>
+                <RowFixed>
+                  <ThemedText.Black fontWeight={400} fontSize={14} color={theme.text2}>
+                    <Trans>Auto Router API</Trans>
+                  </ThemedText.Black>
+                  <QuestionHelper text={<Trans>Use the Uniswap Labs API to get faster quotes.</Trans>} />
+                </RowFixed>
+                <Toggle
+                  id="toggle-optimized-router-button"
+                  isActive={!clientSideRouter}
+                  toggle={() => {
+                    ReactGA.event({
+                      category: 'Routing',
+                      action: clientSideRouter ? 'enable routing API' : 'disable routing API',
+                    })
+                    setClientSideRouter(!clientSideRouter)
+                  }}
+                />
+              </RowBetween>
+            )}
             <RowBetween>
               <RowFixed>
-                <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>
-                  Toggle Expert Mode
-                </TYPE.black>
-                <QuestionHelper text="Allow high price impact trades and skip the confirm screen. Use at your own risk." />
+                <ThemedText.Black fontWeight={400} fontSize={14} color={theme.text2}>
+                  <Trans>Expert Mode</Trans>
+                </ThemedText.Black>
+                <QuestionHelper
+                  text={
+                    <Trans>Allow high price impact trades and skip the confirm screen. Use at your own risk.</Trans>
+                  }
+                />
               </RowFixed>
               <Toggle
                 id="toggle-expert-mode-button"
@@ -210,25 +245,6 @@ export default function SettingsTab({ placeholderSlippage }: { placeholderSlippa
                         setShowConfirmation(true)
                       }
                 }
-              />
-            </RowBetween>
-            <RowBetween>
-              <RowFixed>
-                <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>
-                  Disable Multihops
-                </TYPE.black>
-                <QuestionHelper text="Restricts swaps to direct pairs only." />
-              </RowFixed>
-              <Toggle
-                id="toggle-disable-multihop-button"
-                isActive={singleHopOnly}
-                toggle={() => {
-                  ReactGA.event({
-                    category: 'Routing',
-                    action: singleHopOnly ? 'disable single hop' : 'enable single hop',
-                  })
-                  setSingleHopOnly(!singleHopOnly)
-                }}
               />
             </RowBetween>
           </AutoColumn>

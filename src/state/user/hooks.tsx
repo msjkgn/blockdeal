@@ -1,25 +1,31 @@
 import { Percent, Token } from '@uniswap/sdk-core'
-import { Pair } from '@uniswap/v2-sdk'
+import { computePairAddress, Pair } from '@uniswap/v2-sdk'
+import { L2_CHAIN_IDS } from 'constants/chains'
+import { SupportedLocale } from 'constants/locales'
+import { L2_DEADLINE_FROM_NOW } from 'constants/misc'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import JSBI from 'jsbi'
-import flatMap from 'lodash.flatmap'
 import { useCallback, useMemo } from 'react'
-import { shallowEqual, useDispatch, useSelector } from 'react-redux'
-import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS } from '../../constants/routing'
+import { shallowEqual } from 'react-redux'
+import { useAppDispatch, useAppSelector } from 'state/hooks'
 
-import { useActiveWeb3React } from '../../hooks/web3'
+import { V2_FACTORY_ADDRESSES } from '../../constants/addresses'
+import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS } from '../../constants/routing'
 import { useAllTokens } from '../../hooks/Tokens'
-import { AppDispatch, AppState } from '../index'
+import { AppState } from '../index'
 import {
   addSerializedPair,
   addSerializedToken,
   removeSerializedToken,
   SerializedPair,
   SerializedToken,
-  toggleURLWarning,
+  updateHideClosedPositions,
+  updateShowSurveyPopup,
+  updateUserClientSideRouter,
   updateUserDarkMode,
   updateUserDeadline,
   updateUserExpertMode,
-  updateUserSingleHopOnly,
+  updateUserLocale,
   updateUserSlippageTolerance,
 } from './actions'
 
@@ -44,10 +50,7 @@ function deserializeToken(serializedToken: SerializedToken): Token {
 }
 
 export function useIsDarkMode(): boolean {
-  const { userDarkMode, matchesDarkMode } = useSelector<
-    AppState,
-    { userDarkMode: boolean | null; matchesDarkMode: boolean }
-  >(
+  const { userDarkMode, matchesDarkMode } = useAppSelector(
     ({ user: { matchesDarkMode, userDarkMode } }) => ({
       userDarkMode,
       matchesDarkMode,
@@ -59,7 +62,7 @@ export function useIsDarkMode(): boolean {
 }
 
 export function useDarkModeManager(): [boolean, () => void] {
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useAppDispatch()
   const darkMode = useIsDarkMode()
 
   const toggleSetDarkMode = useCallback(() => {
@@ -69,12 +72,30 @@ export function useDarkModeManager(): [boolean, () => void] {
   return [darkMode, toggleSetDarkMode]
 }
 
+export function useUserLocale(): SupportedLocale | null {
+  return useAppSelector((state) => state.user.userLocale)
+}
+
+export function useUserLocaleManager(): [SupportedLocale | null, (newLocale: SupportedLocale) => void] {
+  const dispatch = useAppDispatch()
+  const locale = useUserLocale()
+
+  const setLocale = useCallback(
+    (newLocale: SupportedLocale) => {
+      dispatch(updateUserLocale({ userLocale: newLocale }))
+    },
+    [dispatch]
+  )
+
+  return [locale, setLocale]
+}
+
 export function useIsExpertMode(): boolean {
-  return useSelector<AppState, AppState['user']['userExpertMode']>((state) => state.user.userExpertMode)
+  return useAppSelector((state) => state.user.userExpertMode)
 }
 
 export function useExpertModeManager(): [boolean, () => void] {
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useAppDispatch()
   const expertMode = useIsExpertMode()
 
   const toggleSetExpertMode = useCallback(() => {
@@ -84,25 +105,35 @@ export function useExpertModeManager(): [boolean, () => void] {
   return [expertMode, toggleSetExpertMode]
 }
 
-export function useUserSingleHopOnly(): [boolean, (newSingleHopOnly: boolean) => void] {
-  const dispatch = useDispatch<AppDispatch>()
-
-  const singleHopOnly = useSelector<AppState, AppState['user']['userSingleHopOnly']>(
-    (state) => state.user.userSingleHopOnly
+export function useShowSurveyPopup(): [boolean | undefined, (showPopup: boolean) => void] {
+  const dispatch = useAppDispatch()
+  const showSurveyPopup = useAppSelector((state) => state.user.showSurveyPopup)
+  const toggleShowSurveyPopup = useCallback(
+    (showPopup: boolean) => {
+      dispatch(updateShowSurveyPopup({ showSurveyPopup: showPopup }))
+    },
+    [dispatch]
   )
+  return [showSurveyPopup, toggleShowSurveyPopup]
+}
 
-  const setSingleHopOnly = useCallback(
-    (newSingleHopOnly: boolean) => {
-      dispatch(updateUserSingleHopOnly({ userSingleHopOnly: newSingleHopOnly }))
+export function useClientSideRouter(): [boolean, (userClientSideRouter: boolean) => void] {
+  const dispatch = useAppDispatch()
+
+  const clientSideRouter = useAppSelector((state) => Boolean(state.user.userClientSideRouter))
+
+  const setClientSideRouter = useCallback(
+    (newClientSideRouter: boolean) => {
+      dispatch(updateUserClientSideRouter({ userClientSideRouter: newClientSideRouter }))
     },
     [dispatch]
   )
 
-  return [singleHopOnly, setSingleHopOnly]
+  return [clientSideRouter, setClientSideRouter]
 }
 
 export function useSetUserSlippageTolerance(): (slippageTolerance: Percent | 'auto') => void {
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useAppDispatch()
 
   return useCallback(
     (userSlippageTolerance: Percent | 'auto') => {
@@ -127,7 +158,7 @@ export function useSetUserSlippageTolerance(): (slippageTolerance: Percent | 'au
  * Return the user's slippage tolerance, from the redux store, and a function to update the slippage tolerance
  */
 export function useUserSlippageTolerance(): Percent | 'auto' {
-  const userSlippageTolerance = useSelector<AppState, AppState['user']['userSlippageTolerance']>((state) => {
+  const userSlippageTolerance = useAppSelector((state) => {
     return state.user.userSlippageTolerance
   })
 
@@ -135,6 +166,21 @@ export function useUserSlippageTolerance(): Percent | 'auto' {
     () => (userSlippageTolerance === 'auto' ? 'auto' : new Percent(userSlippageTolerance, 10_000)),
     [userSlippageTolerance]
   )
+}
+
+export function useUserHideClosedPositions(): [boolean, (newHideClosedPositions: boolean) => void] {
+  const dispatch = useAppDispatch()
+
+  const hideClosedPositions = useAppSelector((state) => state.user.userHideClosedPositions)
+
+  const setHideClosedPositions = useCallback(
+    (newHideClosedPositions: boolean) => {
+      dispatch(updateHideClosedPositions({ userHideClosedPositions: newHideClosedPositions }))
+    },
+    [dispatch]
+  )
+
+  return [hideClosedPositions, setHideClosedPositions]
 }
 
 /**
@@ -150,10 +196,11 @@ export function useUserSlippageToleranceWithDefault(defaultSlippageTolerance: Pe
 }
 
 export function useUserTransactionTTL(): [number, (slippage: number) => void] {
-  const dispatch = useDispatch<AppDispatch>()
-  const userDeadline = useSelector<AppState, AppState['user']['userDeadline']>((state) => {
-    return state.user.userDeadline
-  })
+  const { chainId } = useActiveWeb3React()
+  const dispatch = useAppDispatch()
+  const userDeadline = useAppSelector((state) => state.user.userDeadline)
+  const onL2 = Boolean(chainId && L2_CHAIN_IDS.includes(chainId))
+  const deadline = onL2 ? L2_DEADLINE_FROM_NOW : userDeadline
 
   const setUserDeadline = useCallback(
     (userDeadline: number) => {
@@ -162,11 +209,11 @@ export function useUserTransactionTTL(): [number, (slippage: number) => void] {
     [dispatch]
   )
 
-  return [userDeadline, setUserDeadline]
+  return [deadline, setUserDeadline]
 }
 
 export function useAddUserToken(): (token: Token) => void {
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useAppDispatch()
   return useCallback(
     (token: Token) => {
       dispatch(addSerializedToken({ serializedToken: serializeToken(token) }))
@@ -176,7 +223,7 @@ export function useAddUserToken(): (token: Token) => void {
 }
 
 export function useRemoveUserAddedToken(): (chainId: number, address: string) => void {
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useAppDispatch()
   return useCallback(
     (chainId: number, address: string) => {
       dispatch(removeSerializedToken({ chainId, address }))
@@ -187,11 +234,14 @@ export function useRemoveUserAddedToken(): (chainId: number, address: string) =>
 
 export function useUserAddedTokens(): Token[] {
   const { chainId } = useActiveWeb3React()
-  const serializedTokensMap = useSelector<AppState, AppState['user']['tokens']>(({ user: { tokens } }) => tokens)
+  const serializedTokensMap = useAppSelector(({ user: { tokens } }) => tokens)
 
   return useMemo(() => {
     if (!chainId) return []
-    return Object.values(serializedTokensMap?.[chainId] ?? {}).map(deserializeToken)
+    const tokenMap: Token[] = serializedTokensMap?.[chainId]
+      ? Object.values(serializedTokensMap[chainId]).map(deserializeToken)
+      : []
+    return tokenMap
   }, [serializedTokensMap, chainId])
 }
 
@@ -203,7 +253,7 @@ function serializePair(pair: Pair): SerializedPair {
 }
 
 export function usePairAdder(): (pair: Pair) => void {
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useAppDispatch()
 
   return useCallback(
     (pair: Pair) => {
@@ -214,12 +264,7 @@ export function usePairAdder(): (pair: Pair) => void {
 }
 
 export function useURLWarningVisible(): boolean {
-  return useSelector((state: AppState) => state.user.URLWarningVisible)
-}
-
-export function useURLWarningToggle(): () => void {
-  const dispatch = useDispatch()
-  return useCallback(() => dispatch(toggleURLWarning()), [dispatch])
+  return useAppSelector((state: AppState) => state.user.URLWarningVisible)
 }
 
 /**
@@ -228,7 +273,17 @@ export function useURLWarningToggle(): () => void {
  * @param tokenB the other token
  */
 export function toV2LiquidityToken([tokenA, tokenB]: [Token, Token]): Token {
-  return new Token(tokenA.chainId, Pair.getAddress(tokenA, tokenB), 18, 'UNI-V2', 'Uniswap V2')
+  if (tokenA.chainId !== tokenB.chainId) throw new Error('Not matching chain IDs')
+  if (tokenA.equals(tokenB)) throw new Error('Tokens cannot be equal')
+  if (!V2_FACTORY_ADDRESSES[tokenA.chainId]) throw new Error('No V2 factory address on this chain')
+
+  return new Token(
+    tokenA.chainId,
+    computePairAddress({ factoryAddress: V2_FACTORY_ADDRESSES[tokenA.chainId], tokenA, tokenB }),
+    18,
+    'UNI-V2',
+    'Uniswap V2'
+  )
 }
 
 /**
@@ -245,7 +300,7 @@ export function useTrackedTokenPairs(): [Token, Token][] {
   const generatedPairs: [Token, Token][] = useMemo(
     () =>
       chainId
-        ? flatMap(Object.keys(tokens), (tokenAddress) => {
+        ? Object.keys(tokens).flatMap((tokenAddress) => {
             const token = tokens[tokenAddress]
             // for each token on the current chain,
             return (
@@ -267,7 +322,7 @@ export function useTrackedTokenPairs(): [Token, Token][] {
   )
 
   // pairs saved by users
-  const savedSerializedPairs = useSelector<AppState, AppState['user']['pairs']>(({ user: { pairs } }) => pairs)
+  const savedSerializedPairs = useAppSelector(({ user: { pairs } }) => pairs)
 
   const userPairs: [Token, Token][] = useMemo(() => {
     if (!chainId || !savedSerializedPairs) return []

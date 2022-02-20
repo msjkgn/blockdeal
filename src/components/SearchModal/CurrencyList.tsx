@@ -1,26 +1,28 @@
+import { Trans } from '@lingui/macro'
 import { Currency, CurrencyAmount, Token } from '@uniswap/sdk-core'
-import React, { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react'
+import { LightGreyCard } from 'components/Card'
+import QuestionHelper from 'components/QuestionHelper'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import useTheme from 'hooks/useTheme'
+import { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react'
 import { FixedSizeList } from 'react-window'
 import { Text } from 'rebass'
 import styled from 'styled-components/macro'
-import { useActiveWeb3React } from '../../hooks/web3'
+
+import TokenListLogo from '../../assets/svg/tokenlist.svg'
+import { useIsUserAddedToken } from '../../hooks/Tokens'
 import { useCombinedActiveList } from '../../state/lists/hooks'
 import { WrappedTokenInfo } from '../../state/lists/wrappedTokenInfo'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
-import { TYPE } from '../../theme'
-import { useIsUserAddedToken } from '../../hooks/Tokens'
-import Column from '../Column'
-import { RowFixed, RowBetween } from '../Row'
-import CurrencyLogo from '../CurrencyLogo'
-import { MouseoverTooltip } from '../Tooltip'
-import { MenuItem } from './styleds'
-import Loader from '../Loader'
+import { ThemedText } from '../../theme'
 import { isTokenOnList } from '../../utils'
+import Column from '../Column'
+import CurrencyLogo from '../CurrencyLogo'
+import Loader from '../Loader'
+import { RowBetween, RowFixed } from '../Row'
+import { MouseoverTooltip } from '../Tooltip'
 import ImportRow from './ImportRow'
-import { LightGreyCard } from 'components/Card'
-import TokenListLogo from '../../assets/svg/tokenlist.svg'
-import QuestionHelper from 'components/QuestionHelper'
-import useTheme from 'hooks/useTheme'
+import { MenuItem } from './styleds'
 
 function currencyKey(currency: Currency): string {
   return currency.isToken ? currency.address : 'ETHER'
@@ -103,12 +105,14 @@ function CurrencyRow({
   isSelected,
   otherSelected,
   style,
+  showCurrencyAmount,
 }: {
   currency: Currency
   onSelect: () => void
   isSelected: boolean
   otherSelected: boolean
   style: CSSProperties
+  showCurrencyAmount?: boolean
 }) {
   const { account } = useActiveWeb3React()
   const key = currencyKey(currency)
@@ -131,14 +135,20 @@ function CurrencyRow({
         <Text title={currency.name} fontWeight={500}>
           {currency.symbol}
         </Text>
-        <TYPE.darkGray ml="0px" fontSize={'12px'} fontWeight={300}>
-          {currency.name} {!currency.isNative && !isOnSelectedList && customAdded && '• Added by user'}
-        </TYPE.darkGray>
+        <ThemedText.DarkGray ml="0px" fontSize={'12px'} fontWeight={300}>
+          {!currency.isNative && !isOnSelectedList && customAdded ? (
+            <Trans>{currency.name} • Added by user</Trans>
+          ) : (
+            currency.name
+          )}
+        </ThemedText.DarkGray>
       </Column>
       <TokenTags currency={currency} />
-      <RowFixed style={{ justifySelf: 'flex-end' }}>
-        {balance ? <Balance balance={balance} /> : account ? <Loader /> : null}
-      </RowFixed>
+      {showCurrencyAmount && (
+        <RowFixed style={{ justifySelf: 'flex-end' }}>
+          {balance ? <Balance balance={balance} /> : account ? <Loader /> : null}
+        </RowFixed>
+      )}
     </MenuItem>
   )
 }
@@ -153,15 +163,21 @@ function BreakLineComponent({ style }: { style: CSSProperties }) {
   const theme = useTheme()
   return (
     <FixedContentRow style={style}>
-      <LightGreyCard padding="8px 12px" borderRadius="8px">
+      <LightGreyCard padding="8px 12px" $borderRadius="8px">
         <RowBetween>
           <RowFixed>
             <TokenListLogoWrapper src={TokenListLogo} />
-            <TYPE.main ml="6px" fontSize="12px" color={theme.text1}>
-              Expanded results from inactive Token Lists
-            </TYPE.main>
+            <ThemedText.Main ml="6px" fontSize="12px" color={theme.text1}>
+              <Trans>Expanded results from inactive Token Lists</Trans>
+            </ThemedText.Main>
           </RowFixed>
-          <QuestionHelper text="Tokens from inactive lists. Import specific tokens below or click 'Manage' to activate more lists." />
+          <QuestionHelper
+            text={
+              <Trans>
+                Tokens from inactive lists. Import specific tokens below or click Manage to activate more lists.
+              </Trans>
+            }
+          />
         </RowBetween>
       </LightGreyCard>
     </FixedContentRow>
@@ -178,6 +194,7 @@ export default function CurrencyList({
   fixedListRef,
   showImportView,
   setImportToken,
+  showCurrencyAmount,
 }: {
   height: number
   currencies: Currency[]
@@ -188,6 +205,7 @@ export default function CurrencyList({
   fixedListRef?: MutableRefObject<FixedSizeList | undefined>
   showImportView: () => void
   setImportToken: (token: Token) => void
+  showCurrencyAmount?: boolean
 }) {
   const itemData: (Currency | BreakLine)[] = useMemo(() => {
     if (otherListTokens && otherListTokens?.length > 0) {
@@ -210,8 +228,7 @@ export default function CurrencyList({
       const otherSelected = Boolean(currency && otherCurrency && otherCurrency.equals(currency))
       const handleSelect = () => currency && onCurrencySelect(currency)
 
-      // TODO: fix native multi chain
-      const token = currency.isNative ? undefined : currency?.wrapped
+      const token = currency?.wrapped
 
       const showImport = index > currencies.length
 
@@ -227,13 +244,22 @@ export default function CurrencyList({
             isSelected={isSelected}
             onSelect={handleSelect}
             otherSelected={otherSelected}
+            showCurrencyAmount={showCurrencyAmount}
           />
         )
       } else {
         return null
       }
     },
-    [currencies.length, onCurrencySelect, otherCurrency, selectedCurrency, setImportToken, showImportView]
+    [
+      currencies.length,
+      onCurrencySelect,
+      otherCurrency,
+      selectedCurrency,
+      setImportToken,
+      showImportView,
+      showCurrencyAmount,
+    ]
   )
 
   const itemKey = useCallback((index: number, data: typeof itemData) => {

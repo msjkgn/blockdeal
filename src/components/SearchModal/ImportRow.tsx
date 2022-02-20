@@ -1,15 +1,17 @@
-import React, { CSSProperties } from 'react'
+import { Trans } from '@lingui/macro'
 import { Token } from '@uniswap/sdk-core'
-import { AutoRow, RowFixed } from 'components/Row'
+import { ButtonPrimary } from 'components/Button'
 import { AutoColumn } from 'components/Column'
 import CurrencyLogo from 'components/CurrencyLogo'
-import { TYPE } from 'theme'
 import ListLogo from 'components/ListLogo'
+import { AutoRow, RowFixed } from 'components/Row'
+import { useIsTokenActive, useIsUserAddedToken } from 'hooks/Tokens'
 import useTheme from 'hooks/useTheme'
-import { ButtonPrimary } from 'components/Button'
-import styled from 'styled-components/macro'
-import { useIsUserAddedToken, useIsTokenActive } from 'hooks/Tokens'
+import { CSSProperties } from 'react'
 import { CheckCircle } from 'react-feather'
+import styled from 'styled-components/macro'
+import { ThemedText } from 'theme'
+
 import { WrappedTokenInfo } from '../../state/lists/wrappedTokenInfo'
 
 const TokenSection = styled.div<{ dim?: boolean }>`
@@ -65,16 +67,16 @@ export default function ImportRow({
       <CurrencyLogo currency={token} size={'24px'} style={{ opacity: dim ? '0.6' : '1' }} />
       <AutoColumn gap="4px" style={{ opacity: dim ? '0.6' : '1' }}>
         <AutoRow>
-          <TYPE.body fontWeight={500}>{token.symbol}</TYPE.body>
-          <TYPE.darkGray ml="8px" fontWeight={300}>
+          <ThemedText.Body fontWeight={500}>{token.symbol}</ThemedText.Body>
+          <ThemedText.DarkGray ml="8px" fontWeight={300}>
             <NameOverflow title={token.name}>{token.name}</NameOverflow>
-          </TYPE.darkGray>
+          </ThemedText.DarkGray>
         </AutoRow>
         {list && list.logoURI && (
           <RowFixed>
-            <TYPE.small mr="4px" color={theme.text3}>
-              via {list.name}
-            </TYPE.small>
+            <ThemedText.Small mr="4px" color={theme.text3}>
+              <Trans>via {list.name} </Trans>
+            </ThemedText.Small>
             <ListLogo logoURI={list.logoURI} size="12px" />
           </RowFixed>
         )}
@@ -90,12 +92,14 @@ export default function ImportRow({
             showImportView()
           }}
         >
-          Import
+          <Trans>Import</Trans>
         </ButtonPrimary>
       ) : (
         <RowFixed style={{ minWidth: 'fit-content' }}>
           <CheckIcon />
-          <TYPE.main color={theme.green1}>Active</TYPE.main>
+          <ThemedText.Main color={theme.green1}>
+            <Trans>Active</Trans>
+          </ThemedText.Main>
         </RowFixed>
       )}
     </TokenSection>

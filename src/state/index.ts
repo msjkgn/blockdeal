@@ -1,23 +1,51 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { save, load } from 'redux-localstorage-simple'
-import user from './user/reducer'
-import application from './application/reducer'
-import { gelatoReducers, GELATO_PERSISTED_KEYS } from '@gelatonetwork/limit-orders-react'
+import { setupListeners } from '@reduxjs/toolkit/query/react'
+import multicall from 'lib/state/multicall'
+import { load, save } from 'redux-localstorage-simple'
 
-const PERSISTED_KEYS: string[] = ['user', ...GELATO_PERSISTED_KEYS]
+import application from './application/reducer'
+import burn from './burn/reducer'
+import burnV3 from './burn/v3/reducer'
+import { api as dataApi } from './data/slice'
+import { updateVersion } from './global/actions'
+import lists from './lists/reducer'
+import logs from './logs/slice'
+import mint from './mint/reducer'
+import mintV3 from './mint/v3/reducer'
+import { routingApi } from './routing/slice'
+import swap from './swap/reducer'
+import transactions from './transactions/reducer'
+import user from './user/reducer'
+
+const PERSISTED_KEYS: string[] = ['user', 'transactions', 'lists']
 
 const store = configureStore({
   reducer: {
-    user,
     application,
-    ...gelatoReducers,
+    user,
+    transactions,
+    swap,
+    mint,
+    mintV3,
+    burn,
+    burnV3,
+    multicall: multicall.reducer,
+    lists,
+    logs,
+    [dataApi.reducerPath]: dataApi.reducer,
+    [routingApi.reducerPath]: routingApi.reducer,
   },
-  middleware: [
-    // ...getDefaultMiddleware({ thunk: false }),
-    save({ states: PERSISTED_KEYS, debounce: 1000 }),
-  ],
-  preloadedState: load({ states: PERSISTED_KEYS }),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ thunk: true })
+      .concat(dataApi.middleware)
+      .concat(routingApi.middleware)
+      .concat(save({ states: PERSISTED_KEYS, debounce: 1000 })),
+  preloadedState: load({ states: PERSISTED_KEYS, disableWarnings: process.env.NODE_ENV === 'test' }),
 })
+
+store.dispatch(updateVersion())
+
+setupListeners(store.dispatch)
 
 export default store
 

@@ -3,8 +3,8 @@ import { AddressZero } from '@ethersproject/constants'
 import { Contract } from '@ethersproject/contracts'
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers'
 import { Token } from '@uniswap/sdk-core'
-import { FeeAmount } from '@uniswap/v3-sdk/dist/'
-import { TokenAddressMap } from '../state/lists/hooks'
+import { FeeAmount } from '@uniswap/v3-sdk'
+import { ChainTokenMap } from 'lib/hooks/useTokenList/utils'
 
 // returns the checksummed address if the address is valid, otherwise returns false
 export function isAddress(value: any): string | false {
@@ -25,12 +25,12 @@ export function shortenAddress(address: string, chars = 4): string {
 }
 
 // account is not optional
-export function getSigner(library: Web3Provider, account: string): JsonRpcSigner {
+function getSigner(library: Web3Provider, account: string): JsonRpcSigner {
   return library.getSigner(account).connectUnchecked()
 }
 
 // account is optional
-export function getProviderOrSigner(library: Web3Provider, account?: string): Web3Provider | JsonRpcSigner {
+function getProviderOrSigner(library: Web3Provider, account?: string): Web3Provider | JsonRpcSigner {
   return account ? getSigner(library, account) : library
 }
 
@@ -47,8 +47,8 @@ export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
 }
 
-export function isTokenOnList(tokenAddressMap: TokenAddressMap, token?: Token): boolean {
-  return Boolean(token?.isToken && tokenAddressMap[token.chainId]?.[token.address])
+export function isTokenOnList(chainTokenMap: ChainTokenMap, token?: Token): boolean {
+  return Boolean(token?.isToken && chainTokenMap[token.chainId]?.[token.address])
 }
 
 export function formattedFeeAmount(feeAmount: FeeAmount): number {

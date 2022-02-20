@@ -1,22 +1,38 @@
 // a list of tokens by chain
-import { Currency, Ether, Token, WETH9 } from '@uniswap/sdk-core'
+import { Currency, Token } from '@uniswap/sdk-core'
+
+import { SupportedChainId } from './chains'
 import {
   AMPL,
   DAI,
+  DAI_ARBITRUM_ONE,
+  DAI_OPTIMISM,
+  DAI_POLYGON,
+  ETH2X_FLI,
   FEI,
   FRAX,
   FXS,
-  MATIC_BASES,
-  MIR,
+  nativeOnChain,
   renBTC,
+  rETH2,
+  sETH2,
+  SWISE,
   TRIBE,
-  UMA,
-  UNI,
   USDC,
+  USDC_ARBITRUM,
+  USDC_OPTIMISM,
+  USDC_POLYGON,
   USDT,
-  UST,
+  USDT_ARBITRUM_ONE,
+  USDT_OPTIMISM,
+  USDT_POLYGON,
   WBTC,
-  WETH_MATIC,
+  WBTC_ARBITRUM_ONE,
+  WBTC_OPTIMISM,
+  WBTC_POLYGON,
+  WETH_POLYGON,
+  WETH_POLYGON_MUMBAI,
+  WRAPPED_NATIVE_CURRENCY,
 } from './tokens'
 
 type ChainTokenList = {
@@ -27,46 +43,39 @@ type ChainCurrencyList = {
   readonly [chainId: number]: Currency[]
 }
 
-// List of all mirror's assets addresses.
-// Last pulled from : https://whitelist.mirror.finance/eth/tokenlists.json
-// TODO: Generate this programmatically ?
-const mAssetsAdditionalBases: { [tokenAddress: string]: Token[] } = {
-  [UST.address]: [MIR],
-  [MIR.address]: [UST],
-  '0xd36932143F6eBDEDD872D5Fb0651f4B72Fd15a84': [MIR, UST], // mAAPL
-  '0x59A921Db27Dd6d4d974745B7FfC5c33932653442': [MIR, UST], // mGOOGL
-  '0x21cA39943E91d704678F5D00b6616650F066fD63': [MIR, UST], // mTSLA
-  '0xC8d674114bac90148d11D3C1d33C61835a0F9DCD': [MIR, UST], // mNFLX
-  '0x13B02c8dE71680e71F0820c996E4bE43c2F57d15': [MIR, UST], // mQQQ
-  '0xEdb0414627E6f1e3F082DE65cD4F9C693D78CCA9': [MIR, UST], // mTWTR
-  '0x41BbEDd7286dAab5910a1f15d12CBda839852BD7': [MIR, UST], // mMSFT
-  '0x0cae9e4d663793c2a2A0b211c1Cf4bBca2B9cAa7': [MIR, UST], // mAMZN
-  '0x56aA298a19C93c6801FDde870fA63EF75Cc0aF72': [MIR, UST], // mBABA
-  '0x1d350417d9787E000cc1b95d70E9536DcD91F373': [MIR, UST], // mIAU
-  '0x9d1555d8cB3C846Bb4f7D5B1B1080872c3166676': [MIR, UST], // mSLV
-  '0x31c63146a635EB7465e5853020b39713AC356991': [MIR, UST], // mUSO
-  '0xf72FCd9DCF0190923Fadd44811E240Ef4533fc86': [MIR, UST], // mVIXY
-}
-const WETH_ONLY: ChainTokenList = {
-  [1]: [WETH9[1]],
-  [3]: [WETH9[3]],
-  [4]: [WETH9[4]],
-  [5]: [WETH9[5]],
-  [42]: [WETH9[42]],
-  [137]: [WETH_MATIC],
-}
+const WRAPPED_NATIVE_CURRENCIES_ONLY: ChainTokenList = Object.fromEntries(
+  Object.entries(WRAPPED_NATIVE_CURRENCY).map(([key, value]) => [key, [value]])
+)
+
 // used to construct intermediary pairs for trading
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
-  ...WETH_ONLY,
-  [1]: [...WETH_ONLY[1], DAI, USDC, USDT, WBTC],
-  [137]: MATIC_BASES,
+  ...WRAPPED_NATIVE_CURRENCIES_ONLY,
+  [SupportedChainId.MAINNET]: [...WRAPPED_NATIVE_CURRENCIES_ONLY[SupportedChainId.MAINNET], DAI, USDC, USDT, WBTC],
+  [SupportedChainId.OPTIMISM]: [
+    ...WRAPPED_NATIVE_CURRENCIES_ONLY[SupportedChainId.OPTIMISM],
+    DAI_OPTIMISM,
+    USDT_OPTIMISM,
+    WBTC_OPTIMISM,
+  ],
+  [SupportedChainId.ARBITRUM_ONE]: [
+    ...WRAPPED_NATIVE_CURRENCIES_ONLY[SupportedChainId.ARBITRUM_ONE],
+    DAI_ARBITRUM_ONE,
+    USDT_ARBITRUM_ONE,
+    WBTC_ARBITRUM_ONE,
+  ],
+  [SupportedChainId.POLYGON]: [
+    ...WRAPPED_NATIVE_CURRENCIES_ONLY[SupportedChainId.POLYGON],
+    DAI_POLYGON,
+    USDC_POLYGON,
+    USDT_POLYGON,
+    WETH_POLYGON,
+  ],
 }
 export const ADDITIONAL_BASES: { [chainId: number]: { [tokenAddress: string]: Token[] } } = {
-  [1]: {
-    ...mAssetsAdditionalBases,
-    '0xA948E86885e12Fb09AfEF8C52142EBDbDf73cD18': [UNI[1]],
-    '0x561a4717537ff4AF5c687328c0f7E90a319705C0': [UNI[1]],
-    '0xa6e3454fec677772dd771788a079355e43910638': [UMA],
+  [SupportedChainId.MAINNET]: {
+    '0xF16E4d813f4DcfDe4c5b44f305c908742De84eF0': [ETH2X_FLI],
+    [rETH2.address]: [sETH2],
+    [SWISE.address]: [sETH2],
     [FEI.address]: [TRIBE],
     [TRIBE.address]: [FEI],
     [FRAX.address]: [FXS],
@@ -80,27 +89,84 @@ export const ADDITIONAL_BASES: { [chainId: number]: { [tokenAddress: string]: To
  * tokens.
  */
 export const CUSTOM_BASES: { [chainId: number]: { [tokenAddress: string]: Token[] } } = {
-  [1]: {
-    [AMPL.address]: [DAI, WETH9[1]],
+  [SupportedChainId.MAINNET]: {
+    [AMPL.address]: [DAI, WRAPPED_NATIVE_CURRENCY[SupportedChainId.MAINNET]],
   },
 }
-// used for display in the default list when adding liquidity
-export const SUGGESTED_BASES: ChainCurrencyList = {
-  [1]: [Ether.onChain(1), DAI, USDC, USDT, WBTC],
-  [137]: MATIC_BASES,
-}
-// used to construct the list of all pairs we consider by default in the frontend
-export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
-  ...WETH_ONLY,
-  [1]: [...WETH_ONLY[1], DAI, USDC, USDT, WBTC],
-  [127]: MATIC_BASES,
+
+/**
+ * Shows up in the currency select for swap and add liquidity
+ */
+export const COMMON_BASES: ChainCurrencyList = {
+  [SupportedChainId.MAINNET]: [
+    nativeOnChain(SupportedChainId.MAINNET),
+    DAI,
+    USDC,
+    USDT,
+    WBTC,
+    WRAPPED_NATIVE_CURRENCY[SupportedChainId.MAINNET],
+  ],
+  [SupportedChainId.ROPSTEN]: [
+    nativeOnChain(SupportedChainId.ROPSTEN),
+    WRAPPED_NATIVE_CURRENCY[SupportedChainId.ROPSTEN],
+  ],
+  [SupportedChainId.RINKEBY]: [
+    nativeOnChain(SupportedChainId.RINKEBY),
+    WRAPPED_NATIVE_CURRENCY[SupportedChainId.RINKEBY],
+  ],
+  [SupportedChainId.GOERLI]: [nativeOnChain(SupportedChainId.GOERLI), WRAPPED_NATIVE_CURRENCY[SupportedChainId.GOERLI]],
+  [SupportedChainId.KOVAN]: [nativeOnChain(SupportedChainId.KOVAN), WRAPPED_NATIVE_CURRENCY[SupportedChainId.KOVAN]],
+  [SupportedChainId.ARBITRUM_ONE]: [
+    nativeOnChain(SupportedChainId.ARBITRUM_ONE),
+    DAI_ARBITRUM_ONE,
+    USDC_ARBITRUM,
+    USDT_ARBITRUM_ONE,
+    WBTC_ARBITRUM_ONE,
+    WRAPPED_NATIVE_CURRENCY[SupportedChainId.ARBITRUM_ONE],
+  ],
+  [SupportedChainId.ARBITRUM_RINKEBY]: [
+    nativeOnChain(SupportedChainId.ARBITRUM_RINKEBY),
+    WRAPPED_NATIVE_CURRENCY[SupportedChainId.ARBITRUM_RINKEBY],
+  ],
+  [SupportedChainId.OPTIMISM]: [
+    nativeOnChain(SupportedChainId.OPTIMISM),
+    DAI_OPTIMISM,
+    USDC_OPTIMISM,
+    USDT_OPTIMISM,
+    WBTC_OPTIMISM,
+  ],
+  [SupportedChainId.OPTIMISTIC_KOVAN]: [nativeOnChain(SupportedChainId.OPTIMISTIC_KOVAN)],
+  [SupportedChainId.POLYGON]: [
+    nativeOnChain(SupportedChainId.POLYGON),
+    WETH_POLYGON,
+    USDC_POLYGON,
+    DAI_POLYGON,
+    USDT_POLYGON,
+    WBTC_POLYGON,
+  ],
+  [SupportedChainId.POLYGON_MUMBAI]: [
+    nativeOnChain(SupportedChainId.POLYGON_MUMBAI),
+    WRAPPED_NATIVE_CURRENCY[SupportedChainId.POLYGON_MUMBAI],
+    WETH_POLYGON_MUMBAI,
+  ],
 }
 
+// used to construct the list of all pairs we consider by default in the frontend
+export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
+  ...WRAPPED_NATIVE_CURRENCIES_ONLY,
+  [SupportedChainId.MAINNET]: [...WRAPPED_NATIVE_CURRENCIES_ONLY[SupportedChainId.MAINNET], DAI, USDC, USDT, WBTC],
+}
 export const PINNED_PAIRS: { readonly [chainId: number]: [Token, Token][] } = {
-  [1]: [
+  [SupportedChainId.MAINNET]: [
     [
-      new Token(1, '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643', 8, 'cDAI', 'Compound Dai'),
-      new Token(1, '0x39AA39c021dfbaE8faC545936693aC917d5E7563', 8, 'cUSDC', 'Compound USD Coin'),
+      new Token(SupportedChainId.MAINNET, '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643', 8, 'cDAI', 'Compound Dai'),
+      new Token(
+        SupportedChainId.MAINNET,
+        '0x39AA39c021dfbaE8faC545936693aC917d5E7563',
+        8,
+        'cUSDC',
+        'Compound USD Coin'
+      ),
     ],
     [USDC, USDT],
     [DAI, USDT],

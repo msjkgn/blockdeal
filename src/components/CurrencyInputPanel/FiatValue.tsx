@@ -1,9 +1,14 @@
+import { Trans } from '@lingui/macro'
+// eslint-disable-next-line no-restricted-imports
+import { t } from '@lingui/macro'
 import { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core'
-import React, { useMemo } from 'react'
-import useTheme from '../../hooks/useTheme'
-import { TYPE } from '../../theme'
-import { warningSeverity } from '../../utils/prices'
 import HoverInlineText from 'components/HoverInlineText'
+import { useMemo } from 'react'
+
+import useTheme from '../../hooks/useTheme'
+import { ThemedText } from '../../theme'
+import { warningSeverity } from '../../utils/prices'
+import { MouseoverTooltip } from '../Tooltip'
 
 export function FiatValue({
   fiatValue,
@@ -17,18 +22,32 @@ export function FiatValue({
     if (!priceImpact) return undefined
     if (priceImpact.lessThan('0')) return theme.green1
     const severity = warningSeverity(priceImpact)
-    if (severity < 1) return theme.text4
+    if (severity < 1) return theme.text3
     if (severity < 3) return theme.yellow1
     return theme.red1
-  }, [priceImpact, theme.green1, theme.red1, theme.text4, theme.yellow1])
+  }, [priceImpact, theme.green1, theme.red1, theme.text3, theme.yellow1])
 
   return (
-    <TYPE.body fontSize={14} color={fiatValue ? theme.text2 : theme.text4}>
-      {fiatValue ? '~' : ''}$
-      <HoverInlineText text={fiatValue ? fiatValue?.toSignificant(6, { groupSeparator: ',' }) : '-'} />{' '}
+    <ThemedText.Body fontSize={14} color={fiatValue ? theme.text3 : theme.text4}>
+      {fiatValue ? (
+        <Trans>
+          $
+          <HoverInlineText
+            text={fiatValue?.toSignificant(6, { groupSeparator: ',' })}
+            textColor={fiatValue ? theme.text3 : theme.text4}
+          />
+        </Trans>
+      ) : (
+        ''
+      )}
       {priceImpact ? (
-        <span style={{ color: priceImpactColor }}> ({priceImpact.multiply(-1).toSignificant(3)}%)</span>
+        <span style={{ color: priceImpactColor }}>
+          {' '}
+          <MouseoverTooltip text={t`The estimated difference between the USD values of input and output amounts.`}>
+            (<Trans>{priceImpact.multiply(-1).toSignificant(3)}%</Trans>)
+          </MouseoverTooltip>
+        </span>
       ) : null}
-    </TYPE.body>
+    </ThemedText.Body>
   )
 }

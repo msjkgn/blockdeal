@@ -1,11 +1,16 @@
 import Tooltip from 'components/Tooltip'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components/macro'
 
-const TextWrapper = styled.span<{ margin: boolean; link?: boolean; fontSize?: string; adjustSize?: boolean }>`
-  cursor: auto;
+const TextWrapper = styled.span<{
+  margin: boolean
+  link?: boolean
+  fontSize?: string
+  adjustSize?: boolean
+  textColor?: string
+}>`
   margin-left: ${({ margin }) => margin && '4px'};
-  color: ${({ theme, link }) => (link ? theme.blue1 : theme.text1)};
+  color: ${({ theme, link, textColor }) => (link ? theme.blue1 : textColor ?? theme.text1)};
   font-size: ${({ fontSize }) => fontSize ?? 'inherit'};
 
   @media screen and (max-width: 600px) {
@@ -19,14 +24,16 @@ const HoverInlineText = ({
   margin = false,
   adjustSize = false,
   fontSize,
+  textColor,
   link,
   ...rest
 }: {
-  text: string
+  text?: string
   maxCharacters?: number
   margin?: boolean
   adjustSize?: boolean
   fontSize?: string
+  textColor?: string
   link?: boolean
 }) => {
   const [showHover, setShowHover] = useState(false)
@@ -43,6 +50,7 @@ const HoverInlineText = ({
           onMouseLeave={() => setShowHover(false)}
           margin={margin}
           adjustSize={adjustSize}
+          textColor={textColor}
           link={link}
           fontSize={fontSize}
           {...rest}
@@ -54,7 +62,14 @@ const HoverInlineText = ({
   }
 
   return (
-    <TextWrapper margin={margin} adjustSize={adjustSize} link={link} fontSize={fontSize} {...rest}>
+    <TextWrapper
+      margin={margin}
+      adjustSize={adjustSize}
+      link={link}
+      fontSize={fontSize}
+      textColor={textColor}
+      {...rest}
+    >
       {text}
     </TextWrapper>
   )

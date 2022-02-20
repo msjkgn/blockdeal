@@ -1,30 +1,19 @@
 import { Currency } from '@uniswap/sdk-core'
-import { useActiveWeb3React } from 'hooks/web3'
-import React, { useMemo } from 'react'
+import useCurrencyLogoURIs from 'lib/hooks/useCurrencyLogoURIs'
+import React from 'react'
 import styled from 'styled-components/macro'
-import EthereumLogo from '../../assets/images/ethereum-logo.png'
-import useHttpLocations from '../../hooks/useHttpLocations'
-import { WrappedTokenInfo } from '../../state/lists/wrappedTokenInfo'
+
 import Logo from '../Logo'
-import { getBaseTokenLogoURLByTokenSymbol } from '../../constants/tokens'
-import { useCombinedActiveList } from 'state/lists/hooks'
 
-export const getTokenLogoURL = (address: string) =>
-  `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`
-
-const StyledEthereumLogo = styled.img<{ size: string }>`
+const StyledLogo = styled(Logo)<{ size: string; native: boolean }>`
   width: ${({ size }) => size};
   height: ${({ size }) => size};
-  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.075);
-  border-radius: 24px;
-`
-
-const StyledLogo = styled(Logo)<{ size: string }>`
-  width: ${({ size }) => size};
-  height: ${({ size }) => size};
-  border-radius: ${({ size }) => size};
-  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.075);
-  background-color: ${({ theme }) => theme.white};
+  background: radial-gradient(white 50%, #ffffff00 calc(75% + 1px), #ffffff00 100%);
+  border-radius: 50%;
+  -mox-box-shadow: 0 0 1px ${({ native }) => (native ? 'white' : 'black')};
+  -webkit-box-shadow: 0 0 1px ${({ native }) => (native ? 'white' : 'black')};
+  box-shadow: 0 0 1px ${({ native }) => (native ? 'white' : 'black')};
+  border: 0px solid rgba(255, 255, 255, 0);
 `
 
 export default function CurrencyLogo({
@@ -33,47 +22,20 @@ export default function CurrencyLogo({
   style,
   ...rest
 }: {
-  currency?: Currency
+  currency?: Currency | null
   size?: string
   style?: React.CSSProperties
 }) {
-  const uriLocations = useHttpLocations(currency instanceof WrappedTokenInfo ? currency.logoURI : undefined)
-  const { chainId } = useActiveWeb3React()
+  const logoURIs = useCurrencyLogoURIs(currency)
 
-  const activeTokenList = useCombinedActiveList()
-
-  const srcs: string[] = useMemo(() => {
-    if (!currency || currency.isNative) return []
-
-    const uriBySymbol = getBaseTokenLogoURLByTokenSymbol(currency.symbol)
-
-    if (currency.isToken) {
-      const urlFromList =
-        chainId && activeTokenList[chainId][currency.address]
-          ? activeTokenList[chainId][currency.address]['token']['tokenInfo']['logoURI']
-          : undefined
-      const defaultUrls = currency.chainId === 1 ? [getTokenLogoURL(currency.address)] : []
-      if (currency instanceof WrappedTokenInfo) {
-        return [...uriLocations, ...defaultUrls]
-      }
-      const tokenUrlsSoFar = uriBySymbol ? [uriBySymbol, ...defaultUrls] : defaultUrls
-      return urlFromList ? ([urlFromList, ...tokenUrlsSoFar] as string[]) : (tokenUrlsSoFar as string[])
-    }
-    return []
-  }, [currency, uriLocations, chainId, activeTokenList])
-
-  if (currency?.isNative) {
-    return chainId !== 1 ? (
-      <StyledLogo
-        srcs={[getBaseTokenLogoURLByTokenSymbol(currency.symbol) ?? '']}
-        size={size}
-        style={style}
-        {...rest}
-      />
-    ) : (
-      <StyledEthereumLogo src={EthereumLogo} size={size} style={style} {...rest} />
-    )
-  }
-
-  return <StyledLogo size={size} srcs={srcs} alt={`${currency?.symbol ?? 'token'} logo`} style={style} {...rest} />
+  return (
+    <StyledLogo
+      size={size}
+      native={currency?.isNative ?? false}
+      srcs={logoURIs}
+      alt={`${currency?.symbol ?? 'token'} logo`}
+      style={style}
+      {...rest}
+    />
+  )
 }

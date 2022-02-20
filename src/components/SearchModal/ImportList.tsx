@@ -1,35 +1,31 @@
-import React, { useState, useCallback } from 'react'
-import styled from 'styled-components/macro'
-import ReactGA from 'react-ga'
-import { TYPE, CloseIcon } from 'theme'
+import { Trans } from '@lingui/macro'
+import { TokenList } from '@uniswap/token-lists'
+import { ButtonPrimary } from 'components/Button'
 import Card from 'components/Card'
 import { AutoColumn } from 'components/Column'
-import { RowBetween, RowFixed, AutoRow } from 'components/Row'
-import { ArrowLeft, AlertTriangle } from 'react-feather'
+import ListLogo from 'components/ListLogo'
+import { AutoRow, RowBetween, RowFixed } from 'components/Row'
+import { SectionBreak } from 'components/swap/styleds'
+import { useFetchListCallback } from 'hooks/useFetchListCallback'
 import useTheme from 'hooks/useTheme'
 import { transparentize } from 'polished'
-import { ButtonPrimary } from 'components/Button'
-import { ExternalLink } from '../../theme/components'
-import ListLogo from 'components/ListLogo'
-import { PaddedColumn, Checkbox, TextDot } from './styleds'
-import { TokenList } from '@uniswap/token-lists'
-import { useDispatch } from 'react-redux'
-import { AppDispatch } from 'state'
-import { useFetchListCallback } from 'hooks/useFetchListCallback'
-import { removeList, enableList } from 'state/lists/actions'
-import { CurrencyModalView } from './CurrencySearchModal'
+import { useCallback, useState } from 'react'
+import { AlertTriangle, ArrowLeft } from 'react-feather'
+import ReactGA from 'react-ga'
+import { useAppDispatch } from 'state/hooks'
+import { enableList, removeList } from 'state/lists/actions'
 import { useAllLists } from 'state/lists/hooks'
+import styled from 'styled-components/macro'
+import { CloseIcon, ThemedText } from 'theme'
+
+import { ExternalLink } from '../../theme'
+import { CurrencyModalView } from './CurrencySearchModal'
+import { Checkbox, PaddedColumn, TextDot } from './styleds'
 
 const Wrapper = styled.div`
   position: relative;
   width: 100%;
   overflow: auto;
-`
-
-const SectionBreak = styled.div`
-  height: 1px;
-  width: 100%;
-  background-color: ${({ theme }) => theme.bg3};
 `
 
 interface ImportProps {
@@ -41,7 +37,7 @@ interface ImportProps {
 
 export function ImportList({ listURL, list, setModalView, onDismiss }: ImportProps) {
   const theme = useTheme()
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useAppDispatch()
 
   // user must accept
   const [confirmed, setConfirmed] = useState(false)
@@ -85,7 +81,9 @@ export function ImportList({ listURL, list, setModalView, onDismiss }: ImportPro
       <PaddedColumn gap="14px" style={{ width: '100%', flex: '1 1' }}>
         <RowBetween>
           <ArrowLeft style={{ cursor: 'pointer' }} onClick={() => setModalView(CurrencyModalView.manage)} />
-          <TYPE.mediumHeader>Import List</TYPE.mediumHeader>
+          <ThemedText.MediumHeader>
+            <Trans>Import List</Trans>
+          </ThemedText.MediumHeader>
           <CloseIcon onClick={onDismiss} />
         </RowBetween>
       </PaddedColumn>
@@ -98,18 +96,18 @@ export function ImportList({ listURL, list, setModalView, onDismiss }: ImportPro
                 {list.logoURI && <ListLogo logoURI={list.logoURI} size="40px" />}
                 <AutoColumn gap="sm" style={{ marginLeft: '20px' }}>
                   <RowFixed>
-                    <TYPE.body fontWeight={600} mr="6px">
+                    <ThemedText.Body fontWeight={600} mr="6px">
                       {list.name}
-                    </TYPE.body>
+                    </ThemedText.Body>
                     <TextDot />
-                    <TYPE.main fontSize={'16px'} ml="6px">
-                      {list.tokens.length} tokens
-                    </TYPE.main>
+                    <ThemedText.Main fontSize={'16px'} ml="6px">
+                      <Trans>{list.tokens.length} tokens</Trans>
+                    </ThemedText.Main>
                   </RowFixed>
                   <ExternalLink href={`https://tokenlists.org/token-list?url=${listURL}`}>
-                    <TYPE.main fontSize={'12px'} color={theme.blue1}>
+                    <ThemedText.Main fontSize={'12px'} color={theme.blue1}>
                       {listURL}
-                    </TYPE.main>
+                    </ThemedText.Main>
                   </ExternalLink>
                 </AutoColumn>
               </RowFixed>
@@ -118,20 +116,22 @@ export function ImportList({ listURL, list, setModalView, onDismiss }: ImportPro
           <Card style={{ backgroundColor: transparentize(0.8, theme.red1) }}>
             <AutoColumn justify="center" style={{ textAlign: 'center', gap: '16px', marginBottom: '12px' }}>
               <AlertTriangle stroke={theme.red1} size={32} />
-              <TYPE.body fontWeight={500} fontSize={20} color={theme.red1}>
-                Import at your own risk{' '}
-              </TYPE.body>
+              <ThemedText.Body fontWeight={500} fontSize={20} color={theme.red1}>
+                <Trans>Import at your own risk</Trans>
+              </ThemedText.Body>
             </AutoColumn>
 
             <AutoColumn style={{ textAlign: 'center', gap: '16px', marginBottom: '12px' }}>
-              <TYPE.body fontWeight={500} color={theme.red1}>
-                By adding this list you are implicitly trusting that the data is correct. Anyone can create a list,
-                including creating fake versions of existing lists and lists that claim to represent projects that do
-                not have one.
-              </TYPE.body>
-              <TYPE.body fontWeight={600} color={theme.red1}>
-                If you purchase a token from this list, you may not be able to sell it back.
-              </TYPE.body>
+              <ThemedText.Body fontWeight={500} color={theme.red1}>
+                <Trans>
+                  By adding this list you are implicitly trusting that the data is correct. Anyone can create a list,
+                  including creating fake versions of existing lists and lists that claim to represent projects that do
+                  not have one.
+                </Trans>
+              </ThemedText.Body>
+              <ThemedText.Body fontWeight={600} color={theme.red1}>
+                <Trans>If you purchase a token from this list, you may not be able to sell it back.</Trans>
+              </ThemedText.Body>
             </AutoColumn>
             <AutoRow justify="center" style={{ cursor: 'pointer' }} onClick={() => setConfirmed(!confirmed)}>
               <Checkbox
@@ -140,25 +140,25 @@ export function ImportList({ listURL, list, setModalView, onDismiss }: ImportPro
                 checked={confirmed}
                 onChange={() => setConfirmed(!confirmed)}
               />
-              <TYPE.body ml="10px" fontSize="16px" color={theme.red1} fontWeight={500}>
-                I understand
-              </TYPE.body>
+              <ThemedText.Body ml="10px" fontSize="16px" color={theme.red1} fontWeight={500}>
+                <Trans>I understand</Trans>
+              </ThemedText.Body>
             </AutoRow>
           </Card>
 
           <ButtonPrimary
             disabled={!confirmed}
             altDisabledStyle={true}
-            borderRadius="20px"
+            $borderRadius="20px"
             padding="10px 1rem"
             onClick={handleAddList}
           >
-            Import
+            <Trans>Import</Trans>
           </ButtonPrimary>
           {addError ? (
-            <TYPE.error title={addError} style={{ textOverflow: 'ellipsis', overflow: 'hidden' }} error>
+            <ThemedText.Error title={addError} style={{ textOverflow: 'ellipsis', overflow: 'hidden' }} error>
               {addError}
-            </TYPE.error>
+            </ThemedText.Error>
           ) : null}
         </AutoColumn>
         {/* </Card> */}

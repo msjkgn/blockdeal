@@ -1,15 +1,15 @@
-import React, { useContext } from 'react'
-import { useActiveWeb3React } from '../../hooks/web3'
-import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink'
-
-import { AutoColumn, ColumnCenter } from '../Column'
-import styled, { ThemeContext } from 'styled-components'
-import { RowBetween } from '../Row'
-import { TYPE, CloseIcon, CustomLightSpinner } from '../../theme'
+import { Trans } from '@lingui/macro'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useContext } from 'react'
 import { ArrowUpCircle } from 'react-feather'
+import styled, { ThemeContext } from 'styled-components/macro'
 
 import Circle from '../../assets/images/blue-loader.svg'
+import { CloseIcon, CustomLightSpinner, ThemedText } from '../../theme'
 import { ExternalLink } from '../../theme/components'
+import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink'
+import { AutoColumn, ColumnCenter } from '../Column'
+import { RowBetween } from '../Row'
 
 const ConfirmOrLoadingWrapper = styled.div`
   width: 100%;
@@ -32,7 +32,9 @@ export function LoadingView({ children, onDismiss }: { children: any; onDismiss:
       </ConfirmedIcon>
       <AutoColumn gap="100px" justify={'center'}>
         {children}
-        <TYPE.subHeader>Confirm this transaction in your wallet</TYPE.subHeader>
+        <ThemedText.SubHeader>
+          <Trans>Confirm this transaction in your wallet</Trans>
+        </ThemedText.SubHeader>
       </AutoColumn>
     </ConfirmOrLoadingWrapper>
   )
@@ -66,7 +68,9 @@ export function SubmittedView({
             href={getExplorerLink(chainId, hash, ExplorerDataType.TRANSACTION)}
             style={{ marginLeft: '4px' }}
           >
-            <TYPE.subHeader>View transaction on Etherscan</TYPE.subHeader>
+            <ThemedText.SubHeader>
+              <Trans>View transaction on Explorer</Trans>
+            </ThemedText.SubHeader>
           </ExternalLink>
         )}
       </AutoColumn>

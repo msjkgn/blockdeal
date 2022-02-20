@@ -1,20 +1,23 @@
-import React, { useState } from 'react'
-import { PaddedColumn, Separator } from './styleds'
+import { Trans } from '@lingui/macro'
+import { Token } from '@uniswap/sdk-core'
+import { TokenList } from '@uniswap/token-lists'
 import { RowBetween } from 'components/Row'
+import { useState } from 'react'
 import { ArrowLeft } from 'react-feather'
 import { Text } from 'rebass'
-import { CloseIcon } from 'theme'
 import styled from 'styled-components/macro'
-import { Token } from '@uniswap/sdk-core'
+import { CloseIcon } from 'theme'
+
+import { CurrencyModalView } from './CurrencySearchModal'
 import { ManageLists } from './ManageLists'
 import ManageTokens from './ManageTokens'
-import { TokenList } from '@uniswap/token-lists'
-import { CurrencyModalView } from './CurrencySearchModal'
+import { PaddedColumn, Separator } from './styleds'
 
 const Wrapper = styled.div`
   width: 100%;
   position: relative;
-  padding-bottom: 80px;
+  display: flex;
+  flex-flow: column;
 `
 
 const ToggleWrapper = styled(RowBetween)`
@@ -63,7 +66,7 @@ export default function Manage({
         <RowBetween>
           <ArrowLeft style={{ cursor: 'pointer' }} onClick={() => setModalView(CurrencyModalView.search)} />
           <Text fontWeight={500} fontSize={20}>
-            Manage
+            <Trans>Manage</Trans>
           </Text>
           <CloseIcon onClick={onDismiss} />
         </RowBetween>
@@ -72,10 +75,10 @@ export default function Manage({
       <PaddedColumn style={{ paddingBottom: 0 }}>
         <ToggleWrapper>
           <ToggleOption onClick={() => setShowLists(!showLists)} active={showLists}>
-            Lists
+            <Trans>Lists</Trans>
           </ToggleOption>
           <ToggleOption onClick={() => setShowLists(!showLists)} active={!showLists}>
-            Tokens
+            <Trans>Tokens</Trans>
           </ToggleOption>
         </ToggleWrapper>
       </PaddedColumn>

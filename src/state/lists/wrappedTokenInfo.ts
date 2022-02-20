@@ -1,10 +1,10 @@
 import { Currency, Token } from '@uniswap/sdk-core'
-import { Tags, TokenInfo } from '@uniswap/token-lists'
-import { TokenList } from '@uniswap/token-lists/dist/types'
+import { Tags, TokenInfo, TokenList } from '@uniswap/token-lists'
+
 import { isAddress } from '../../utils'
 
 type TagDetails = Tags[keyof Tags]
-export interface TagInfo extends TagDetails {
+interface TagInfo extends TagDetails {
   id: string
 }
 /**
@@ -13,11 +13,11 @@ export interface TagInfo extends TagDetails {
 export class WrappedTokenInfo implements Token {
   public readonly isNative: false = false
   public readonly isToken: true = true
-  public readonly list: TokenList
+  public readonly list?: TokenList
 
   public readonly tokenInfo: TokenInfo
 
-  constructor(tokenInfo: TokenInfo, list: TokenList) {
+  constructor(tokenInfo: TokenInfo, list?: TokenList) {
     this.tokenInfo = tokenInfo
     this.list = list
   }
@@ -55,7 +55,7 @@ export class WrappedTokenInfo implements Token {
   public get tags(): TagInfo[] {
     if (this._tags !== null) return this._tags
     if (!this.tokenInfo.tags) return (this._tags = [])
-    const listTags = this.list.tags
+    const listTags = this.list?.tags
     if (!listTags) return (this._tags = [])
 
     return (this._tags = this.tokenInfo.tags.map((tagId) => {

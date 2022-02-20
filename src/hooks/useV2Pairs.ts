@@ -1,9 +1,13 @@
-import { Pair } from '@uniswap/v2-sdk'
-import { useMemo } from 'react'
-import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { Interface } from '@ethersproject/abi'
-import { useMultipleContractSingleData } from '../state/multicall/hooks'
-import { Currency, CurrencyAmount, Token } from '@uniswap/sdk-core'
+import { Currency, CurrencyAmount } from '@uniswap/sdk-core'
+import IUniswapV2PairJson from '@uniswap/v2-core/build/IUniswapV2Pair.json'
+import { computePairAddress, Pair } from '@uniswap/v2-sdk'
+import { useMultipleContractSingleData } from 'lib/hooks/multicall'
+import { useMemo } from 'react'
+
+import { V2_FACTORY_ADDRESSES } from '../constants/addresses'
+
+const { abi: IUniswapV2PairABI } = IUniswapV2PairJson
 
 const PAIR_INTERFACE = new Interface(IUniswapV2PairABI)
 
@@ -12,10 +16,6 @@ export enum PairState {
   NOT_EXISTS,
   EXISTS,
   INVALID,
-}
-
-const getPairAddress = (tokenA: Token, tokenB: Token): string | undefined => {
-  return Pair.getAddress(tokenA, tokenB)
 }
 
 export function useV2Pairs(currencies: [Currency | undefined, Currency | undefined][]): [PairState, Pair | null][] {
@@ -27,7 +27,13 @@ export function useV2Pairs(currencies: [Currency | undefined, Currency | undefin
   const pairAddresses = useMemo(
     () =>
       tokens.map(([tokenA, tokenB]) => {
-        return tokenA && tokenB && !tokenA.equals(tokenB) ? getPairAddress(tokenA, tokenB) : undefined
+        return tokenA &&
+          tokenB &&
+          tokenA.chainId === tokenB.chainId &&
+          !tokenA.equals(tokenB) &&
+          V2_FACTORY_ADDRESSES[tokenA.chainId]
+          ? computePairAddress({ factoryAddress: V2_FACTORY_ADDRESSES[tokenA.chainId], tokenA, tokenB })
+          : undefined
       }),
     [tokens]
   )

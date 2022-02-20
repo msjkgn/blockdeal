@@ -3,6 +3,13 @@
 # generated contract types
 /src/types/v3
 /src/abis/types
+/src/lib/locales/**/*.js
+/src/lib/locales/**/en-US.po
+/src/lib/locales/**/pseudo.po
+/src/locales/**/*.js
+/src/locales/**/en-US.po
+/src/locales/**/pseudo.po
+/src/state/data/generated.ts
 
 # dependencies
 /node_modules
@@ -10,9 +17,10 @@
 # testing
 /coverage
 
-# production
+# builds
 /build
-
+/dist
+/dts
 
 # misc
 .DS_Store
@@ -37,8 +45,3 @@ package-lock.json
 cypress/videos
 cypress/screenshots
 cypress/fixtures/example.json
-
-.eslintcache
-
-yalc.lock
-.yalc
