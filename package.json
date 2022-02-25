@@ -147,6 +147,7 @@
   },
   "license": "GPL-3.0-or-later",
   "dependencies": {
+    "css-modules-typescript-loader": "^4.0.1",
     "gh-pages": "^3.2.3"
   }
 }
