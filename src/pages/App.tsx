@@ -10,6 +10,7 @@ import ErrorBoundary from '../components/ErrorBoundary'
 // import PoweredByGelato from '../components/PoweredByGelato'
 import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
 import Pools from './Pools'
+import PoolView from './PoolView'
 import { RedirectPathToPoolsOnly } from './Pools/RedirectToPoolsOnly'
 import { ThemedBackground } from '../theme'
 
@@ -65,6 +66,7 @@ export default function App() {
             <Web3ReactManager>
               <Switch>
                 <Route exact strict path="/pools" component={Pools} />
+                <Route exact strict path="/:id" component={PoolView} />
                 <Route component={RedirectPathToPoolsOnly} />
               </Switch>
             </Web3ReactManager>
