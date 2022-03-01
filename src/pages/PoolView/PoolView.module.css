@@ -72,7 +72,7 @@
   cursor:pointer;
 }
 
-button {
+.title_container button {
   display: inline-block;
   width:100%;
   height: 50px;
