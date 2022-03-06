@@ -1,0 +1,119 @@
+.title_container{
+  box-sizing: border-box;
+  margin: 0px 0px 40px;
+  min-width: 0px;
+  width: 100%;
+  display: flex;
+  padding: 0px;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: start;
+  justify-content: flex-start;
+}
+
+.title{
+  font-size:28px;
+  color: rgb(255, 1, 122);
+}
+
+.pool_info{
+  display: flex;
+  justify-content: space-between;
+}
+
+.pool_info p{
+  width: 40%;
+  text-align: left;
+}
+
+.pool_info p:nth-child(2){
+  font-weight: 700;
+}
+
+.pool_status{
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.pool_status p {
+  color:white;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.pool_status span{
+  text-align: center;
+  padding:10px 5px;
+  background-color: #bbbbbb;
+  border-radius: 5px; 
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.pool_status span span{
+  margin:5px;
+  cursor:pointer;
+}
+
+.pool_status span span:nth-child(1){
+  border-right:1px solid #999999;
+  border-radius: 0;
+  padding-right:10px;
+}
+
+.liquidity_info{
+  display: flex;
+  justify-content: space-between;
+}
+
+.liquidity_info span{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: black;
+  padding:5px;
+  border-radius: 10px;
+  width: 100px;
+}
+
+.liquidity_info p{
+  margin: 0;
+}
+.liquidity_info input{
+  background-color: transparent;
+  border:none;
+  text-align: right;
+  font-size: 1.1rem;
+  color:gray;
+  font-weight: 700;
+}
+
+.liquidity_info input:focus{
+  color:white;
+  font-weight: 700;
+}
+
+.balance_info{
+  display: flex;
+  justify-content: space-between;
+}
+
+.balance_info p:nth-child(1){
+  color: gray;
+  font-size: 0.8rem;
+}
+
+button {
+  display: inline-block;
+  width:100%;
+  height: 50px;
+  background-color: rgb(255, 1, 122);
+  border:none;
+  border-radius: 10px;
+  color:white;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top:10px;
+  cursor: pointer;
+}

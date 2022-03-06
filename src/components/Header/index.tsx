@@ -326,6 +326,9 @@ export default function Header() {
         <StyledNavLink id={`pool-view-nav-link`} to={'/poolsView'}>
           PoolView
         </StyledNavLink>
+        <StyledNavLink id={`add-liquidity-nav-link`} to={'/addLiquidity'}>
+          add liquidity
+        </StyledNavLink>
       </HeaderLinks>
       <HeaderControls>
         <HeaderElement>
