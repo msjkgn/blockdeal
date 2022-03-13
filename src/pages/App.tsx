@@ -13,6 +13,9 @@ import Pools from './Pools'
 import PoolView from './PoolView'
 import { RedirectPathToPoolsOnly } from './Pools/RedirectToPoolsOnly'
 import { ThemedBackground } from '../theme'
+import AddLiquidity from './AddLiquidity'
+import RemoveLiquidity from './RemoveLiquidity'
+import CreatePool from './CreatePool'
 
 const AppWrapper = styled.div`
   display: flex;
@@ -66,6 +69,9 @@ export default function App() {
             <Web3ReactManager>
               <Switch>
                 <Route exact strict path="/pools" component={Pools} />
+                <Route exact strict path="/addLiquidity" component={AddLiquidity} />
+                <Route exact strict path="/removeLiquidity" component={RemoveLiquidity} />
+                <Route exact strict path="/createPool" component={CreatePool} />
                 <Route exact strict path="/:id" component={PoolView} />
                 <Route component={RedirectPathToPoolsOnly} />
               </Switch>
