@@ -1,5 +1,5 @@
 {
-  "name": "@hedgeyourpool",
+  "name": "hedgeyourpool",
   "version": "0.0.25-beta",
   "description": "hedgeYourPool Interface",
   "homepage": ".",
@@ -178,7 +178,8 @@
     "widgets:start": "cosmos",
     "widgets:build": "rollup --config --failAfterWarnings --configPlugin typescript2",
     "predeploy": "yarn build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "clean": "rm -rf build && rm -rf node_modules && rm package-lock.json"
   },
   "browserslist": {
     "production": [
