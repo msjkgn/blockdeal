@@ -2682,3 +2682,14 @@ msgstr "{tokenB} / {tokenA}"
 msgid "← Back to Pools Overview"
 msgstr "← 풀 개요로 돌아 가기"
 
+#: src/pages/Pool/index.tsx
+msgid "My funds"
+msgstr "내 펀드"
+
+#: src/pages/Pool/index.tsx
+msgid "Funds Overview"
+msgstr "펀드 개요"
+
+#: src/pages/Pool/index.tsx
+msgid "All funds"
+msgstr "모든 펀드"
