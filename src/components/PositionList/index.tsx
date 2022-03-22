@@ -44,11 +44,12 @@ export default function PositionList({
   setUserHideClosedPositions,
   userHideClosedPositions,
 }: PositionListProps) {
+  // const [] = useState(false);
   return (
     <>
       <DesktopHeader>
         <div>
-          <Trans>Your positions</Trans>
+          <Trans>positions</Trans>
           {positions && ' (' + positions.length + ')'}
         </div>
         <ButtonText style={{ opacity: 0.6 }} onClick={() => setUserHideClosedPositions(!userHideClosedPositions)}>
@@ -56,7 +57,7 @@ export default function PositionList({
         </ButtonText>
       </DesktopHeader>
       <MobileHeader>
-        <Trans>Your positions</Trans>
+        <Trans>positions</Trans>
       </MobileHeader>
       {positions.map((p) => {
         return <PositionListItem key={p.tokenId.toString()} positionDetails={p} />

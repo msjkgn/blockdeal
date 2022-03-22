@@ -179,7 +179,7 @@
     "widgets:build": "rollup --config --failAfterWarnings --configPlugin typescript2",
     "predeploy": "yarn build",
     "deploy": "gh-pages -d build",
-    "clean": "rm -rf build && rm -rf node_modules && rm package-lock.json"
+    "clean": "rm -rf build && rm -rf node_modules"
   },
   "browserslist": {
     "production": [
