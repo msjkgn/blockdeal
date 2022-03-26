@@ -280,7 +280,7 @@ export default function Header() {
         {/* <StyledNavLink id={`swap-nav-link`} to={'/swap'}>
           <Trans>Swap</Trans>
         </StyledNavLink> */}
-        <StyledNavLink
+        {/* <StyledNavLink
           id={`pool-nav-link`}
           to={'/pool'}
           isActive={(match, { pathname }) =>
@@ -295,7 +295,7 @@ export default function Header() {
         </StyledNavLink>
         <StyledNavLink id={'rebalance-nav-lint'} to={'/rebalance'}>
           <Trans>Rebalance</Trans>
-        </StyledNavLink>
+        </StyledNavLink> */}
       </HeaderLinks>
 
       <HeaderControls>

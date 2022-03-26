@@ -4,7 +4,7 @@ import { Trans } from '@lingui/macro'
 import { Currency, CurrencyAmount, Fraction, Price, Token } from '@uniswap/sdk-core'
 import { NonfungiblePositionManager, Pool, Position } from '@uniswap/v3-sdk'
 import Badge from 'components/Badge'
-import { ButtonPrimary, ButtonSecondary } from 'components/Button'
+import { ButtonConfirmed, ButtonDropdownLight, ButtonPrimary, ButtonYellow } from 'components/Button'
 import { DarkCard, LightCard } from 'components/Card'
 import { AutoColumn } from 'components/Column'
 import CurrencyLogo from 'components/CurrencyLogo'
@@ -701,8 +701,8 @@ export function PositionPage({
                       </ThemedText.LargeHeader>
                     )}
                   </AutoRow>
-                  <ButtonPrimary>Rebalance</ButtonPrimary>
-                  <ButtonSecondary onClick={openDetail}>View Fund Details</ButtonSecondary>
+                  <ButtonConfirmed confirmed={false}>Rebalance</ButtonConfirmed>
+                  <ButtonDropdownLight onClick={openDetail}>View Fund Details</ButtonDropdownLight>
                   {isViewDetail && (
                     <>
                       <LightCard padding="12px 16px">
@@ -770,6 +770,7 @@ export function PositionPage({
                       </LightCard>
                     </>
                   )}
+                  <ButtonYellow>withdraw fund</ButtonYellow>
                 </AutoColumn>
               </DarkCard>
               <DarkCard>
