@@ -1,18 +1,15 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
 import { Trans } from '@lingui/macro'
-import { Currency, CurrencyAmount, Fraction, Percent, Price, Token } from '@uniswap/sdk-core'
+import { Currency, CurrencyAmount, Fraction, Price, Token } from '@uniswap/sdk-core'
 import { NonfungiblePositionManager, Pool, Position } from '@uniswap/v3-sdk'
 import Badge from 'components/Badge'
-import { ButtonConfirmed, ButtonGray, ButtonPrimary } from 'components/Button'
+import { ButtonPrimary, ButtonSecondary } from 'components/Button'
 import { DarkCard, LightCard } from 'components/Card'
 import { AutoColumn } from 'components/Column'
 import CurrencyLogo from 'components/CurrencyLogo'
-import DoubleCurrencyLogo from 'components/DoubleLogo'
-import Loader from 'components/Loader'
+import { AutoRow } from 'components/Row'
 import { RowBetween, RowFixed } from 'components/Row'
-import { Dots } from 'components/swap/styleds'
-import Toggle from 'components/Toggle'
 import TransactionConfirmationModal, { ConfirmationModalContent } from 'components/TransactionConfirmationModal'
 import { useToken } from 'hooks/Tokens'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
@@ -26,20 +23,14 @@ import { useSingleCallResult } from 'lib/hooks/multicall'
 import useNativeCurrency from 'lib/hooks/useNativeCurrency'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import ReactGA from 'react-ga'
-import { Link, RouteComponentProps } from 'react-router-dom'
-import { Bound } from 'state/mint/v3/actions'
 import { useIsTransactionPending, useTransactionAdder } from 'state/transactions/hooks'
 import styled from 'styled-components/macro'
-import { ExternalLink, HideExtraSmall, ThemedText } from 'theme'
+import { ExternalLink, ThemedText } from 'theme'
 import { currencyId } from 'utils/currencyId'
 import { formatCurrencyAmount } from 'utils/formatCurrencyAmount'
-import { formatTickPrice } from 'utils/formatTickPrice'
 import { unwrappedToken } from 'utils/unwrappedToken'
 
-import RangeBadge from '../../components/Badge/RangeBadge'
 import { getPriceOrderingFromPositionForUI } from '../../components/PositionListItem'
-import RateToggle from '../../components/RateToggle'
-import { SwitchLocaleLink } from '../../components/SwitchLocaleLink'
 import { usePositionTokenURI } from '../../hooks/usePositionTokenURI'
 import useTheme from '../../hooks/useTheme'
 import { TransactionType } from '../../state/transactions/actions'
@@ -47,28 +38,43 @@ import { calculateGasMargin } from '../../utils/calculateGasMargin'
 import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink'
 import { LoadingRows } from './styleds'
 
-const PageWrapper = styled.div`
-  min-width: 800px;
-  max-width: 960px;
+// const PageWrapper = styled.div`
+//   min-width: 800px;
+//   max-width: 960px;
+//   width:100%;
+//   ${({ theme }) => theme.mediaWidth.upToMedium`
+//   width:100%;
+//     max-width: 680px;
+//   `};
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    min-width: 680px;
-    max-width: 680px;
+//   ${({ theme }) => theme.mediaWidth.upToSmall`
+//   width:100%;
+//     max-width: 600px;
+//   `};
+
+//   @media only screen and (max-width: 620px) {
+//     width:100%;
+//     max-width: 500px;
+//   }
+
+//   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+//   width:100%;
+//     max-width: 340px;
+//   `};
+// `
+
+const PageWrapper = styled(AutoColumn)`
+  max-width: 870px;
+  width: 100%;
+  box-shadow: rgb(0 0 0 / 25%) 1px 1px 4px;
+  border-radius: 15px;
+  margin-bottom: 10px;
+  border: ${({ theme }) => theme.mediaWidth.upToMedium`
+    max-width: 800px;
   `};
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    min-width: 600px;
-    max-width: 600px;
-  `};
-
-  @media only screen and (max-width: 620px) {
-    min-width: 500px;
     max-width: 500px;
-  }
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    min-width: 340px;
-    max-width: 340px;
   `};
 `
 
@@ -314,16 +320,23 @@ const useInverter = ({
 }
 
 export function PositionPage({
-  match: {
-    params: { tokenId: tokenIdFromUrl },
-  },
-}: RouteComponentProps<{ tokenId?: string }>) {
+  // match: {
+  //   params: { tokenId: tokenIdFromUrl },
+  // },
+  tokenId: tokenIdFromUrl,
+}: {
+  tokenId?: string
+}) {
   const { chainId, account, library } = useActiveWeb3React()
   const theme = useTheme()
 
   const parsedTokenId = tokenIdFromUrl ? BigNumber.from(tokenIdFromUrl) : undefined
   const { loading, position: positionDetails } = useV3PositionFromTokenId(parsedTokenId)
-
+  const [isViewDetail, openViewDetail] = useState(false)
+  const openDetail = () => {
+    if (isViewDetail) openViewDetail(false)
+    else openViewDetail(true)
+  }
   const {
     token0: token0Address,
     token1: token1Address,
@@ -559,13 +572,13 @@ export function PositionPage({
         />
         <AutoColumn gap="md">
           <AutoColumn gap="sm">
-            <Link style={{ textDecoration: 'none', width: 'fit-content', marginBottom: '0.5rem' }} to="/pool">
+            {/* <Link style={{ textDecoration: 'none', width: 'fit-content', marginBottom: '0.5rem' }} to="/pool">
               <HoverText>
                 <Trans>← Back to Pools Overview</Trans>
               </HoverText>
-            </Link>
+            </Link> */}
             <ResponsiveRow>
-              <RowFixed>
+              {/* <RowFixed>
                 <DoubleCurrencyLogo currency0={currencyBase} currency1={currencyQuote} size={24} margin={true} />
                 <ThemedText.Label fontSize={'24px'} mr="10px">
                   &nbsp;{currencyQuote?.symbol}&nbsp;/&nbsp;{currencyBase?.symbol}
@@ -576,8 +589,8 @@ export function PositionPage({
                   </BadgeText>
                 </Badge>
                 <RangeBadge removed={removed} inRange={inRange} />
-              </RowFixed>
-              {ownsNFT && (
+              </RowFixed> */}
+              {/* {ownsNFT && (
                 <RowFixed>
                   {currency0 && currency1 && feeAmount && tokenId ? (
                     <ButtonGray
@@ -603,12 +616,12 @@ export function PositionPage({
                     </ResponsiveButtonPrimary>
                   ) : null}
                 </RowFixed>
-              )}
+              )} */}
             </ResponsiveRow>
             <RowBetween></RowBetween>
           </AutoColumn>
           <ResponsiveRow align="flex-start">
-            {'result' in metadata ? (
+            {/* {'result' in metadata ? (
               <DarkCard
                 width="100%"
                 height="100%"
@@ -640,63 +653,128 @@ export function PositionPage({
               >
                 <Loader />
               </DarkCard>
-            )}
+            )} */}
             <AutoColumn gap="sm" style={{ width: '100%', height: '100%' }}>
               <DarkCard>
-                <AutoColumn gap="md" style={{ width: '100%' }}>
-                  <AutoColumn gap="md">
+                <AutoColumn gap="lg" style={{ width: '100%' }}>
+                  <AutoRow gap="md" justify={'space-around'}>
+                    <AutoColumn gap="md">
+                      <Label>
+                        <Trans>Liquidity</Trans>
+                      </Label>
+                      {fiatValueOfLiquidity?.greaterThan(new Fraction(1, 100)) ? (
+                        <ThemedText.LargeHeader fontSize="36px" fontWeight={500}>
+                          <Trans>${fiatValueOfLiquidity.toFixed(2, { groupSeparator: ',' })}</Trans>
+                        </ThemedText.LargeHeader>
+                      ) : (
+                        <ThemedText.LargeHeader color={theme.text1} fontSize="36px" fontWeight={500}>
+                          <Trans>$-</Trans>
+                        </ThemedText.LargeHeader>
+                      )}
+                    </AutoColumn>
+                    <AutoColumn>
+                      <Label>
+                        <Trans>Profit</Trans>
+                      </Label>
+                      {fiatValueOfLiquidity?.greaterThan(new Fraction(1, 100)) ? (
+                        <ThemedText.LargeHeader fontSize="36px" fontWeight={500}>
+                          <Trans>${fiatValueOfLiquidity.toFixed(2, { groupSeparator: ',' })}</Trans>
+                        </ThemedText.LargeHeader>
+                      ) : (
+                        <ThemedText.LargeHeader color={theme.text1} fontSize="36px" fontWeight={500}>
+                          <Trans>$-</Trans>
+                        </ThemedText.LargeHeader>
+                      )}
+                    </AutoColumn>
+                  </AutoRow>
+                  <AutoRow gap="md" justify="space-between">
                     <Label>
-                      <Trans>Liquidity</Trans>
+                      <Trans>expected rebalance reward</Trans>
                     </Label>
                     {fiatValueOfLiquidity?.greaterThan(new Fraction(1, 100)) ? (
-                      <ThemedText.LargeHeader fontSize="36px" fontWeight={500}>
+                      <ThemedText.LargeHeader fontSize="20px" fontWeight={500}>
                         <Trans>${fiatValueOfLiquidity.toFixed(2, { groupSeparator: ',' })}</Trans>
                       </ThemedText.LargeHeader>
                     ) : (
-                      <ThemedText.LargeHeader color={theme.text1} fontSize="36px" fontWeight={500}>
+                      <ThemedText.LargeHeader color={theme.text1} fontSize="20px" fontWeight={500}>
                         <Trans>$-</Trans>
                       </ThemedText.LargeHeader>
                     )}
-                  </AutoColumn>
-                  <LightCard padding="12px 16px">
-                    <AutoColumn gap="md">
-                      <RowBetween>
-                        <LinkedCurrency chainId={chainId} currency={currencyQuote} />
-                        <RowFixed>
-                          <ThemedText.Main>
-                            {inverted ? position?.amount0.toSignificant(4) : position?.amount1.toSignificant(4)}
-                          </ThemedText.Main>
-                          {typeof ratio === 'number' && !removed ? (
-                            <Badge style={{ marginLeft: '10px' }}>
-                              <ThemedText.Main fontSize={11}>
-                                <Trans>{inverted ? ratio : 100 - ratio}%</Trans>
+                  </AutoRow>
+                  <ButtonPrimary>Rebalance</ButtonPrimary>
+                  <ButtonSecondary onClick={openDetail}>View Fund Details</ButtonSecondary>
+                  {isViewDetail && (
+                    <>
+                      <LightCard padding="12px 16px">
+                        <AutoColumn gap="md">
+                          <RowBetween>
+                            <ThemedText.Main>Net Assets</ThemedText.Main>
+                            <ThemedText.Main>$325,000,000</ThemedText.Main>
+                          </RowBetween>
+                          <RowBetween>
+                            <ThemedText.Main>Swap pool lower price</ThemedText.Main>
+                            <ThemedText.Main>USDC 2310.3</ThemedText.Main>
+                          </RowBetween>
+                          <RowBetween>
+                            <ThemedText.Main>Swap pool upper price</ThemedText.Main>
+                            <ThemedText.Main>USDC 3842.3</ThemedText.Main>
+                          </RowBetween>
+                          <RowBetween>
+                            <ThemedText.Main>target swap pool weights</ThemedText.Main>
+                            <ThemedText.Main>+42%</ThemedText.Main>
+                          </RowBetween>
+                          <RowBetween>
+                            <ThemedText.Main>target USDC Collateral weight</ThemedText.Main>
+                            <ThemedText.Main>58%</ThemedText.Main>
+                          </RowBetween>
+                          <RowBetween>
+                            <ThemedText.Main>Target LTV</ThemedText.Main>
+                            <ThemedText.Main>+72%</ThemedText.Main>
+                          </RowBetween>
+                        </AutoColumn>
+                      </LightCard>
+
+                      <LightCard padding="12px 16px">
+                        <AutoColumn gap="md">
+                          <RowBetween>
+                            <LinkedCurrency chainId={chainId} currency={currencyQuote} />
+                            <RowFixed>
+                              <ThemedText.Main>
+                                {inverted ? position?.amount0.toSignificant(4) : position?.amount1.toSignificant(4)}
                               </ThemedText.Main>
-                            </Badge>
-                          ) : null}
-                        </RowFixed>
-                      </RowBetween>
-                      <RowBetween>
-                        <LinkedCurrency chainId={chainId} currency={currencyBase} />
-                        <RowFixed>
-                          <ThemedText.Main>
-                            {inverted ? position?.amount1.toSignificant(4) : position?.amount0.toSignificant(4)}
-                          </ThemedText.Main>
-                          {typeof ratio === 'number' && !removed ? (
-                            <Badge style={{ marginLeft: '10px' }}>
-                              <ThemedText.Main color={theme.text2} fontSize={11}>
-                                <Trans>{inverted ? 100 - ratio : ratio}%</Trans>
+                              {typeof ratio === 'number' && !removed ? (
+                                <Badge style={{ marginLeft: '10px' }}>
+                                  <ThemedText.Main fontSize={11}>
+                                    <Trans>{inverted ? ratio : 100 - ratio}%</Trans>
+                                  </ThemedText.Main>
+                                </Badge>
+                              ) : null}
+                            </RowFixed>
+                          </RowBetween>
+                          <RowBetween>
+                            <LinkedCurrency chainId={chainId} currency={currencyBase} />
+                            <RowFixed>
+                              <ThemedText.Main>
+                                {inverted ? position?.amount1.toSignificant(4) : position?.amount0.toSignificant(4)}
                               </ThemedText.Main>
-                            </Badge>
-                          ) : null}
-                        </RowFixed>
-                      </RowBetween>
-                    </AutoColumn>
-                  </LightCard>
+                              {typeof ratio === 'number' && !removed ? (
+                                <Badge style={{ marginLeft: '10px' }}>
+                                  <ThemedText.Main color={theme.text2} fontSize={11}>
+                                    <Trans>{inverted ? 100 - ratio : ratio}%</Trans>
+                                  </ThemedText.Main>
+                                </Badge>
+                              ) : null}
+                            </RowFixed>
+                          </RowBetween>
+                        </AutoColumn>
+                      </LightCard>
+                    </>
+                  )}
                 </AutoColumn>
               </DarkCard>
               <DarkCard>
                 <AutoColumn gap="md" style={{ width: '100%' }}>
-                  <AutoColumn gap="md">
+                  {/* <AutoColumn gap="md">
                     <RowBetween style={{ alignItems: 'flex-start' }}>
                       <AutoColumn gap="md">
                         <Label>
@@ -742,8 +820,8 @@ export function PositionPage({
                         </ButtonConfirmed>
                       ) : null}
                     </RowBetween>
-                  </AutoColumn>
-                  <LightCard padding="12px 16px">
+                  </AutoColumn> */}
+                  {/* <LightCard padding="12px 16px">
                     <AutoColumn gap="md">
                       <RowBetween>
                         <RowFixed>
@@ -776,8 +854,8 @@ export function PositionPage({
                         </RowFixed>
                       </RowBetween>
                     </AutoColumn>
-                  </LightCard>
-                  {showCollectAsWeth && (
+                  </LightCard> */}
+                  {/* {showCollectAsWeth && (
                     <AutoColumn gap="md">
                       <RowBetween>
                         <ThemedText.Main>
@@ -790,12 +868,12 @@ export function PositionPage({
                         />
                       </RowBetween>
                     </AutoColumn>
-                  )}
+                  )} */}
                 </AutoColumn>
               </DarkCard>
             </AutoColumn>
           </ResponsiveRow>
-          <DarkCard>
+          {/* <DarkCard>
             <AutoColumn gap="md">
               <RowBetween>
                 <RowFixed>
@@ -875,10 +953,9 @@ export function PositionPage({
                 currencyBase={currencyBase}
               />
             </AutoColumn>
-          </DarkCard>
+          </DarkCard> */}
         </AutoColumn>
       </PageWrapper>
-      <SwitchLocaleLink />
     </>
   )
 }

@@ -197,7 +197,11 @@ export default function Pool() {
   tokensOwed1: BigNumber
      * 
      */
-    const loading = false
+    const [loading, setLoading] = useState(true)
+
+    setTimeout(() => {
+      setLoading(false)
+    }, 3000);
     return { allPositions, loading }
   }
   // all position hooks
@@ -243,6 +247,7 @@ export default function Pool() {
 
   console.log(filteredPositions)
   console.log(filteredAllPositions)
+  console.log(closedAllPositions)
   const menuItems = [
     {
       content: (
@@ -296,8 +301,8 @@ export default function Pool() {
               <ThemedText.Body fontSize={'20px'}>
                 <Trans>Funds Overview</Trans>
               </ThemedText.Body>
-              <ButtonRow>
-                {/* {showV2Features && (
+              {/* <ButtonRow>
+                {showV2Features && (
                   <Menu
                     menuItems={menuItems}
                     flyoutAlignment={FlyoutAlignment.LEFT}
@@ -310,11 +315,11 @@ export default function Pool() {
                       </MoreOptionsButton>
                     )}
                   />
-                )} */}
+                )}
                 <ResponsiveButtonPrimary id="join-pool-button" as={Link} to="/add/ETH">
                   + <Trans>New Position</Trans>
                 </ResponsiveButtonPrimary>
-              </ButtonRow>
+              </ButtonRow> */}
             </TitleRow>
 
             <MainContentWrapper>
@@ -329,7 +334,7 @@ export default function Pool() {
               {isAll === 'all' ? (
                 allPositionsLoading ? (
                   <PositionsLoadingPlaceholder />
-                ) : filteredAllPositions && filteredAllPositions.length > 0 ? (
+                ) : filteredAllPositions && closedAllPositions && filteredAllPositions.length > 0 && !showConnectAWallet ? (
                   <PositionList
                     positions={filteredAllPositions}
                     setUserHideClosedPositions={setUserHideClosedPositions}
