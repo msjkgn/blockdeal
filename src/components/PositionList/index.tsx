@@ -52,15 +52,15 @@ export default function PositionList({
           <Trans>positions</Trans>
           {positions && ' (' + positions.length + ')'}
         </div>
-        <ButtonText style={{ opacity: 0.6 }} onClick={() => setUserHideClosedPositions(!userHideClosedPositions)}>
+        {/* <ButtonText style={{ opacity: 0.6 }} onClick={() => setUserHideClosedPositions(!userHideClosedPositions)}>
           <Trans>Hide closed positions</Trans>
-        </ButtonText>
+        </ButtonText> */}
       </DesktopHeader>
       <MobileHeader>
         <Trans>positions</Trans>
       </MobileHeader>
       {positions.map((p) => {
-        return <PositionListItem key={p.tokenId.toString()} positionDetails={p} />
+        return <PositionListItem key={p.tokenId.toString()} positionDetails={p} tokenId={p.tokenId}/>
       })}
     </>
   )

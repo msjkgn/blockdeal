@@ -469,7 +469,7 @@ export default function AddLiquidity({
           hash={txHash}
           content={() => (
             <ConfirmationModalContent
-              title={<Trans>Add Liquidity</Trans>}
+              title={<Trans>Deposit to the fund</Trans>}
               onDismiss={handleDismissConfirmation}
               topContent={() => (
                 <Review
@@ -595,7 +595,11 @@ export default function AddLiquidity({
                 <DynamicSection disabled={!feeAmount}>
                   <AutoColumn gap="md">
                     <ThemedText.Label>
-                      {hasExistingPosition ? <Trans>Add more liquidity</Trans> : <Trans>Deposit Amounts</Trans>}
+                      {hasExistingPosition ? (
+                        <Trans>Deposit to the fund</Trans>
+                      ) : (
+                        <Trans>Deposit more to the fund</Trans>
+                      )}
                     </ThemedText.Label>
 
                     <CurrencyInputPanel

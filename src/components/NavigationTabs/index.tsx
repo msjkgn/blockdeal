@@ -116,9 +116,7 @@ export function AddRemoveTabs({
   const location = useLocation()
 
   // detect if back should redirect to v3 or v2 pool page
-  const poolLink = location.pathname.includes('add/v2')
-    ? '/pool/v2'
-    : '/pool' + (!!positionID ? `/${positionID.toString()}` : '')
+  const poolLink = location.pathname.includes('add/v2') ? '/pool/v2' : '/pool'
 
   return (
     <Tabs>
@@ -144,7 +142,7 @@ export function AddRemoveTabs({
           {creating ? (
             <Trans>Create a pair</Trans>
           ) : adding ? (
-            <Trans>Add Liquidity</Trans>
+            <Trans>Deposit to the fund</Trans>
           ) : (
             <Trans>Remove Liquidity</Trans>
           )}

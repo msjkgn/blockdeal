@@ -1,27 +1,26 @@
+import { BigNumber } from '@ethersproject/bignumber'
 import { Trans } from '@lingui/macro'
-import { Percent, Price, Token } from '@uniswap/sdk-core'
+import { Currency, Percent, Price, Token } from '@uniswap/sdk-core'
 import { Position } from '@uniswap/v3-sdk'
 import Badge from 'components/Badge'
-import RangeBadge from 'components/Badge/RangeBadge'
+import { ButtonPrimary } from 'components/Button'
 import DoubleCurrencyLogo from 'components/DoubleLogo'
-import HoverInlineText from 'components/HoverInlineText'
-import Loader from 'components/Loader'
 import { RowBetween } from 'components/Row'
 import { useToken } from 'hooks/Tokens'
 import useIsTickAtLimit from 'hooks/useIsTickAtLimit'
 import { usePool } from 'hooks/usePools'
-import { useMemo } from 'react'
+import { PositionPage } from 'pages/Pool/PositionPage'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Bound } from 'state/mint/v3/actions'
 import styled from 'styled-components/macro'
-import { HideSmall, MEDIA_WIDTHS, SmallOnly } from 'theme'
+import { MEDIA_WIDTHS } from 'theme'
 import { PositionDetails } from 'types/position'
-import { formatTickPrice } from 'utils/formatTickPrice'
+import { currencyId } from 'utils/currencyId'
 import { unwrappedToken } from 'utils/unwrappedToken'
 
 import { DAI, USDC_MAINNET, USDT, WBTC, WRAPPED_NATIVE_CURRENCY } from '../../constants/tokens'
 
-const LinkRow = styled(Link)`
+const LinkRow = styled.div`
   align-items: center;
   border-radius: 20px;
   display: flex;
@@ -127,8 +126,18 @@ const DataText = styled.div`
   `};
 `
 
+const DepositButton = styled(ButtonPrimary)`
+  height: 30px;
+  padding: 5px;
+  background-color: ${({ theme }) => theme.primary1};
+  border-radius: 15px;
+  color: white;
+  text-align: center;
+`
+
 interface PositionListItemProps {
   positionDetails: PositionDetails
+  tokenId: BigNumber
 }
 
 export function getPriceOrderingFromPositionForUI(position?: Position): {
@@ -185,7 +194,7 @@ export function getPriceOrderingFromPositionForUI(position?: Position): {
   }
 }
 
-export default function PositionListItem({ positionDetails }: PositionListItemProps) {
+export default function PositionListItem({ positionDetails, tokenId }: PositionListItemProps) {
   const {
     token0: token0Address,
     token1: token1Address,
@@ -195,6 +204,11 @@ export default function PositionListItem({ positionDetails }: PositionListItemPr
     tickUpper,
   } = positionDetails
 
+  const [isPageOpen, openPage] = useState(false)
+  const clickPageOpen = () => {
+    if (isPageOpen) openPage(false)
+    else openPage(true)
+  }
   const token0 = useToken(token0Address)
   const token1 = useToken(token1Address)
 
@@ -227,23 +241,36 @@ export default function PositionListItem({ positionDetails }: PositionListItemPr
   const removed = liquidity?.eq(0)
 
   return (
-    <LinkRow to={positionSummaryLink}>
-      <RowBetween>
-        <PrimaryPositionIdData>
-          <DoubleCurrencyLogo currency0={currencyBase} currency1={currencyQuote} size={18} margin />
-          <DataText>
-            &nbsp;{currencyQuote?.symbol}&nbsp;/&nbsp;{currencyBase?.symbol}
-          </DataText>
-          &nbsp;
-          <Badge>
-            <BadgeText>
-              <Trans>{new Percent(feeAmount, 1_000_000).toSignificant()}%</Trans>
-            </BadgeText>
-          </Badge>
-        </PrimaryPositionIdData>
-        <RangeBadge removed={removed} inRange={!outOfRange} />
-      </RowBetween>
+    <>
+      <LinkRow onClick={clickPageOpen}>
+        <RowBetween>
+          <PrimaryPositionIdData>
+            <DoubleCurrencyLogo currency0={currencyBase} currency1={currencyQuote} size={18} margin />
+            <DataText>
+              &nbsp;{currencyQuote?.symbol}&nbsp;/&nbsp;{currencyBase?.symbol}
+            </DataText>
+            &nbsp;
+            <Badge>
+              <BadgeText>
+                <Trans>{new Percent(feeAmount, 1_000_000).toSignificant()}%</Trans>
+              </BadgeText>
+            </Badge>
+          </PrimaryPositionIdData>
+          {/* <RangeBadge removed={removed} inRange={!outOfRange} /> */}
 
+          <DepositButton
+            as={Link}
+            to={`/increase/${currencyId(currency0 as Currency)}/${currencyId(
+              currency1 as Currency
+            )}/${feeAmount}/${tokenId}`}
+            width={'100px'}
+            disabled
+          >
+            <Trans>deposit</Trans>
+          </DepositButton>
+        </RowBetween>
+
+        {/* 
       {priceLower && priceUpper ? (
         <RangeLineItem>
           <RangeText>
@@ -273,7 +300,9 @@ export default function PositionListItem({ positionDetails }: PositionListItemPr
         </RangeLineItem>
       ) : (
         <Loader />
-      )}
-    </LinkRow>
+      )} */}
+      </LinkRow>
+      {isPageOpen && <PositionPage tokenId={positionDetails.tokenId + ''} />}
+    </>
   )
 }

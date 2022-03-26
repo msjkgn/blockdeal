@@ -80,10 +80,10 @@ function colors(darkMode: boolean): Colors {
 
     //primary colors
     primary1: darkMode ? '#2172E5' : '#a80202',
-    primary2: darkMode ? '#3680E7' : '#a80202',
-    primary3: darkMode ? '#4D8FEA' : '#a80202',
-    primary4: darkMode ? '#376bad70' : '#a80202',
-    primary5: darkMode ? '#153d6f70' : '#a80202',
+    primary2: darkMode ? '#3680E7' : '#d41919',
+    primary3: darkMode ? '#4D8FEA' : '#e65757',
+    primary4: darkMode ? '#376bad70' : '#d18080',
+    primary5: darkMode ? '#153d6f70' : '#dbbdbd',
 
     // color text
     primaryText1: darkMode ? '#5090ea' : '#FFFFFF',
