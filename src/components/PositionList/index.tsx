@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/macro'
-import { ButtonText } from 'components/Button'
 import PositionListItem from 'components/PositionListItem'
 import React from 'react'
 import styled from 'styled-components/macro'
@@ -59,9 +58,11 @@ export default function PositionList({
       <MobileHeader>
         <Trans>positions</Trans>
       </MobileHeader>
-      {positions.map((p) => {
-        return <PositionListItem key={p.tokenId.toString()} positionDetails={p} tokenId={p.tokenId}/>
-      })}
+
+      {positions.length > 0 &&
+        positions.map((p) => {
+          return <PositionListItem key={p.tokenId.toString()} positionDetails={p} tokenId={p.tokenId} />
+        })}
     </>
   )
 }

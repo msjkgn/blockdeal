@@ -22,7 +22,6 @@ import { AutoColumn } from '../../components/Column'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import FeeSelector from '../../components/FeeSelector'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
-import { PositionPreview } from '../../components/PositionPreview'
 import Row, { RowBetween } from '../../components/Row'
 import { SwitchLocaleLink } from '../../components/SwitchLocaleLink'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
@@ -68,6 +67,7 @@ export default function AddLiquidity({
   },
   history,
 }: RouteComponentProps<{ currencyIdA?: string; currencyIdB?: string; feeAmount?: string; tokenId?: string }>) {
+  console.log('deposit')
   const { account, chainId, library } = useActiveWeb3React()
   const theme = useContext(ThemeContext)
   const toggleWalletModal = useWalletModalToggle() // toggle wallet when disconnected
@@ -190,6 +190,10 @@ export default function AddLiquidity({
   const allowedSlippage = useUserSlippageToleranceWithDefault(
     outOfRange ? ZERO_PERCENT : DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE
   )
+
+  function onAddTemp () {
+    alert('add 되었습니다.')
+  }
 
   async function onAdd() {
     if (!chainId || !library || !account) return
@@ -445,7 +449,8 @@ export default function AddLiquidity({
           )}
         <ButtonError
           onClick={() => {
-            expertMode ? onAdd() : setShowConfirm(true)
+            // expertMode ? onAdd() : setShowConfirm(true)
+            onAddTemp()
           }}
           disabled={
             !isValid ||
@@ -454,7 +459,7 @@ export default function AddLiquidity({
           }
           error={!isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]}
         >
-          <Text fontWeight={500}>{errorMessage ? errorMessage : <Trans>Preview</Trans>}</Text>
+          <Text fontWeight={500}>{errorMessage ? errorMessage : <Trans>deposit</Trans>}</Text>
         </ButtonError>
       </AutoColumn>
     )
@@ -483,7 +488,7 @@ export default function AddLiquidity({
                 />
               )}
               bottomContent={() => (
-                <ButtonPrimary style={{ marginTop: '1rem' }} onClick={onAdd}>
+                <ButtonPrimary style={{ marginTop: '1rem' }} onClick={onAddTemp}>
                   <Text fontWeight={500} fontSize={20}>
                     <Trans>Add</Trans>
                   </Text>
@@ -532,32 +537,31 @@ export default function AddLiquidity({
           <Wrapper>
             <ResponsiveTwoColumns wide={false}>
               <AutoColumn gap="lg">
-                {!hasExistingPosition && (
-                  <>
-                    <AutoColumn gap="md">
-                      <RowBetween paddingBottom="20px">
-                        <ThemedText.Label>
-                          <Trans>Select Token</Trans>
-                        </ThemedText.Label>
-                      </RowBetween>
-                      <RowBetween>
-                        <CurrencyDropdown
-                          value={formattedAmounts[Field.CURRENCY_A]}
-                          onUserInput={onFieldAInput}
-                          hideInput={true}
-                          onMax={() => {
-                            onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
-                          }}
-                          onCurrencySelect={handleCurrencyASelect}
-                          showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
-                          currency={currencies[Field.CURRENCY_A] ?? null}
-                          id="add-liquidity-input-tokena"
-                          showCommonBases
-                        />
+                {!hasExistingPosition ? (
+                  <AutoColumn gap="md">
+                    <RowBetween paddingBottom="20px">
+                      <ThemedText.Label>
+                        <Trans>Select Token</Trans>
+                      </ThemedText.Label>
+                    </RowBetween>
+                    <RowBetween>
+                      <CurrencyDropdown
+                        value={formattedAmounts[Field.CURRENCY_A]}
+                        onUserInput={onFieldAInput}
+                        hideInput={true}
+                        onMax={() => {
+                          onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
+                        }}
+                        onCurrencySelect={handleCurrencyASelect}
+                        showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
+                        currency={currencies[Field.CURRENCY_A] ?? null}
+                        id="add-liquidity-input-tokena"
+                        showCommonBases
+                      />
 
-                        {/* <div style={{ width: '12px' }} /> */}
+                      {/* <div style={{ width: '12px' }} /> */}
 
-                        {/* <CurrencyDropdown
+                      {/* <CurrencyDropdown
                           value={formattedAmounts[Field.CURRENCY_B]}
                           hideInput={true}
                           onUserInput={onFieldBInput}
@@ -570,35 +574,51 @@ export default function AddLiquidity({
                           id="add-liquidity-input-tokenb"
                           showCommonBases
                         /> */}
-                      </RowBetween>
+                    </RowBetween>
 
-                      <FeeSelector
-                        disabled={!baseCurrency}
-                        feeAmount={feeAmount}
-                        handleFeePoolSelect={handleFeePoolSelect}
-                        currencyA={baseCurrency ?? undefined}
-                        currencyB={quoteCurrency ?? undefined}
-                      />
-                    </AutoColumn>{' '}
-                  </>
+                    <FeeSelector
+                      disabled={!baseCurrency}
+                      feeAmount={feeAmount}
+                      handleFeePoolSelect={handleFeePoolSelect}
+                      currencyA={baseCurrency ?? undefined}
+                      currencyB={quoteCurrency ?? undefined}
+                    />
+                  </AutoColumn>
+                ) : (
+                  <AutoColumn gap="md">
+                    <RowBetween>
+                      <ThemedText.Main>Current Deposit Amount</ThemedText.Main>
+                      <ThemedText.Main>$13,000</ThemedText.Main>
+                    </RowBetween>
+                    <RowBetween>
+                      <ThemedText.Main>Your Current Position</ThemedText.Main>
+                      <ThemedText.Main>89.12 fund shares</ThemedText.Main>
+                    </RowBetween>
+                    {''}
+                    <RowBetween>
+                      <ThemedText.Main>Your Current Profits</ThemedText.Main>
+                      <ThemedText.Main>$3,000</ThemedText.Main>
+                    </RowBetween>
+                  </AutoColumn>
                 )}
-                {hasExistingPosition && existingPosition && (
+                {/* {hasExistingPosition && existingPosition && (
+                  // selected range
                   <PositionPreview
                     position={existingPosition}
                     title={<Trans>Selected Range</Trans>}
                     inRange={!outOfRange}
                     ticksAtLimit={ticksAtLimit}
                   />
-                )}
+                )} */}
               </AutoColumn>
               <div>
                 <DynamicSection disabled={!feeAmount}>
                   <AutoColumn gap="md">
                     <ThemedText.Label>
                       {hasExistingPosition ? (
-                        <Trans>Deposit to the fund</Trans>
-                      ) : (
                         <Trans>Deposit more to the fund</Trans>
+                      ) : (
+                        <Trans>Deposit to the fund</Trans>
                       )}
                     </ThemedText.Label>
 
@@ -870,6 +890,20 @@ export default function AddLiquidity({
                 </> */}
               {/* ) : (
               )} */}
+              {hasExistingPosition && (
+                <AutoColumn gap="md">
+                  <RowBetween>
+                    <ThemedText.Main>New Deposit Amount</ThemedText.Main>
+                    <ThemedText.Main>$48,000</ThemedText.Main>
+                  </RowBetween>
+                  <RowBetween>
+                    <ThemedText.Main>Your new Position</ThemedText.Main>
+                    <ThemedText.Main>249.51 fund shares</ThemedText.Main>
+                  </RowBetween>
+                  {''}
+                </AutoColumn>
+              )}
+
               <Buttons />
             </ResponsiveTwoColumns>
           </Wrapper>

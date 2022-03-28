@@ -23,6 +23,7 @@ import { useSingleCallResult } from 'lib/hooks/multicall'
 import useNativeCurrency from 'lib/hooks/useNativeCurrency'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import ReactGA from 'react-ga'
+import { Link } from 'react-router-dom'
 import { useIsTransactionPending, useTransactionAdder } from 'state/transactions/hooks'
 import styled from 'styled-components/macro'
 import { ExternalLink, ThemedText } from 'theme'
@@ -770,7 +771,9 @@ export function PositionPage({
                       </LightCard>
                     </>
                   )}
-                  <ButtonYellow>withdraw fund</ButtonYellow>
+                  <ButtonYellow as={Link} to={`/remove/${tokenId}`}>
+                    withdraw fund
+                  </ButtonYellow>
                 </AutoColumn>
               </DarkCard>
               <DarkCard>

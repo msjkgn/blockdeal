@@ -264,7 +264,6 @@ export default function PositionListItem({ positionDetails, tokenId }: PositionL
               currency1 as Currency
             )}/${feeAmount}/${tokenId}`}
             width={'100px'}
-            disabled
           >
             <Trans>deposit</Trans>
           </DepositButton>
