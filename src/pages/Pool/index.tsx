@@ -165,22 +165,22 @@ interface FundSelectButtonsProps {
 export default function Pool() {
   const useAllPositions = (): UseAllPositionsResults => {
     const allPositions = [
-      {
-        nonce: BigNumber.from('123412341234123412132353434'),
-        tokenId: BigNumber.from('0x6615946c8343ed5a74559a'),
-        operator: '0x0000000000000000000000000000000000000000',
-        token0: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-        token1: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
-        fee: 500,
-        tickLower: 195160,
-        tickUpper: 197910,
-        liquidity: BigNumber.from('123412341234123412132353434'),
-        feeGrowthInside0LastX128: BigNumber.from('123412341234123412132353434'),
-        feeGrowthInside1LastX128: BigNumber.from('123412341234123412132353434'),
-        tokensOwed0: BigNumber.from('12312341234123412341213235343441234'),
-        tokensOwed1: BigNumber.from('123412341234123412132353434'),
-      },
-    ]
+      // {
+      //   nonce: BigNumber.from('123412341234123412132353434'),
+      //   tokenId: BigNumber.from('0x6615946c8343ed5a74559a'),
+      //   operator: '0x0000000000000000000000000000000000000000',
+      //   token0: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+      //   token1: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+      //   fee: 500,
+      //   tickLower: 195160,
+      //   tickUpper: 197910,
+      //   liquidity: BigNumber.from('123412341234123412132353434'),
+      //   feeGrowthInside0LastX128: BigNumber.from('123412341234123412132353434'),
+      //   feeGrowthInside1LastX128: BigNumber.from('123412341234123412132353434'),
+      //   tokensOwed0: BigNumber.from('12312341234123412341213235343441234'),
+      //   tokensOwed1: BigNumber.from('123412341234123412132353434'),
+      // },
+    ] as PositionDetails[] | undefined
     /**
      *   nonce: BigNumber
   tokenId: BigNumber
@@ -345,7 +345,7 @@ export default function Pool() {
                     <ThemedText.Body color={theme.text3} textAlign="center">
                       <Inbox size={48} strokeWidth={1} style={{ marginBottom: '.5rem' }} />
                       <div>
-                        <Trans>Your active V3 liquidity positions will appear here.</Trans>
+                        <Trans>your active V3 liquidity positions will appear here.</Trans>
                       </div>
                     </ThemedText.Body>
                     {!showConnectAWallet && closedAllPositions.length > 0 && (
@@ -376,7 +376,7 @@ export default function Pool() {
                   <ThemedText.Body color={theme.text3} textAlign="center">
                     <Inbox size={48} strokeWidth={1} style={{ marginBottom: '.5rem' }} />
                     <div>
-                      <Trans>Your active V3 liquidity positions will appear here.</Trans>
+                      <Trans>all active V3 liquidity positions will appear here.</Trans>
                     </div>
                   </ThemedText.Body>
                   {!showConnectAWallet && closedPositions.length > 0 && (
