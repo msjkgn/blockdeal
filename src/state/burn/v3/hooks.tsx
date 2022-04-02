@@ -29,6 +29,7 @@ export function useDerivedV3BurnInfo(
   feeValue1?: CurrencyAmount<Currency>
   outOfRange: boolean
   error?: ReactNode
+  rawAmount0?: CurrencyAmount<Currency> | null | undefined
 } {
   const { account } = useActiveWeb3React()
   const { percent } = useBurnV3State()
@@ -58,6 +59,10 @@ export function useDerivedV3BurnInfo(
     : undefined
   const discountedAmount1 = positionSDK
     ? liquidityPercentage.multiply(positionSDK.amount1.quotient).quotient
+    : undefined
+
+  const rawAmount0 = positionSDK
+    ? token0 && CurrencyAmount.fromRawAmount(asWETH ? token0 : unwrappedToken(token0), positionSDK.amount0.quotient)
     : undefined
 
   const liquidityValue0 =
@@ -90,6 +95,7 @@ export function useDerivedV3BurnInfo(
     feeValue1,
     outOfRange,
     error,
+    rawAmount0
   }
 }
 

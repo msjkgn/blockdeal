@@ -7,16 +7,19 @@ export default function FormattedCurrencyAmount({
   currencyAmount,
   significantDigits = 4,
 }: {
-  currencyAmount: CurrencyAmount<Currency>
+  currencyAmount: CurrencyAmount<Currency> | null | undefined
   significantDigits?: number
 }) {
-  return (
-    <>
-      {currencyAmount.equalTo(JSBI.BigInt(0))
-        ? '0'
-        : currencyAmount.greaterThan(CURRENCY_AMOUNT_MIN)
-        ? currencyAmount.toSignificant(significantDigits)
-        : `<${CURRENCY_AMOUNT_MIN.toSignificant(1)}`}
-    </>
-  )
+  if (currencyAmount) {
+    return (
+      <>
+        {currencyAmount.equalTo(JSBI.BigInt(0))
+          ? '0'
+          : currencyAmount.greaterThan(CURRENCY_AMOUNT_MIN)
+          ? currencyAmount.toSignificant(significantDigits)
+          : `<${CURRENCY_AMOUNT_MIN.toSignificant(1)}`}
+      </>
+    )
+  }
+  else return <></>
 }
