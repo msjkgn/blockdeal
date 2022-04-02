@@ -144,7 +144,7 @@ export function AddRemoveTabs({
           ) : adding ? (
             <Trans>Deposit to the fund</Trans>
           ) : (
-            <Trans>Remove Liquidity</Trans>
+            <Trans>withdraw from the fund</Trans>
           )}
         </ThemedText.MediumHeader>
         <Box style={{ marginRight: '.5rem' }}>{children}</Box>

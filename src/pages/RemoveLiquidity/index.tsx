@@ -104,23 +104,26 @@ export default function RemoveLiquidity({
   )
   const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], router?.address)
 
-  async function onAttemptToApprove() {
-    if (!pairContract || !pair || !library || !deadline) throw new Error('missing dependencies')
-    const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
-    if (!liquidityAmount) throw new Error('missing liquidity amount')
+  // async function onAttemptToApprove() {
+  //   if (!pairContract || !pair || !library || !deadline) throw new Error('missing dependencies')
+  //   const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
+  //   if (!liquidityAmount) throw new Error('missing liquidity amount')
 
-    if (gatherPermitSignature) {
-      try {
-        await gatherPermitSignature()
-      } catch (error) {
-        // try to approve if gatherPermitSignature failed for any reason other than the user rejecting it
-        if (error?.code !== 4001) {
-          await approveCallback()
-        }
-      }
-    } else {
-      await approveCallback()
-    }
+  //   if (gatherPermitSignature) {
+  //     try {
+  //       await gatherPermitSignature()
+  //     } catch (error) {
+  //       // try to approve if gatherPermitSignature failed for any reason other than the user rejecting it
+  //       if (error?.code !== 4001) {
+  //         await approveCallback()
+  //       }
+  //     }
+  //   } else {
+  //     await approveCallback()
+  //   }
+  // }
+  function attemptToApproveTemp () {
+    alert('withdrawed')
   }
 
   // wrapped onUserInput to clear signatures
@@ -631,7 +634,7 @@ export default function RemoveLiquidity({
               ) : (
                 <RowBetween>
                   <ButtonConfirmed
-                    onClick={onAttemptToApprove}
+                    onClick={attemptToApproveTemp}
                     confirmed={approval === ApprovalState.APPROVED || signatureData !== null}
                     disabled={approval !== ApprovalState.NOT_APPROVED || signatureData !== null}
                     mr="0.5rem"

@@ -161,7 +161,7 @@ export default function TransactionSettings({ placeholderSlippage }: Transaction
 
   return (
     <AutoColumn gap="md">
-      <AutoColumn gap="sm">
+      {/* <AutoColumn gap="sm">
         <RowFixed>
           <ThemedText.Black fontWeight={400} fontSize={14} color={theme.text2}>
             <Trans>Slippage tolerance</Trans>
@@ -227,7 +227,7 @@ export default function TransactionSettings({ placeholderSlippage }: Transaction
             )}
           </RowBetween>
         ) : null}
-      </AutoColumn>
+      </AutoColumn> */}
 
       {showCustomDeadlineRow && (
         <AutoColumn gap="sm">
@@ -235,9 +235,9 @@ export default function TransactionSettings({ placeholderSlippage }: Transaction
             <ThemedText.Black fontSize={14} fontWeight={400} color={theme.text2}>
               <Trans>Transaction deadline</Trans>
             </ThemedText.Black>
-            <QuestionHelper
+            {/* <QuestionHelper
               text={<Trans>Your transaction will revert if it is pending for more than this period of time.</Trans>}
-            />
+            /> */}
           </RowFixed>
           <RowFixed>
             <OptionCustom style={{ width: '80px' }} warning={!!deadlineError} tabIndex={-1}>
