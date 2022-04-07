@@ -14,6 +14,8 @@ import ERC20_ABI from 'abis/erc20.json'
 import ERC20_BYTES32_ABI from 'abis/erc20_bytes32.json'
 import ERC721_ABI from 'abis/erc721.json'
 import ERC1155_ABI from 'abis/erc1155.json'
+import FACTORY_ABI from 'abis/factory.json'
+import FUND_ABI from 'abis/fund.json'
 import { ArgentWalletDetector, EnsPublicResolver, EnsRegistrar, Erc20, Erc721, Erc1155, Weth } from 'abis/types'
 import WETH_ABI from 'abis/weth.json'
 import {
@@ -33,7 +35,6 @@ import { NonfungiblePositionManager, Quoter, TickLens, UniswapInterfaceMulticall
 import { V3Migrator } from 'types/v3/V3Migrator'
 
 import { getContract } from '../utils'
-
 
 // 실제로 교체해주어야 되는 부분
 const { abi: IUniswapV2PairABI } = IUniswapV2PairJson
@@ -72,6 +73,18 @@ export function useContract<T extends Contract = Contract>(
       return null
     }
   }, [addressOrAddressMap, ABI, library, chainId, withSignerIfPossible, account]) as T
+}
+
+export function useFactoryContract() {
+  const { library, account, chainId } = useActiveWeb3React() // web3 react 
+    if ( !library || !chainId) return null
+    return getContract("0x70bDA08DBe07363968e9EE53d899dFE48560605B", FACTORY_ABI, library, account ? account : undefined)
+}
+
+export function useFundContract() {
+  const { library, account, chainId } = useActiveWeb3React() // web3 react 
+    if ( !library || !chainId) return null
+    return getContract("0xaca81583840B1bf2dDF6CDe824ada250C1936B4D", FUND_ABI, library, account ? account : undefined)
 }
 
 export function useV2MigratorContract() {

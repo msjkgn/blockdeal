@@ -8,6 +8,7 @@ import PositionList from 'components/PositionList'
 import { RowBetween, RowFixed } from 'components/Row'
 import { SwitchLocaleLink } from 'components/SwitchLocaleLink'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useFactoryContract } from 'hooks/useContract'
 import { useV3Positions } from 'hooks/useV3Positions'
 import { useContext, useState } from 'react'
 import { BookOpen, ChevronsRight, Inbox, Layers, PlusCircle } from 'react-feather'
@@ -20,6 +21,7 @@ import { PositionDetails } from 'types/position'
 
 import { V2_FACTORY_ADDRESSES } from '../../constants/addresses'
 import { LoadingRows } from './styleds'
+
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 870px;
@@ -165,21 +167,21 @@ interface FundSelectButtonsProps {
 export default function Pool() {
   const useAllPositions = (): UseAllPositionsResults => {
     const allPositions = [
-      {
-        nonce: BigNumber.from('123412341234123412132353434'),
-        tokenId: BigNumber.from('0x6615946c8343ed5a74559a'),
-        operator: '0x0000000000000000000000000000000000000000',
-        token0: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-        token1: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
-        fee: 500,
-        tickLower: 195160,
-        tickUpper: 197910,
-        liquidity: BigNumber.from('123412341234123412132353434'),
-        feeGrowthInside0LastX128: BigNumber.from('123412341234123412132353434'),
-        feeGrowthInside1LastX128: BigNumber.from('123412341234123412132353434'),
-        tokensOwed0: BigNumber.from('12312341234123412341213235343441234'),
-        tokensOwed1: BigNumber.from('123412341234123412132353434'),
-      },
+      // {
+      //   nonce: BigNumber.from('123412341234123412132353434'),
+      //   tokenId: BigNumber.from('0x6615946c8343ed5a74559a'),
+      //   operator: '0x0000000000000000000000000000000000000000',
+      //   token0: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+      //   token1: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+      //   fee: 500,
+      //   tickLower: 195160,
+      //   tickUpper: 197910,
+      //   liquidity: BigNumber.from('123412341234123412132353434'),
+      //   feeGrowthInside0LastX128: BigNumber.from('123412341234123412132353434'),
+      //   feeGrowthInside1LastX128: BigNumber.from('123412341234123412132353434'),
+      //   tokensOwed0: BigNumber.from('12312341234123412341213235343441234'),
+      //   tokensOwed1: BigNumber.from('123412341234123412132353434'),
+      // },
     ] as PositionDetails[] | undefined
     /**
      *   nonce: BigNumber
@@ -212,6 +214,10 @@ export default function Pool() {
     if (isAll === 'all') setAll('my')
     else setAll('all')
   }
+
+
+  const factoryContract = useFactoryContract();
+  console.log("Pool/index: ", factoryContract);
 
   const { account, chainId } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
