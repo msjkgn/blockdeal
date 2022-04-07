@@ -34,6 +34,8 @@ import { V3Migrator } from 'types/v3/V3Migrator'
 
 import { getContract } from '../utils'
 
+
+// 실제로 교체해주어야 되는 부분
 const { abi: IUniswapV2PairABI } = IUniswapV2PairJson
 const { abi: IUniswapV2Router02ABI } = IUniswapV2Router02Json
 const { abi: QuoterABI } = QuoterJson
@@ -48,7 +50,14 @@ export function useContract<T extends Contract = Contract>(
   ABI: any,
   withSignerIfPossible = true
 ): T | null {
-  const { library, account, chainId } = useActiveWeb3React()
+  const { library, account, chainId } = useActiveWeb3React() // web3 react 
+  console.log(library)
+  console.log(account)
+  console.log(chainId)
+  console.log(addressOrAddressMap)
+  console.log(ABI)
+  console.log(withSignerIfPossible)
+
 
   return useMemo(() => {
     if (!addressOrAddressMap || !ABI || !library || !chainId) return null

@@ -64,7 +64,7 @@ export function useV3PositionFromTokenId(tokenId: BigNumber | undefined): UseV3P
 
 export function useV3Positions(account: string | null | undefined): UseV3PositionsResults {
   const positionManager = useV3NFTPositionManagerContract()
-
+  console.log(positionManager)
   const { loading: balanceLoading, result: balanceResult } = useSingleCallResult(positionManager, 'balanceOf', [
     account ?? undefined,
   ])

@@ -7,7 +7,7 @@ export enum SupportedChainId {
   RINKEBY = 4,
   GOERLI = 5,
   KOVAN = 42,
-
+  HARDHAT = 31337,
   ARBITRUM_ONE = 42161,
   ARBITRUM_RINKEBY = 421611,
 
@@ -29,6 +29,7 @@ export const CHAIN_IDS_TO_NAMES = {
   [SupportedChainId.ARBITRUM_ONE]: 'arbitrum',
   [SupportedChainId.ARBITRUM_RINKEBY]: 'arbitrum_rinkeby',
   [SupportedChainId.OPTIMISM]: 'optimism',
+  [SupportedChainId.HARDHAT]: 'hardhat',
   [SupportedChainId.OPTIMISTIC_KOVAN]: 'optimistic_kovan',
 }
 

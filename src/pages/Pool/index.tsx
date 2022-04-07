@@ -165,21 +165,21 @@ interface FundSelectButtonsProps {
 export default function Pool() {
   const useAllPositions = (): UseAllPositionsResults => {
     const allPositions = [
-      // {
-      //   nonce: BigNumber.from('123412341234123412132353434'),
-      //   tokenId: BigNumber.from('0x6615946c8343ed5a74559a'),
-      //   operator: '0x0000000000000000000000000000000000000000',
-      //   token0: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-      //   token1: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
-      //   fee: 500,
-      //   tickLower: 195160,
-      //   tickUpper: 197910,
-      //   liquidity: BigNumber.from('123412341234123412132353434'),
-      //   feeGrowthInside0LastX128: BigNumber.from('123412341234123412132353434'),
-      //   feeGrowthInside1LastX128: BigNumber.from('123412341234123412132353434'),
-      //   tokensOwed0: BigNumber.from('12312341234123412341213235343441234'),
-      //   tokensOwed1: BigNumber.from('123412341234123412132353434'),
-      // },
+      {
+        nonce: BigNumber.from('123412341234123412132353434'),
+        tokenId: BigNumber.from('0x6615946c8343ed5a74559a'),
+        operator: '0x0000000000000000000000000000000000000000',
+        token0: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+        token1: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+        fee: 500,
+        tickLower: 195160,
+        tickUpper: 197910,
+        liquidity: BigNumber.from('123412341234123412132353434'),
+        feeGrowthInside0LastX128: BigNumber.from('123412341234123412132353434'),
+        feeGrowthInside1LastX128: BigNumber.from('123412341234123412132353434'),
+        tokensOwed0: BigNumber.from('12312341234123412341213235343441234'),
+        tokensOwed1: BigNumber.from('123412341234123412132353434'),
+      },
     ] as PositionDetails[] | undefined
     /**
      *   nonce: BigNumber
@@ -197,7 +197,7 @@ export default function Pool() {
   tokensOwed1: BigNumber
      * 
      */
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
 
     setTimeout(() => {
       setLoading(false)
@@ -219,7 +219,7 @@ export default function Pool() {
   const theme = useContext(ThemeContext)
   const [userHideClosedPositions, setUserHideClosedPositions] = useUserHideClosedPositions()
 
-  const { positions, loading: positionsLoading } = useV3Positions(account)
+  const { positions, loading: positionsLoading } = useV3Positions(account) // 연결된 account 가져옴
 
   const { allPositions, loading: allPositionsLoading } = useAllPositions()
   // all position hooks
@@ -243,53 +243,53 @@ export default function Pool() {
   const filteredAllPositions = [...openAllPositions, ...closedAllPositions]
 
   const showConnectAWallet = Boolean(!account)
-  const showV2Features = Boolean(chainId && V2_FACTORY_ADDRESSES[chainId])
+  // const showV2Features = Boolean(chainId && V2_FACTORY_ADDRESSES[chainId])
 
   console.log(filteredPositions)
   console.log(filteredAllPositions)
   console.log(closedAllPositions)
-  const menuItems = [
-    {
-      content: (
-        <MenuItem>
-          <Trans>Create a pool</Trans>
-          <PlusCircle size={16} />
-        </MenuItem>
-      ),
-      link: '/add/ETH',
-      external: false,
-    },
-    {
-      content: (
-        <MenuItem>
-          <Trans>Migrate</Trans>
-          <ChevronsRight size={16} />
-        </MenuItem>
-      ),
-      link: '/migrate/v2',
-      external: false,
-    },
-    {
-      content: (
-        <MenuItem>
-          <Trans>V2 liquidity</Trans>
-          <Layers size={16} />
-        </MenuItem>
-      ),
-      link: '/pool/v2',
-      external: false,
-    },
-    {
-      content: (
-        <MenuItem>
-          <Trans>Learn</Trans>
-          <BookOpen size={16} />
-        </MenuItem>
-      ),
-      link: 'https://docs.uniswap.org/',
-      external: true,
-    },
-  ]
+  // const menuItems = [
+  //   {
+  //     content: (
+  //       <MenuItem>
+  //         <Trans>Create a pool</Trans>
+  //         <PlusCircle size={16} />
+  //       </MenuItem>
+  //     ),
+  //     link: '/add/ETH',
+  //     external: false,
+  //   },
+  //   {
+  //     content: (
+  //       <MenuItem>
+  //         <Trans>Migrate</Trans>
+  //         <ChevronsRight size={16} />
+  //       </MenuItem>
+  //     ),
+  //     link: '/migrate/v2',
+  //     external: false,
+  //   },
+  //   {
+  //     content: (
+  //       <MenuItem>
+  //         <Trans>V2 liquidity</Trans>
+  //         <Layers size={16} />
+  //       </MenuItem>
+  //     ),
+  //     link: '/pool/v2',
+  //     external: false,
+  //   },
+  //   {
+  //     content: (
+  //       <MenuItem>
+  //         <Trans>Learn</Trans>
+  //         <BookOpen size={16} />
+  //       </MenuItem>
+  //     ),
+  //     link: 'https://docs.uniswap.org/',
+  //     external: true,
+  //   },
+  // ]
 
   return (
     <>

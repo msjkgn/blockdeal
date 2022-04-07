@@ -196,6 +196,7 @@ export default function AddLiquidity({
   }
 
   async function onAdd() {
+    // add liquidity 의 경우 존재하는 풀에 넣는것과, 내가 안 가지고 있는 풀에 넣는 경우
     if (!chainId || !library || !account) return
 
     if (!positionManager || !baseCurrency || !quoteCurrency) {
@@ -217,11 +218,11 @@ export default function AddLiquidity({
               recipient: account,
               deadline: deadline.toString(),
               useNative,
-              createPool: noLiquidity,
+              createPool: noLiquidity, // create Pool 로직 추가
             })
 
       let txn: { to: string; data: string; value: string } = {
-        to: NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
+        to: NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId], // 
         data: calldata,
         value,
       }

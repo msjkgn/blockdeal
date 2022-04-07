@@ -59,6 +59,7 @@ export const USDC: { [chainId in SupportedChainId]: Token } = {
   [SupportedChainId.RINKEBY]: USDC_RINKEBY,
   [SupportedChainId.KOVAN]: USDC_KOVAN,
   [SupportedChainId.ROPSTEN]: USDC_ROPSTEN,
+  [SupportedChainId.HARDHAT]: {} as Token,
 }
 export const DAI_POLYGON = new Token(
   SupportedChainId.POLYGON,
