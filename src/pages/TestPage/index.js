@@ -55,13 +55,15 @@ export default function TestPage() {
 
   const add = async (amt) => {
     console.log('add')
+    //Need address
     const tx = await pairContract.add(base, amt) // Can't test due to bug..
     console.log(tx)
   }
 
-  const remove = async (amt) => {
+  const remove = async () => {
     console.log('remove')
-    const tx = await pairContract.remove() // Can't test due to bug.. inputs: (address owner, uint pos, bool cancel)
+    //Need address.. get pos from index.. need modal or popup to select cancel all or none - for now just cancel all
+    const tx = await pairContract.remove('0xTest', 2, true) // Can't test due to bug.. inputs: (address owner, uint pos, bool cancel)
     console.log(tx)
   }
 
