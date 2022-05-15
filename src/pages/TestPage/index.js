@@ -18,7 +18,6 @@ export default function TestPage() {
 
   const [orderList, setOrderList] = React.useState([])
 
-  console.log(orderList)
   React.useEffect(() => {
     //TODO: get chainlink price
     setChainLinkPrice('2909.23')
