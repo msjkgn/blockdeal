@@ -164,7 +164,7 @@ export default function TestPage() {
           width: 'fit-content',
         }}
       >
-        <Input type="number" placeholder="0.00" value={amt} onChange={(e) => setAmount(e.target.value)} />
+        <Input type="number" value={amt} onChange={(e) => setAmount(e.target.value)} />
         <div style={{ padding: '0 10px 0 0' }}>{base ? 'USDT' : 'ETH'}</div>
       </div>
       <div style={{ display: 'flex', padding: '5px 0', fontWeight: '300', fontSize: '14px' }}>
@@ -206,7 +206,4 @@ const Input = styled.input`
   background: #29313d;
   border: none;
   text-align: right;
-  ::placeholder {
-    color: palevioletred;
-  }
 `
