@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useFactoryContract, usePairContract2 } from 'hooks/useContract'
 import React from 'react'
 import styled from 'styled-components/macro'
@@ -17,6 +18,7 @@ export default function TestPage() {
 
   const [orderList, setOrderList] = React.useState([])
 
+  console.log(orderList)
   React.useEffect(() => {
     //TODO: get chainlink price
     setChainLinkPrice('2909.23')
@@ -29,7 +31,21 @@ export default function TestPage() {
 
   React.useEffect(() => {
     //TODO: get order list
-    setOrderList([])
+    let test = [
+      {
+        owner: '0xTest',
+        base4Quote: false,
+        amt: '3000.00',
+        existingAddAmt: '2300.00',
+      },
+      {
+        owner: '0xTest',
+        base4Quote: false,
+        amt: '9000.00',
+        existingAddAmt: '1400.00',
+      },
+    ]
+    setOrderList(test)
   }, []) // wallet address
 
   const switchBase = (switchTo) => {
@@ -46,13 +62,59 @@ export default function TestPage() {
   const remove = async (amt) => {
     console.log('remove')
     const tx = await pairContract.remove() // Can't test due to bug.. inputs: (address owner, uint pos, bool cancel)
+    console.log(tx)
   }
 
-  const testButton = async () => {
-    if (factoryContract) {
-      const fundList = await factoryContract.feeTo()
-      console.log('FundList: ', fundList)
-    }
+  //   const testButton = async () => {
+  //     if (factoryContract) {
+  //       const fundList = await factoryContract.feeTo()
+  //       console.log('FundList: ', fundList)
+  //     }
+  //   }
+
+  const OrderList = (props) => {
+    const { orderList } = props
+    return (
+      <>
+        {orderList.map((order, index) => {
+          const { owner, base4Quote, amt, existingAddAmt } = order
+          return (
+            <>
+              <div style={{ display: 'flex', padding: '15px 0 5px 0' }} key={index}>
+                <div style={{ color: '#41CD01' }}>My order #{index + 1}</div>
+                <button
+                  onClick={remove}
+                  style={{
+                    marginLeft: 'auto',
+                    padding: '5px 10px',
+                    fontSize: '12px',
+                    fontWeight: '400',
+                    backgroundColor: '#666666',
+                    borderRadius: '4px',
+                    border: 'none',
+                    color: 'white',
+                  }}
+                >
+                  Cancel / Complete
+                </button>
+              </div>
+              <div style={{ display: 'flex' }}>
+                <div>
+                  <div style={{ fontWeight: '600', fontSize: '14px' }}>Filled Amount</div>
+                  <div>
+                    {amt - existingAddAmt} / {amt} {base4Quote ? 'ETH' : 'USDT'}
+                  </div>
+                </div>
+                <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
+                  <div style={{ fontWeight: '600', fontSize: '14px' }}>Filled Price</div>
+                  <div>2800.82 USDT</div>
+                </div>
+              </div>
+            </>
+          )
+        })}
+      </>
+    )
   }
 
   return (
@@ -132,34 +194,7 @@ export default function TestPage() {
       >
         Convert to {base ? 'ETH' : 'USDT'}
       </button>
-      <div style={{ display: 'flex', padding: '10px 0' }}>
-        <div style={{ color: '#41CD01' }}>My order #1</div>
-        <button
-          onClick={remove}
-          style={{
-            marginLeft: 'auto',
-            padding: '5px 10px',
-            fontSize: '12px',
-            fontWeight: '400',
-            backgroundColor: '#666666',
-            borderRadius: '4px',
-            border: 'none',
-            color: 'white',
-          }}
-        >
-          Cancel / Complete
-        </button>
-      </div>
-      <div style={{ display: 'flex' }}>
-        <div>
-          <div style={{ fontWeight: '600', fontSize: '14px' }}>Filled Amount</div>
-          <div>20000 / 300000 USDT</div>
-        </div>
-        <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
-          <div style={{ fontWeight: '600', fontSize: '14px' }}>Filled Price</div>
-          <div>2800.82 USDT</div>
-        </div>
-      </div>
+      <OrderList orderList={orderList} />
     </div>
   )
 }
