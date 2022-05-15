@@ -5,6 +5,7 @@ import { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core'
 import { FeeAmount, NonfungiblePositionManager } from '@uniswap/v3-sdk'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+// import { useFundContract } from 'hooks/useContract'
 import { useCallback, useContext, useEffect, useState } from 'react'
 import ReactGA from 'react-ga'
 import { RouteComponentProps } from 'react-router-dom'
@@ -191,8 +192,15 @@ export default function AddLiquidity({
     outOfRange ? ZERO_PERCENT : DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE
   )
 
-  function onAddTemp () {
-    alert('add 되었습니다.')
+  // const fundContract = useFundContract()
+  // console.log('AddLiquidity/index:', fundContract)
+
+  async function onAddTemp({ amtUHIn }: { amtUHIn: BigInt }) {
+    // console.log('AddLiquidity/index: onAddTemp called')
+    // if (!chainId || !fundContract || !account) return
+    // console.log('AddLiquidity/index: amtUHIn: ', amtUHIn, ', account: ', account)
+    // const retVal = await fundContract.depositToFund(amtUHIn, account)
+    // console.log('retVal: ', retVal)
   }
 
   async function onAdd() {
@@ -222,7 +230,7 @@ export default function AddLiquidity({
             })
 
       let txn: { to: string; data: string; value: string } = {
-        to: NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId], // 
+        to: NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId], //
         data: calldata,
         value,
       }
@@ -449,10 +457,6 @@ export default function AddLiquidity({
             </RowBetween>
           )}
         <ButtonError
-          onClick={() => {
-            // expertMode ? onAdd() : setShowConfirm(true)
-            onAddTemp()
-          }}
           disabled={
             !isValid ||
             (!argentWalletContract && approvalA !== ApprovalState.APPROVED && !depositADisabled) ||
@@ -489,7 +493,7 @@ export default function AddLiquidity({
                 />
               )}
               bottomContent={() => (
-                <ButtonPrimary style={{ marginTop: '1rem' }} onClick={onAddTemp}>
+                <ButtonPrimary style={{ marginTop: '1rem' }} >
                   <Text fontWeight={500} fontSize={20}>
                     <Trans>Add</Trans>
                   </Text>

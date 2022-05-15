@@ -10,6 +10,8 @@ import { SwitchLocaleLink } from 'components/SwitchLocaleLink'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useFactoryContract } from 'hooks/useContract'
 import { useV3Positions } from 'hooks/useV3Positions'
+import { fa } from 'make-plural'
+import { useEffect } from 'react'
 import { useContext, useState } from 'react'
 import { BookOpen, ChevronsRight, Inbox, Layers, PlusCircle } from 'react-feather'
 import { Link } from 'react-router-dom'
@@ -214,10 +216,15 @@ export default function Pool() {
     if (isAll === 'all') setAll('my')
     else setAll('all')
   }
+  const factoryContract = useFactoryContract()
+  console.log('Pool/index:', factoryContract)
 
-
-  const factoryContract = useFactoryContract();
-  console.log("Pool/index: ", factoryContract);
+  const testButton = async () => {
+    if (factoryContract) {
+      const fundList = await factoryContract.funds(0)
+      console.log("FundList: ", fundList)
+    }
+  }
 
   const { account, chainId } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
@@ -251,9 +258,9 @@ export default function Pool() {
   const showConnectAWallet = Boolean(!account)
   // const showV2Features = Boolean(chainId && V2_FACTORY_ADDRESSES[chainId])
 
-  console.log(filteredPositions)
-  console.log(filteredAllPositions)
-  console.log(closedAllPositions)
+  // console.log(filteredPositions)
+  // console.log(filteredAllPositions)
+  // console.log(closedAllPositions)
   // const menuItems = [
   //   {
   //     content: (
@@ -337,6 +344,7 @@ export default function Pool() {
                   <Trans>All funds</Trans>
                 </button>
               </FundSelectButtons>
+              <button onClick={() => testButton()}>TEST</button>
               {isAll === 'all' ? (
                 allPositionsLoading ? (
                   <PositionsLoadingPlaceholder />

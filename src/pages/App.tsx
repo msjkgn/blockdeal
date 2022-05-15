@@ -27,6 +27,7 @@ import PoolFinder from './PoolFinder'
 import Rebalance from './Rebalance'
 import RemoveLiquidity from './RemoveLiquidity'
 import RemoveLiquidityV3 from './RemoveLiquidity/V3'
+import TestPage from './TestPage'
 
 const Vote = lazy(() => import('./Vote'))
 
@@ -96,7 +97,7 @@ export default function App() {
                 <Route exact strict path="/pool/v2" component={PoolV2} />
                 <Route exact strict path="/pool" component={Pool} />
                 <Route exact strict path="/pool/:tokenId" component={PositionPage} />
-
+                <Route exact strict path="/testpage" component={TestPage} />
                 <Route
                   exact
                   strict

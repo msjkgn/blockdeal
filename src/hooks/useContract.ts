@@ -52,12 +52,12 @@ export function useContract<T extends Contract = Contract>(
   withSignerIfPossible = true
 ): T | null {
   const { library, account, chainId } = useActiveWeb3React() // web3 react 
-  console.log(library)
-  console.log(account)
-  console.log(chainId)
-  console.log(addressOrAddressMap)
-  console.log(ABI)
-  console.log(withSignerIfPossible)
+  // console.log(library)
+  // console.log(account)
+  // console.log(chainId)
+  // console.log(addressOrAddressMap)
+  // console.log(ABI)
+  // console.log(withSignerIfPossible)
 
 
   return useMemo(() => {
@@ -78,13 +78,14 @@ export function useContract<T extends Contract = Contract>(
 export function useFactoryContract() {
   const { library, account, chainId } = useActiveWeb3React() // web3 react 
     if ( !library || !chainId) return null
-    return getContract("0x70bDA08DBe07363968e9EE53d899dFE48560605B", FACTORY_ABI, library, account ? account : undefined)
+    return getContract("0xeF390cA1F3116fDE9ADbdd21706fE7774e13C451", FACTORY_ABI, library, account ? account : undefined)
 }
 
-export function useFundContract() {
+export function usePairContract2() {
   const { library, account, chainId } = useActiveWeb3React() // web3 react 
     if ( !library || !chainId) return null
-    return getContract("0xaca81583840B1bf2dDF6CDe824ada250C1936B4D", FUND_ABI, library, account ? account : undefined)
+    // TODO: ADD ETH/USDT Pair address after creating from factory.
+    return getContract("0xc582Bc0317dbb0908203541971a358c44b1F3766", FUND_ABI, library, account ? account : undefined)
 }
 
 export function useV2MigratorContract() {
