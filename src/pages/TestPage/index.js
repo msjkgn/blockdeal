@@ -142,7 +142,7 @@ export default function TestPage() {
   }
 
   return (
-    <div style={{ padding: '0px 10px', width: '100%' }}>
+    <div style={{ padding: '0px 10px', width: '100%', maxWidth: '400px' }}>
       <div style={{ display: 'flex', padding: '10px 0px' }}>
         <div style={{ fontSize: '22px', fontWeight: '600' }}>ETH/USDT</div>
         <div style={{ color: '#E8435A', marginLeft: 'auto' }}>{chainLinkPrice}</div>
