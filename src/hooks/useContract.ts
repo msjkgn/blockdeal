@@ -16,6 +16,7 @@ import ERC721_ABI from 'abis/erc721.json'
 import ERC1155_ABI from 'abis/erc1155.json'
 import FACTORY_ABI from 'abis/factory.json'
 import FUND_ABI from 'abis/fund.json'
+import PAIR_ABI from 'abis/pair.json'
 import { ArgentWalletDetector, EnsPublicResolver, EnsRegistrar, Erc20, Erc721, Erc1155, Weth } from 'abis/types'
 import WETH_ABI from 'abis/weth.json'
 import {
@@ -85,7 +86,7 @@ export function usePairContract2() {
   const { library, account, chainId } = useActiveWeb3React() // web3 react 
     if ( !library || !chainId) return null
     // TODO: ADD ETH/USDT Pair address after creating from factory.
-    return getContract("0xc582Bc0317dbb0908203541971a358c44b1F3766", FUND_ABI, library, account ? account : undefined)
+    return getContract("0x38B7eEd1202d501d57c49b9Ad7bf90DAFED02D35", PAIR_ABI, library, account ? account : undefined)
 }
 
 export function useV2MigratorContract() {

@@ -18,10 +18,33 @@ export default function TestPage() {
 
   const [orderList, setOrderList] = React.useState([])
 
+  //   React.useEffect(() => {
+  //     async function getPairAddress() {
+  //       let pairs
+  //       if (factoryContract) {
+  //         const feeTo = await factoryContract.feeTo()
+  //         console.log('feeTo: ', feeTo)
+  //         return await factoryContract.allPairs(0)
+  //       }
+
+  //       return pairs
+  //     }
+  //     getPairAddress().then((result) => {
+  //       console.log(result)
+  //     })
+  //     // setChainLinkPrice(price ? price : 0)
+  //   }, [factoryContract]) // update every X seconds
+
   React.useEffect(() => {
-    //TODO: get chainlink price
-    setChainLinkPrice('2909.23')
-  }, []) // update every X seconds
+    async function getChainlinkPrice() {
+      if (pairContract) {
+        let price = await pairContract.getPrice()
+        //TODO: update every X seconds
+        setChainLinkPrice(price ? (parseInt(price.toString()) / 100000000).toFixed(2) : 0)
+      }
+    }
+    getChainlinkPrice()
+  }, [pairContract])
 
   React.useEffect(() => {
     //TODO: get instant fill amount
@@ -66,12 +89,12 @@ export default function TestPage() {
     console.log(tx)
   }
 
-  //   const testButton = async () => {
-  //     if (factoryContract) {
-  //       const fundList = await factoryContract.feeTo()
-  //       console.log('FundList: ', fundList)
-  //     }
-  //   }
+  const testButton = async () => {
+    if (factoryContract) {
+      const feeTo = await factoryContract.feeTo()
+      console.log('feeTo: ', feeTo)
+    }
+  }
 
   const OrderList = (props) => {
     const { orderList } = props
@@ -84,7 +107,7 @@ export default function TestPage() {
               <div style={{ display: 'flex', padding: '15px 0 5px 0' }} key={index}>
                 <div style={{ color: '#41CD01' }}>My order #{index + 1}</div>
                 <button
-                  onClick={remove}
+                  onClick={testButton}
                   style={{
                     marginLeft: 'auto',
                     padding: '5px 10px',
