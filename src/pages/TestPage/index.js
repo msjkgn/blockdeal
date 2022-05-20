@@ -11,6 +11,10 @@ export default function TestPage() {
 
   const [base, setBase] = React.useState(true)
 
+  //TODO: setBase & setQuote based on current chain & selected pair
+  const [baseCurrency, setBaseCurrency] = React.useState('MATIC')
+  const [quoteCurrency, setQuoteCurrency] = React.useState('USDT')
+
   //TODO: support 2 decimal points
   const [amt, setAmount] = React.useState(0)
   const [chainLinkPrice, setChainLinkPrice] = React.useState(0)
@@ -126,12 +130,12 @@ export default function TestPage() {
                 <div>
                   <div style={{ fontWeight: '600', fontSize: '14px' }}>Filled Amount</div>
                   <div>
-                    {amt - existingAddAmt} / {amt} {base4Quote ? 'ETH' : 'USDT'}
+                    {amt - existingAddAmt} / {amt} {base4Quote ? baseCurrency : quoteCurrency}
                   </div>
                 </div>
                 <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
                   <div style={{ fontWeight: '600', fontSize: '14px' }}>Filled Price</div>
-                  <div>2800.82 USDT</div>
+                  <div>2800.82 {base4Quote ? baseCurrency : quoteCurrency}</div>
                 </div>
               </div>
             </>
@@ -144,7 +148,9 @@ export default function TestPage() {
   return (
     <div style={{ padding: '0px 10px', width: '100%', maxWidth: '400px' }}>
       <div style={{ display: 'flex', padding: '10px 0px' }}>
-        <div style={{ fontSize: '22px', fontWeight: '600' }}>ETH/USDT</div>
+        <div style={{ fontSize: '22px', fontWeight: '600' }}>
+          {baseCurrency}/{quoteCurrency}
+        </div>
         <div style={{ color: '#E8435A', marginLeft: 'auto' }}>{chainLinkPrice}</div>
       </div>
       <div style={{ display: 'flex', padding: '10px 0' }}>
@@ -160,7 +166,7 @@ export default function TestPage() {
             border: '1px solid #29313D',
           }}
         >
-          USDT {'>'} ETH
+          {quoteCurrency} {'>'} {baseCurrency}
         </button>
         <button
           onClick={() => switchBase(false)}
@@ -174,7 +180,7 @@ export default function TestPage() {
             border: '1px solid #29313D',
           }}
         >
-          ETH {'>'} USDT
+          {baseCurrency} {'>'} {quoteCurrency}
         </button>
       </div>
       <div
@@ -189,18 +195,18 @@ export default function TestPage() {
         }}
       >
         <Input type="number" value={amt} onChange={(e) => setAmount(e.target.value)} />
-        <div style={{ padding: '0 10px 0 0' }}>{base ? 'USDT' : 'ETH'}</div>
+        <div style={{ padding: '0 10px 0 0' }}>{base ? baseCurrency : quoteCurrency}</div>
       </div>
       <div style={{ display: 'flex', padding: '5px 0', fontWeight: '300', fontSize: '14px' }}>
         <div>Expected Total:</div>
         <div style={{ marginLeft: 'auto' }}>
-          {(amt / chainLinkPrice) * 0.995} {base ? 'ETH' : 'USDT'}
+          {(amt / chainLinkPrice) * 0.995} {base ? baseCurrency : quoteCurrency}
         </div>
       </div>
       <div style={{ display: 'flex', padding: '5px 0', fontWeight: '300', fontSize: '14px' }}>
         <div>Expected Total NOW:</div>
         <div style={{ marginLeft: 'auto' }}>
-          {Math.min(instantFillAmount, amt)} {base ? 'ETH' : 'USDT'}
+          {Math.min(instantFillAmount, amt)} {base ? baseCurrency : quoteCurrency}
         </div>
       </div>
 
@@ -216,7 +222,7 @@ export default function TestPage() {
           color: 'white',
         }}
       >
-        Convert to {base ? 'ETH' : 'USDT'}
+        Convert to {base ? baseCurrency : quoteCurrency}
       </button>
       <OrderList orderList={orderList} />
     </div>
