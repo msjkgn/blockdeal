@@ -40,7 +40,7 @@ const AppWrapper = styled.div`
 const BodyWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 500px;
   padding: 120px 16px 0px 16px;
   align-items: center;
   flex: 1;

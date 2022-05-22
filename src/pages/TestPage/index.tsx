@@ -1,12 +1,22 @@
 /* eslint-disable react/prop-types */
-import PAIR_ABI from 'abis/pair.json'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useFactoryContract, usePairContract2, useWETHTest } from 'hooks/useContract'
 import React from 'react'
 import styled from 'styled-components/macro'
-
-import { calculateGasMargin } from '../../utils/calculateGasMargin'
-
+interface Test {
+  owner: string
+  base4Quote: boolean
+  amt: string
+  existingAddAmt: string
+}
+const Input = styled.input`
+  color: white;
+  font-size: 18px;
+  padding: 10px;
+  background: ${({ theme }) => theme.bgCustom};
+  border: none;
+  text-align: right;
+`
 export default function TestPage() {
   const factoryContract = useFactoryContract()
   const pairContract = usePairContract2()
@@ -19,7 +29,7 @@ export default function TestPage() {
 
   const { library, account, chainId } = useActiveWeb3React() // web3 react
 
-  const [base, setBase] = React.useState(true)
+  const [base, setBase] = React.useState<boolean>(true)
 
   //TODO: setBase & setQuote based on current chain & selected pair
   const [baseCurrency, setBaseCurrency] = React.useState('WETH')
@@ -27,11 +37,12 @@ export default function TestPage() {
 
   //TODO: support 2 decimal points
   const [amt, setAmount] = React.useState(0)
-  const [chainLinkPrice, setChainLinkPrice] = React.useState(0)
+  const [chainLinkPrice, setChainLinkPrice] = React.useState<string>('0')
   const [instantFillAmount, setInstantFillAmount] = React.useState(0)
 
-  const [orderList, setOrderList] = React.useState([])
+  const [orderList, setOrderList] = React.useState<Test[]>([])
 
+  //const useGetChainLink = () => {}
   //   React.useEffect(() => {
   //     async function getPairAddress() {
   //       let pairs
@@ -52,10 +63,10 @@ export default function TestPage() {
   React.useEffect(() => {
     async function getChainlinkPrice() {
       if (pairContract) {
-        let price = await pairContract.getPrice()
+        const price = await pairContract.getPrice()
         //TODO: update every X seconds
         console.log(parseInt(price.toString()))
-        setChainLinkPrice(price ? (parseInt(price.toString()) / 100000000).toFixed(2) : 0)
+        setChainLinkPrice(String(price ? (parseInt(price.toString()) / 100000000).toFixed(2) : 0))
       }
     }
     getChainlinkPrice()
@@ -66,9 +77,11 @@ export default function TestPage() {
     // setInstantFillAmount('50')
   }, [base])
 
+
+
   React.useEffect(() => {
     //TODO: get order list
-    let test = [
+    const test : Test[]= [
       {
         owner: '0xTest',
         base4Quote: false,
@@ -85,7 +98,7 @@ export default function TestPage() {
     setOrderList(test)
   }, []) // wallet address
 
-  const switchBase = (switchTo) => {
+  const switchBase = (switchTo: boolean) => {
     console.log(switchTo)
     setBase(switchTo)
   }
@@ -93,18 +106,18 @@ export default function TestPage() {
   const add = async () => {
     console.log('add')
     console.log(account, base, amt * Math.pow(10, 9))
-    let txn = {
-      to: pairContract.address,
+    const txn = {
+      to: pairContract?.address,
       data: { owner: account, base4Quote: base, amt: amt * Math.pow(10, 18) },
       value: '0x0',
     }
-    console.log(await pairContract.baseAddress())
-    console.log(await pairContract.baseDecimal())
-    console.log(await pairContract.orders(1))
-    let approveTx = await wethContract.approve('0xB3B994d44d11509f3f45A279A9B732e92cE0363F', amt * Math.pow(10, 16))
+    console.log(await pairContract?.baseAddress())
+    console.log(await pairContract?.baseDecimal())
+    console.log(await pairContract?.orders(1))
+    const approveTx = await wethContract?.approve('0xB3B994d44d11509f3f45A279A9B732e92cE0363F', amt * Math.pow(10, 16))
     console.log(approveTx)
 
-    let tx = await pairContract.add(account, base, amt * Math.pow(10, 16))
+    const tx = await pairContract?.add(account, base, amt * Math.pow(10, 16))
     console.log(tx)
 
     // let contract = window.web3.eth.Contract(PAIR_ABI, '0xB3B994d44d11509f3f45A279A9B732e92cE0363F')
@@ -156,7 +169,7 @@ export default function TestPage() {
   const remove = async () => {
     console.log('remove')
     //get pos from index.. need modal or popup to select cancel all or none - for now just cancel all
-    const tx = await pairContract.remove('0xTest', 2, true) // Can't test due to bug.. inputs: (address owner, uint pos, bool cancel)
+    const tx = await pairContract?.remove('0xTest', 2, true) // Can't test due to bug.. inputs: (address owner, uint pos, bool cancel)
     console.log(tx)
   }
 
@@ -167,8 +180,7 @@ export default function TestPage() {
     }
   }
 
-  const OrderList = (props) => {
-    const { orderList } = props
+  const OrderList = ({orderList}: {orderList: Test[]})  => {
     return (
       <>
         {orderList.map((order, index) => {
@@ -183,7 +195,7 @@ export default function TestPage() {
                     marginLeft: 'auto',
                     padding: '5px 10px',
                     fontSize: '12px',
-                    fontWeight: '400',
+                    fontWeight: 400,
                     backgroundColor: '#666666',
                     borderRadius: '4px',
                     border: 'none',
@@ -195,13 +207,13 @@ export default function TestPage() {
               </div>
               <div style={{ display: 'flex' }}>
                 <div>
-                  <div style={{ fontWeight: '600', fontSize: '14px' }}>Filled Amount</div>
+                  <div style={{ fontWeight: 600, fontSize: '14px' }}>Filled Amount</div>
                   <div>
-                    {amt - existingAddAmt} / {amt} {base4Quote ? baseCurrency : quoteCurrency}
+                    {parseInt(amt) - parseInt(existingAddAmt)} / {amt} {base4Quote ? baseCurrency : quoteCurrency}
                   </div>
                 </div>
                 <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
-                  <div style={{ fontWeight: '600', fontSize: '14px' }}>Filled Price</div>
+                  <div style={{ fontWeight: 600, fontSize: '14px' }}>Filled Price</div>
                   <div>2800.82 {base4Quote ? baseCurrency : quoteCurrency}</div>
                 </div>
               </div>
@@ -215,7 +227,7 @@ export default function TestPage() {
   return (
     <div style={{ padding: '0px 10px', width: '100%', maxWidth: '400px' }}>
       <div style={{ display: 'flex', padding: '10px 0px' }}>
-        <div style={{ fontSize: '22px', fontWeight: '600' }}>
+        <div style={{ fontSize: '22px', fontWeight: 600 }}>
           {baseCurrency}/{quoteCurrency}
         </div>
         <div style={{ color: '#E8435A', marginLeft: 'auto' }}>{chainLinkPrice}</div>
@@ -226,7 +238,7 @@ export default function TestPage() {
           style={{
             padding: '4px 6px',
             fontSize: '16px',
-            fontWeight: '500',
+            fontWeight: 500,
             color: 'white',
             backgroundColor: `${base ? '#2EBD85' : '#29313D'}`,
             borderRadius: '4px',
@@ -240,7 +252,7 @@ export default function TestPage() {
           style={{
             padding: '4px 6px',
             fontSize: '16px',
-            fontWeight: '500',
+            fontWeight: 500,
             color: 'white',
             backgroundColor: `${base ? '#29313D' : '#2EBD85'}`,
             borderRadius: '4px',
@@ -261,16 +273,16 @@ export default function TestPage() {
           width: 'fit-content',
         }}
       >
-        <Input type="number" value={amt} onChange={(e) => setAmount(e.target.value)} />
+        <Input type="number" value={amt} onChange={(e) => setAmount(parseInt(e.target.value))} />
         <div style={{ padding: '0 10px 0 0' }}>{base ? baseCurrency : quoteCurrency}</div>
       </div>
-      <div style={{ display: 'flex', padding: '5px 0', fontWeight: '300', fontSize: '14px' }}>
+      <div style={{ display: 'flex', padding: '5px 0', fontWeight: 300, fontSize: '14px' }}>
         <div>Expected Total:</div>
         <div style={{ marginLeft: 'auto' }}>
-          {base ? amt * chainLinkPrice * 0.995 : (amt / chainLinkPrice) * 0.995} {base ? quoteCurrency : baseCurrency}
+          {base ? amt * parseInt(chainLinkPrice) * 0.995 : (amt / parseInt(chainLinkPrice)) * 0.995} {base ? quoteCurrency : baseCurrency}
         </div>
       </div>
-      <div style={{ display: 'flex', padding: '5px 0', fontWeight: '300', fontSize: '14px' }}>
+      <div style={{ display: 'flex', padding: '5px 0', fontWeight: 300, fontSize: '14px' }}>
         <div>Expected Total NOW:</div>
         <div style={{ marginLeft: 'auto' }}>
           {Math.min(instantFillAmount, amt)} {base ? quoteCurrency : baseCurrency}
@@ -295,12 +307,3 @@ export default function TestPage() {
     </div>
   )
 }
-
-const Input = styled.input`
-  color: white;
-  font-size: 18px;
-  padding: 10px;
-  background: #29313d;
-  border: none;
-  text-align: right;
-`
