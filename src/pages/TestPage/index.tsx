@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useFactoryContract, usePairContract2, useWETHTest } from 'hooks/useContract'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components/macro'
 interface Test {
   owner: string
@@ -16,6 +16,7 @@ const Input = styled.input`
   background: ${({ theme }) => theme.bgCustom};
   border: none;
   text-align: right;
+  width:100%;
 `
 export default function TestPage() {
   const factoryContract = useFactoryContract()
@@ -29,18 +30,18 @@ export default function TestPage() {
 
   const { library, account, chainId } = useActiveWeb3React() // web3 react
 
-  const [base, setBase] = React.useState<boolean>(true)
+  const [base, setBase] = useState<boolean>(true)
 
   //TODO: setBase & setQuote based on current chain & selected pair
-  const [baseCurrency, setBaseCurrency] = React.useState('WETH')
-  const [quoteCurrency, setQuoteCurrency] = React.useState('USDT')
+  const [baseCurrency, setBaseCurrency] = useState<string>('WETH')
+  const [quoteCurrency, setQuoteCurrency] = useState<string>('USDT')
 
   //TODO: support 2 decimal points
-  const [amt, setAmount] = React.useState(0)
-  const [chainLinkPrice, setChainLinkPrice] = React.useState<string>('0')
-  const [instantFillAmount, setInstantFillAmount] = React.useState(0)
+  const [amt, setAmount] = useState(0)
+  const [chainLinkPrice, setChainLinkPrice] = useState<string>('0')
+  const [instantFillAmount, setInstantFillAmount] = useState<number>(0)
 
-  const [orderList, setOrderList] = React.useState<Test[]>([])
+  const [orderList, setOrderList] = useState<Test[]>([])
 
   //const useGetChainLink = () => {}
   //   React.useEffect(() => {
@@ -60,7 +61,7 @@ export default function TestPage() {
   //     // setChainLinkPrice(price ? price : 0)
   //   }, [factoryContract]) // update every X seconds
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function getChainlinkPrice() {
       if (pairContract) {
         const price = await pairContract.getPrice()
@@ -72,16 +73,14 @@ export default function TestPage() {
     getChainlinkPrice()
   }, [pairContract])
 
-  React.useEffect(() => {
+  useEffect(() => {
     //TODO: get instant fill amount
     // setInstantFillAmount('50')
   }, [base])
 
-
-
-  React.useEffect(() => {
+  useEffect(() => {
     //TODO: get order list
-    const test : Test[]= [
+    const test: Test[] = [
       {
         owner: '0xTest',
         base4Quote: false,
@@ -180,7 +179,7 @@ export default function TestPage() {
     }
   }
 
-  const OrderList = ({orderList}: {orderList: Test[]})  => {
+  const OrderList = ({ orderList }: { orderList: Test[] }) => {
     return (
       <>
         {orderList.map((order, index) => {
@@ -270,16 +269,17 @@ export default function TestPage() {
           padding: '10px 0',
           backgroundColor: '#29313D',
           borderRadius: '8px',
-          width: 'fit-content',
+          width: '100%',
         }}
       >
         <Input type="number" value={amt} onChange={(e) => setAmount(parseInt(e.target.value))} />
-        <div style={{ padding: '0 10px 0 0' }}>{base ? baseCurrency : quoteCurrency}</div>
+        <div style={{ padding: '0 10px 0 0', color:'white' }}>{base ? baseCurrency : quoteCurrency}</div>
       </div>
       <div style={{ display: 'flex', padding: '5px 0', fontWeight: 300, fontSize: '14px' }}>
         <div>Expected Total:</div>
         <div style={{ marginLeft: 'auto' }}>
-          {base ? amt * parseInt(chainLinkPrice) * 0.995 : (amt / parseInt(chainLinkPrice)) * 0.995} {base ? quoteCurrency : baseCurrency}
+          {base ? amt * parseInt(chainLinkPrice) * 0.995 : (amt / parseInt(chainLinkPrice)) * 0.995}{' '}
+          {base ? quoteCurrency : baseCurrency}
         </div>
       </div>
       <div style={{ display: 'flex', padding: '5px 0', fontWeight: 300, fontSize: '14px' }}>
