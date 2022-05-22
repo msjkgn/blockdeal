@@ -89,6 +89,13 @@ export function usePairContract2() {
     return getContract("0xB3B994d44d11509f3f45A279A9B732e92cE0363F", PAIR_ABI, library, account ? account : undefined)
 }
 
+export function useWETHTest() {
+  return useContract<Weth>(
+    "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+    WETH_ABI,
+  )
+}
+
 export function useV2MigratorContract() {
   return useContract<V3Migrator>(V3_MIGRATOR_ADDRESSES, V2MigratorABI, true)
 }
