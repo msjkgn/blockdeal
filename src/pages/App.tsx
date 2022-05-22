@@ -34,7 +34,9 @@ const Vote = lazy(() => import('./Vote'))
 const AppWrapper = styled.div`
   display: flex;
   flex-flow: column;
-  align-items: flex-start;
+  width: 500px;
+  justify-content: center;
+  align-items: center;
 `
 
 const BodyWrapper = styled.div`

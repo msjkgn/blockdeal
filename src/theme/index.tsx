@@ -74,6 +74,7 @@ function colors(darkMode: boolean): Colors {
     bg5: darkMode ? '#6C7284' : '#fa850a',
     bg6: darkMode ? '#1A2028' : '#fa850a',
 
+    bgCustom: darkMode ? '#29313d' : '#29313d',
     //specialty colors
     modalBG: darkMode ? 'rgba(0,0,0,.425)' : 'rgba(0,0,0,0.3)',
     advancedBG: darkMode ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.6)',
