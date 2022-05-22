@@ -14,6 +14,9 @@ import ERC20_ABI from 'abis/erc20.json'
 import ERC20_BYTES32_ABI from 'abis/erc20_bytes32.json'
 import ERC721_ABI from 'abis/erc721.json'
 import ERC1155_ABI from 'abis/erc1155.json'
+import FACTORY_ABI from 'abis/factory.json'
+import FUND_ABI from 'abis/fund.json'
+import PAIR_ABI from 'abis/pair.json'
 import { ArgentWalletDetector, EnsPublicResolver, EnsRegistrar, Erc20, Erc721, Erc1155, Weth } from 'abis/types'
 import WETH_ABI from 'abis/weth.json'
 import {
@@ -34,6 +37,7 @@ import { V3Migrator } from 'types/v3/V3Migrator'
 
 import { getContract } from '../utils'
 
+// 실제로 교체해주어야 되는 부분
 const { abi: IUniswapV2PairABI } = IUniswapV2PairJson
 const { abi: IUniswapV2Router02ABI } = IUniswapV2Router02Json
 const { abi: QuoterABI } = QuoterJson
@@ -48,7 +52,14 @@ export function useContract<T extends Contract = Contract>(
   ABI: any,
   withSignerIfPossible = true
 ): T | null {
-  const { library, account, chainId } = useActiveWeb3React()
+  const { library, account, chainId } = useActiveWeb3React() // web3 react 
+  // console.log(library)
+  // console.log(account)
+  // console.log(chainId)
+  // console.log(addressOrAddressMap)
+  // console.log(ABI)
+  // console.log(withSignerIfPossible)
+
 
   return useMemo(() => {
     if (!addressOrAddressMap || !ABI || !library || !chainId) return null
@@ -63,6 +74,26 @@ export function useContract<T extends Contract = Contract>(
       return null
     }
   }, [addressOrAddressMap, ABI, library, chainId, withSignerIfPossible, account]) as T
+}
+
+export function useFactoryContract() {
+  const { library, account, chainId } = useActiveWeb3React() // web3 react 
+    if ( !library || !chainId) return null
+    return getContract("0x291477dfE7EEA4025940Df33F0fDC3a0314D98b6", FACTORY_ABI, library, account ? account : undefined)
+}
+
+export function usePairContract2() {
+  const { library, account, chainId } = useActiveWeb3React() // web3 react 
+    if ( !library || !chainId) return null
+    // TODO: ADD ETH/USDT Pair address after creating from factory.
+    return getContract("0xB3B994d44d11509f3f45A279A9B732e92cE0363F", PAIR_ABI, library, account ? account : undefined)
+}
+
+export function useWETHTest() {
+  return useContract<Weth>(
+    "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+    WETH_ABI,
+  )
 }
 
 export function useV2MigratorContract() {

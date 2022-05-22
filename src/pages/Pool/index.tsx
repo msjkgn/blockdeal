@@ -8,7 +8,10 @@ import PositionList from 'components/PositionList'
 import { RowBetween, RowFixed } from 'components/Row'
 import { SwitchLocaleLink } from 'components/SwitchLocaleLink'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useFactoryContract } from 'hooks/useContract'
 import { useV3Positions } from 'hooks/useV3Positions'
+import { fa } from 'make-plural'
+import { useEffect } from 'react'
 import { useContext, useState } from 'react'
 import { BookOpen, ChevronsRight, Inbox, Layers, PlusCircle } from 'react-feather'
 import { Link } from 'react-router-dom'
@@ -20,6 +23,7 @@ import { PositionDetails } from 'types/position'
 
 import { V2_FACTORY_ADDRESSES } from '../../constants/addresses'
 import { LoadingRows } from './styleds'
+
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 870px;
@@ -197,7 +201,7 @@ export default function Pool() {
   tokensOwed1: BigNumber
      * 
      */
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
 
     setTimeout(() => {
       setLoading(false)
@@ -212,6 +216,15 @@ export default function Pool() {
     if (isAll === 'all') setAll('my')
     else setAll('all')
   }
+  const factoryContract = useFactoryContract()
+  console.log('Pool/index:', factoryContract)
+
+  const testButton = async () => {
+    if (factoryContract) {
+      const fundList = await factoryContract.funds(0)
+      console.log("FundList: ", fundList)
+    }
+  }
 
   const { account, chainId } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
@@ -219,7 +232,7 @@ export default function Pool() {
   const theme = useContext(ThemeContext)
   const [userHideClosedPositions, setUserHideClosedPositions] = useUserHideClosedPositions()
 
-  const { positions, loading: positionsLoading } = useV3Positions(account)
+  const { positions, loading: positionsLoading } = useV3Positions(account) // 연결된 account 가져옴
 
   const { allPositions, loading: allPositionsLoading } = useAllPositions()
   // all position hooks
@@ -243,53 +256,53 @@ export default function Pool() {
   const filteredAllPositions = [...openAllPositions, ...closedAllPositions]
 
   const showConnectAWallet = Boolean(!account)
-  const showV2Features = Boolean(chainId && V2_FACTORY_ADDRESSES[chainId])
+  // const showV2Features = Boolean(chainId && V2_FACTORY_ADDRESSES[chainId])
 
-  console.log(filteredPositions)
-  console.log(filteredAllPositions)
-  console.log(closedAllPositions)
-  const menuItems = [
-    {
-      content: (
-        <MenuItem>
-          <Trans>Create a pool</Trans>
-          <PlusCircle size={16} />
-        </MenuItem>
-      ),
-      link: '/add/ETH',
-      external: false,
-    },
-    {
-      content: (
-        <MenuItem>
-          <Trans>Migrate</Trans>
-          <ChevronsRight size={16} />
-        </MenuItem>
-      ),
-      link: '/migrate/v2',
-      external: false,
-    },
-    {
-      content: (
-        <MenuItem>
-          <Trans>V2 liquidity</Trans>
-          <Layers size={16} />
-        </MenuItem>
-      ),
-      link: '/pool/v2',
-      external: false,
-    },
-    {
-      content: (
-        <MenuItem>
-          <Trans>Learn</Trans>
-          <BookOpen size={16} />
-        </MenuItem>
-      ),
-      link: 'https://docs.uniswap.org/',
-      external: true,
-    },
-  ]
+  // console.log(filteredPositions)
+  // console.log(filteredAllPositions)
+  // console.log(closedAllPositions)
+  // const menuItems = [
+  //   {
+  //     content: (
+  //       <MenuItem>
+  //         <Trans>Create a pool</Trans>
+  //         <PlusCircle size={16} />
+  //       </MenuItem>
+  //     ),
+  //     link: '/add/ETH',
+  //     external: false,
+  //   },
+  //   {
+  //     content: (
+  //       <MenuItem>
+  //         <Trans>Migrate</Trans>
+  //         <ChevronsRight size={16} />
+  //       </MenuItem>
+  //     ),
+  //     link: '/migrate/v2',
+  //     external: false,
+  //   },
+  //   {
+  //     content: (
+  //       <MenuItem>
+  //         <Trans>V2 liquidity</Trans>
+  //         <Layers size={16} />
+  //       </MenuItem>
+  //     ),
+  //     link: '/pool/v2',
+  //     external: false,
+  //   },
+  //   {
+  //     content: (
+  //       <MenuItem>
+  //         <Trans>Learn</Trans>
+  //         <BookOpen size={16} />
+  //       </MenuItem>
+  //     ),
+  //     link: 'https://docs.uniswap.org/',
+  //     external: true,
+  //   },
+  // ]
 
   return (
     <>
@@ -331,6 +344,7 @@ export default function Pool() {
                   <Trans>All funds</Trans>
                 </button>
               </FundSelectButtons>
+              <button onClick={() => testButton()}>TEST</button>
               {isAll === 'all' ? (
                 allPositionsLoading ? (
                   <PositionsLoadingPlaceholder />
