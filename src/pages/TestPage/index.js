@@ -67,22 +67,28 @@ export default function TestPage() {
   }, [base])
 
   React.useEffect(() => {
-    //TODO: get order list
-    let test = [
-      {
-        owner: '0xTest',
-        base4Quote: false,
-        amt: '3000.00',
-        existingAddAmt: '2300.00',
-      },
-      {
-        owner: '0xTest',
-        base4Quote: false,
-        amt: '9000.00',
-        existingAddAmt: '1400.00',
-      },
-    ]
-    setOrderList(test)
+    async function getOrders() {
+      if (pairContract) {
+        //TODO: for loop after backend update
+        let order = await pairContract.orders(0)
+        console.log(order)
+        let [owner, base4Quote, amt, existingAmt] = order
+        console.log(amt.toNumber())
+        console.log(Math.pow(10, 18))
+        console.log(owner, base, (amt.toNumber() / Math.pow(10, 18)).toFixed(8), existingAmt / Math.pow(10, 18))
+        console.log(library)
+        let test = [
+          {
+            owner,
+            base4Quote,
+            amt: (amt.toNumber() / Math.pow(10, 18)).toFixed(8).toString(),
+            existingAmt: (amt.toNumber() / Math.pow(10, 18)).toFixed(8),
+          },
+        ]
+        setOrderList(test)
+      }
+    }
+    getOrders()
   }, []) // wallet address
 
   const switchBase = (switchTo) => {
@@ -92,64 +98,14 @@ export default function TestPage() {
 
   const add = async () => {
     console.log('add')
-    console.log(account, base, amt * Math.pow(10, 9))
-    let txn = {
-      to: pairContract.address,
-      data: { owner: account, base4Quote: base, amt: amt * Math.pow(10, 18) },
-      value: '0x0',
-    }
-    console.log(await pairContract.baseAddress())
-    console.log(await pairContract.baseDecimal())
-    console.log(await pairContract.orders(1))
-    let approveTx = await wethContract.approve('0xB3B994d44d11509f3f45A279A9B732e92cE0363F', amt * Math.pow(10, 16))
-    console.log(approveTx)
+    console.log(account, base, amt * Math.pow(10, 18))
+    // console.log(await pairContract.baseAddress())
+    // console.log(await pairContract.baseDecimal())
+    // console.log(await pairContract.orderCount())
+    // let approveTx = await wethContract.approve('0xB3B994d44d11509f3f45A279A9B732e92cE0363F', amt * Math.pow(10, 18))
+    // console.log(approveTx)
 
-    let tx = await pairContract.add(account, base, amt * Math.pow(10, 16))
-    console.log(tx)
-
-    // let contract = window.web3.eth.Contract(PAIR_ABI, '0xB3B994d44d11509f3f45A279A9B732e92cE0363F')
-    // console.log(contract)
-    // library
-    //   .getSigner()
-    //   .estimateGas(txn)
-    //   .then((estimate) => {
-    //     const newTxn = {
-    //       ...txn,
-    //       gasLimit: calculateGasMargin(estimate),
-    //     }
-
-    //     return library
-    //       .getSigner()
-    //       .sendTransaction(newTxn)
-    //       .then((response) => {
-    //         console.log(response)
-    //         // setAttemptingTxn(false)
-    //         // addTransaction(response, {
-    //         //   type: TransactionType.ADD_LIQUIDITY_V3_POOL,
-    //         //   baseCurrencyId: currencyId(baseCurrency),
-    //         //   quoteCurrencyId: currencyId(quoteCurrency),
-    //         //   createPool: Boolean(noLiquidity),
-    //         //   expectedAmountBaseRaw: parsedAmounts[Field.CURRENCY_A]?.quotient?.toString() ?? '0',
-    //         //   expectedAmountQuoteRaw: parsedAmounts[Field.CURRENCY_B]?.quotient?.toString() ?? '0',
-    //         //   feeAmount: position.pool.fee,
-    //         // })
-    //         // setTxHash(response.hash)
-    //         // ReactGA.event({
-    //         //   category: 'Liquidity',
-    //         //   action: 'Add',
-    //         //   label: [currencies[Field.CURRENCY_A]?.symbol, currencies[Field.CURRENCY_B]?.symbol].join('/'),
-    //         // })
-    //       })
-    //   })
-    //   .catch((error) => {
-    //     console.error('Failed to send transaction', error)
-    //     // setAttemptingTxn(false)
-    //     // we only care if the error is something _other_ than the user rejected the tx
-    //     if (error?.code !== 4001) {
-    //       console.error(error)
-    //     }
-    //   })
-    // const tx = await pairContract.add(account, base, amt * Math.pow(10, 18))
+    // let tx = await pairContract.add(account, base, 10000000000) // 0.00000001 ETH in WEI
     // console.log(tx)
   }
 
@@ -172,7 +128,7 @@ export default function TestPage() {
     return (
       <>
         {orderList.map((order, index) => {
-          const { owner, base4Quote, amt, existingAddAmt } = order
+          const { owner, base4Quote, amt, existingAmt } = order
           return (
             <div key={index}>
               <div style={{ display: 'flex', padding: '15px 0 5px 0' }}>
@@ -197,7 +153,7 @@ export default function TestPage() {
                 <div>
                   <div style={{ fontWeight: '600', fontSize: '14px' }}>Filled Amount</div>
                   <div>
-                    {amt - existingAddAmt} / {amt} {base4Quote ? baseCurrency : quoteCurrency}
+                    {amt - existingAmt} / {amt} {base4Quote ? baseCurrency : quoteCurrency}
                   </div>
                 </div>
                 <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
