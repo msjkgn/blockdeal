@@ -34,7 +34,7 @@ export default function TestPage() {
 
   //TODO: setBase & setQuote based on current chain & selected pair
   const [baseCurrency, setBaseCurrency] = useState<string>('WETH')
-  const [quoteCurrency, setQuoteCurrency] = useState<string>('USDT')
+  const [quoteCurrency, setQuoteCurrency] = useState<string>('USDC')
 
   //TODO: support 2 decimal points
   const [amt, setAmount] = useState(0)
@@ -186,8 +186,8 @@ export default function TestPage() {
           const { owner, base4Quote, amt, existingAddAmt } = order
           return (
             <div key={index}>
-              <div style={{ display: 'flex', padding: '15px 0 5px 0' }}>
-                <div style={{ color: '#41CD01' }}>My order #{index + 1}</div>
+              <div style={{ display: 'flex', padding: '40px 0 5px 0' }}>
+                <div style={{ color: `${base ? '#FF6534' : '#2EBD85'}` }}>My order #{index + 1}</div>
                 <button
                   onClick={testButton}
                   style={{
@@ -231,34 +231,34 @@ export default function TestPage() {
         </div>
         <div style={{ color: '#E8435A', marginLeft: 'auto' }}>{chainLinkPrice}</div>
       </div>
-      <div style={{ display: 'flex', padding: '10px 0' }}>
-        <button
-          onClick={() => switchBase(true)}
-          style={{
-            padding: '4px 6px',
-            fontSize: '16px',
-            fontWeight: 500,
-            color: 'white',
-            backgroundColor: `${base ? '#2EBD85' : '#29313D'}`,
-            borderRadius: '4px',
-            border: '1px solid #29313D',
-          }}
-        >
-          {baseCurrency} {'>'} {quoteCurrency}
-        </button>
+      <div style={{ display: 'flex', padding: '10px 0 20px' }}>
         <button
           onClick={() => switchBase(false)}
           style={{
-            padding: '4px 6px',
+            padding: '10px 10px',
             fontSize: '16px',
             fontWeight: 500,
             color: 'white',
             backgroundColor: `${base ? '#29313D' : '#2EBD85'}`,
-            borderRadius: '4px',
-            border: '1px solid #29313D',
+            borderRadius: '2px',
+            border: '0px solid',
           }}
         >
           {quoteCurrency} {'>'} {baseCurrency}
+        </button>
+        <button
+          onClick={() => switchBase(true)}
+          style={{
+            padding: '10px 10px',
+            fontSize: '16px',
+            fontWeight: 500,
+            color: 'white',
+            backgroundColor: `${base ? '#FF6534' : '#29313D'}`,
+            borderRadius: '2px',
+            border: '0px solid',
+          }}
+        >
+          {baseCurrency} {'>'} {quoteCurrency}
         </button>
       </div>
       <div
@@ -276,9 +276,9 @@ export default function TestPage() {
         <div style={{ padding: '0 10px 0 0', color:'white' }}>{base ? baseCurrency : quoteCurrency}</div>
       </div>
       <div style={{ display: 'flex', padding: '5px 0', fontWeight: 300, fontSize: '14px' }}>
-        <div>Expected Total:</div>
-        <div style={{ marginLeft: 'auto' }}>
-          {base ? amt * parseInt(chainLinkPrice) * 0.995 : (amt / parseInt(chainLinkPrice)) * 0.995}{' '}
+        <div style={{ padding: '5px 0 0' }}>Expected Total:</div>
+        <div style={{ padding: '5px 0 0', marginLeft: 'auto' }}>
+          {base ? amt * parseInt(chainLinkPrice) : (amt / parseInt(chainLinkPrice))}{' '}
           {base ? quoteCurrency : baseCurrency}
         </div>
       </div>
@@ -295,7 +295,7 @@ export default function TestPage() {
           margin: '20px 0',
           padding: '10px 20px',
           fontSize: '18px',
-          backgroundColor: '#2EBD85',
+          backgroundColor: `${base ? '#FF6534' : '#2EBD85'}`,
           borderRadius: '4px',
           border: 'none',
           color: 'white',

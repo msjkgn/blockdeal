@@ -1,7 +1,7 @@
 import Loader from 'components/Loader'
 import ApeModeQueryParamReader from 'hooks/useApeModeQueryParamReader'
-import { lazy, Suspense } from 'react'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Suspense } from 'react'
+import { Route, Switch } from 'react-router-dom'
 import styled from 'styled-components/macro'
 
 import GoogleAnalyticsReporter from '../components/analytics/GoogleAnalyticsReporter'
@@ -28,8 +28,6 @@ import Rebalance from './Rebalance'
 import RemoveLiquidity from './RemoveLiquidity'
 import RemoveLiquidityV3 from './RemoveLiquidity/V3'
 import TestPage from './TestPage'
-
-const Vote = lazy(() => import('./Vote'))
 
 const AppWrapper = styled.div`
   display: flex;
@@ -89,12 +87,7 @@ export default function App() {
             <TopLevelModals />
             <Suspense fallback={<Loader />}>
               <Switch>
-                <Route strict path="/vote" component={Vote} />
                 <Route strict path="/rebalance" component={Rebalance} />
-
-                <Route exact strict path="/create-proposal">
-                  <Redirect to="/vote/create-proposal" />
-                </Route>
                 <Route exact strict path="/pool/v2/find" component={PoolFinder} />
                 <Route exact strict path="/pool/v2" component={PoolV2} />
                 <Route exact strict path="/pool" component={Pool} />
