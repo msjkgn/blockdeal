@@ -74,26 +74,23 @@ export default function TestPage() {
     _getFilledAmounts()
   }, [base])
 
+  //TODO: delay when fetching all data - should update while fetching.
   React.useEffect(() => {
     async function getOrders() {
       if (pairContract) {
         const orderCount = await pairContract.ownerOrderCount(account)
         let orderList = []
         for (let i = 0; i < orderCount; i++) {
-          let order = await pairContract.orders(i)
-          let pos = await pairContract.ownerOrderPos(account, i)
-          // console.log('Pos: ', pos.toString())
-          let [cumulAmt, cumulAmtOut] = await pairContract.getFilledAmounts(pos.toString())
-          // console.log(await pairContract.getFilledAmounts(pos.toString()))
-          // console.log('filledAmt: ', cumulAmt.toString(), cumulAmtOut.toString())
-          let [owner, base4Quote, amt, existingAmt] = order
-          //TODO: unable to calculate filledPrice when 0
-          // console.log(owner, base4Quote, amt.toString(), existingAmt.toString())
+          const order = await pairContract.orders(i)
+          const pos = await pairContract.ownerOrderPos(account, i)
+          const [cumulAmt, cumulAmtOut] = await pairContract.getFilledAmounts(pos.toString())
+          const [owner, base4Quote, amt, existingAmt] = order
           orderList.push({
             base4Quote,
             filledAmt: cumulAmt,
             amt: window._ethers.utils.formatUnits(amt, 'ether'),
-            filledPrice: 0,
+            cumulAmt,
+            cumulAmtOut,
           })
         }
         setOrderList(orderList)
@@ -138,7 +135,7 @@ export default function TestPage() {
     return (
       <>
         {orderList.map((order, index) => {
-          const { base4Quote, filledAmt, amt, filledPrice } = order
+          const { base4Quote, filledAmt, amt, cumulAmt, cumulAmtOut } = order
           return (
             <div key={index}>
               <div style={{ display: 'flex', padding: '15px 0 5px 0' }}>
@@ -169,7 +166,11 @@ export default function TestPage() {
                 <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
                   <div style={{ fontWeight: '600', fontSize: '14px' }}>Filled Price</div>
                   <div>
-                    {filledPrice} {base4Quote ? baseCurrency : quoteCurrency}
+                    {window._ethers.constants.Zero.eq(cumulAmt)
+                      ? '-'
+                      : base4Quote
+                      ? `${cumulAmt.div(cumulAmtOut)} ${baseCurrency}`
+                      : `${cumulAmtOut.div(cumulAmt)} ${baseCurrency}`}
                   </div>
                 </div>
               </div>
