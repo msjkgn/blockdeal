@@ -78,21 +78,24 @@ export default function TestPage() {
     async function getOrders() {
       if (pairContract) {
         const orderCount = await pairContract.ownerOrderCount(account)
-        // console.log(parseInt(orderCount))
-
         let orderList = []
         for (let i = 0; i < orderCount; i++) {
           let order = await pairContract.orders(i)
+          let pos = await pairContract.ownerOrderPos(account, i)
+          // console.log('Pos: ', pos.toString())
+          let [cumulAmt, cumulAmtOut] = await pairContract.getFilledAmounts(pos.toString())
+          // console.log(await pairContract.getFilledAmounts(pos.toString()))
+          // console.log('filledAmt: ', cumulAmt.toString(), cumulAmtOut.toString())
           let [owner, base4Quote, amt, existingAmt] = order
-          //TODO: amt, existing amt formatting
+          //TODO: unable to calculate filledPrice when 0
+          // console.log(owner, base4Quote, amt.toString(), existingAmt.toString())
           orderList.push({
-            owner,
             base4Quote,
-            amt: (amt.toNumber() / Math.pow(10, 18)).toFixed(8).toString(),
-            existingAmt: (existingAmt.toNumber() / Math.pow(10, 18)).toFixed(8),
+            filledAmt: cumulAmt,
+            amt: window._ethers.utils.formatUnits(amt, 'ether'),
+            filledPrice: 0,
           })
         }
-        // console.log(orderList)
         setOrderList(orderList)
       }
     }
@@ -135,7 +138,7 @@ export default function TestPage() {
     return (
       <>
         {orderList.map((order, index) => {
-          const { owner, base4Quote, amt, existingAmt } = order
+          const { base4Quote, filledAmt, amt, filledPrice } = order
           return (
             <div key={index}>
               <div style={{ display: 'flex', padding: '15px 0 5px 0' }}>
@@ -160,12 +163,14 @@ export default function TestPage() {
                 <div>
                   <div style={{ fontWeight: '600', fontSize: '14px' }}>Filled Amount</div>
                   <div>
-                    {amt - existingAmt} / {amt} {base4Quote ? baseCurrency : quoteCurrency}
+                    {parseFloat(filledAmt)} / {amt} {base4Quote ? baseCurrency : quoteCurrency}
                   </div>
                 </div>
                 <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
                   <div style={{ fontWeight: '600', fontSize: '14px' }}>Filled Price</div>
-                  <div>2800.82 {base4Quote ? baseCurrency : quoteCurrency}</div>
+                  <div>
+                    {filledPrice} {base4Quote ? baseCurrency : quoteCurrency}
+                  </div>
                 </div>
               </div>
             </div>
