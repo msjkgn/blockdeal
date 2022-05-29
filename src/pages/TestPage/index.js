@@ -7,15 +7,16 @@ import styled from 'styled-components/macro'
 export default function TestPage() {
   const factoryContract = useFactoryContract()
   const pairContract = usePairContract2()
-  console.log('Pool/index: Factory Contract - ', factoryContract)
-  console.log('Pool/index: Pair Contract    - ', pairContract)
+  // console.log('Pool/index: Factory Contract - ', factoryContract)
+  // console.log('Pool/index: Pair Contract    - ', pairContract)
 
   const wethContract = useWETHTest()
-  console.log('Pool/index: wethContract     - ', wethContract)
+  // console.log('Pool/index: wethContract     - ', wethContract)
 
   const { library, account, chainId } = useActiveWeb3React() // web3 react
 
   const [base, setBase] = React.useState(true)
+  const [fee, setFee] = React.useState(0.005) // TODO: Get fee from backend.
 
   //TODO: setBase & setQuote based on current chain & selected pair
   const [baseCurrency, setBaseCurrency] = React.useState('WETH')
@@ -27,6 +28,8 @@ export default function TestPage() {
   const [instantFillAmount, setInstantFillAmount] = React.useState(0)
 
   const [orderList, setOrderList] = React.useState([])
+
+  const chainLinkPriceFormatted = parseFloat(window._ethers.utils.formatUnits(chainLinkPrice, 8)).toFixed(2)
 
   //   React.useEffect(() => {
   //     async function getPairAddress() {
@@ -55,28 +58,33 @@ export default function TestPage() {
           console.log(e)
         }
         //TODO: update every X seconds
-        let priceFormatted = parseFloat(window._ethers.utils.formatUnits(price, 8)).toFixed(2)
-        setChainLinkPrice(priceFormatted)
+        setChainLinkPrice(price)
       }
     }
     getChainlinkPrice()
-  }, [pairContract])
+  }, [])
 
   React.useEffect(() => {
-    //TODO: get instant fill amount
-    // setInstantFillAmount('50')
+    async function _getFilledAmounts() {
+      if (pairContract) {
+        const fillAmount = await pairContract.getAmountAvailable(base)
+        setInstantFillAmount(fillAmount)
+      }
+    }
+    _getFilledAmounts()
   }, [base])
 
   React.useEffect(() => {
     async function getOrders() {
       if (pairContract) {
         const orderCount = await pairContract.ownerOrderCount(account)
-        console.log(parseInt(orderCount))
+        // console.log(parseInt(orderCount))
 
         let orderList = []
         for (let i = 0; i < orderCount; i++) {
           let order = await pairContract.orders(i)
           let [owner, base4Quote, amt, existingAmt] = order
+          //TODO: amt, existing amt formatting
           orderList.push({
             owner,
             base4Quote,
@@ -84,7 +92,7 @@ export default function TestPage() {
             existingAmt: (existingAmt.toNumber() / Math.pow(10, 18)).toFixed(8),
           })
         }
-        console.log(orderList)
+        // console.log(orderList)
         setOrderList(orderList)
       }
     }
@@ -173,7 +181,7 @@ export default function TestPage() {
         <div style={{ fontSize: '22px', fontWeight: '600' }}>
           {baseCurrency}/{quoteCurrency}
         </div>
-        <div style={{ color: '#E8435A', marginLeft: 'auto' }}>{chainLinkPrice}</div>
+        <div style={{ color: '#E8435A', marginLeft: 'auto' }}>{chainLinkPriceFormatted}</div>
       </div>
       <div style={{ display: 'flex', padding: '10px 0' }}>
         <button
@@ -222,16 +230,21 @@ export default function TestPage() {
       <div style={{ display: 'flex', padding: '5px 0', fontWeight: '300', fontSize: '14px' }}>
         <div>Expected Total:</div>
         <div style={{ marginLeft: 'auto' }}>
-          {base ? amt * chainLinkPrice * 0.995 : (amt / chainLinkPrice) * 0.995} {base ? quoteCurrency : baseCurrency}
+          {base ? amt * chainLinkPriceFormatted * (1 - fee) : (amt / chainLinkPriceFormatted) * (1 - fee)}{' '}
+          {base ? quoteCurrency : baseCurrency}
         </div>
       </div>
       <div style={{ display: 'flex', padding: '5px 0', fontWeight: '300', fontSize: '14px' }}>
         <div>Expected Total NOW:</div>
         <div style={{ marginLeft: 'auto' }}>
-          {Math.min(instantFillAmount, amt)} {base ? quoteCurrency : baseCurrency}
+          {Math.min(
+            parseFloat(window._ethers.utils.formatUnits(instantFillAmount, 'ether')),
+            base ? amt * chainLinkPriceFormatted : amt / chainLinkPriceFormatted
+          ) *
+            (1 - fee)}{' '}
+          {base ? quoteCurrency : baseCurrency}
         </div>
       </div>
-
       <button
         onClick={add}
         style={{
