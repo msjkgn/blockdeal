@@ -1,11 +1,8 @@
 /* eslint-disable react/prop-types */
-import PAIR_ABI from 'abis/pair.json'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useFactoryContract, usePairContract2, useWETHTest } from 'hooks/useContract'
 import React from 'react'
 import styled from 'styled-components/macro'
-
-import { calculateGasMargin } from '../../utils/calculateGasMargin'
 
 export default function TestPage() {
   const factoryContract = useFactoryContract()
@@ -15,7 +12,6 @@ export default function TestPage() {
 
   const wethContract = useWETHTest()
   console.log('Pool/index: wethContract     - ', wethContract)
-  console.log(wethContract?.address)
 
   const { library, account, chainId } = useActiveWeb3React() // web3 react
 
@@ -38,7 +34,7 @@ export default function TestPage() {
   //       if (factoryContract) {
   //         const feeTo = await factoryContract.feeTo()
   //         console.log('feeTo: ', feeTo)
-  //         return await factoryContract.allPairs(0)
+  //         return await fac toryContract.allPairs(0)
   //       }
 
   //       return pairs
@@ -52,10 +48,15 @@ export default function TestPage() {
   React.useEffect(() => {
     async function getChainlinkPrice() {
       if (pairContract) {
-        let price = await pairContract.getPrice()
+        let price = 0
+        try {
+          price = await pairContract.getPrice()
+        } catch (e) {
+          console.log(e)
+        }
         //TODO: update every X seconds
-        console.log(parseInt(price.toString()))
-        setChainLinkPrice(price ? (parseInt(price.toString()) / 100000000).toFixed(2) : 0)
+        let priceFormatted = parseFloat(window._ethers.utils.formatUnits(price, 8)).toFixed(2)
+        setChainLinkPrice(priceFormatted)
       }
     }
     getChainlinkPrice()
@@ -69,44 +70,42 @@ export default function TestPage() {
   React.useEffect(() => {
     async function getOrders() {
       if (pairContract) {
-        //TODO: for loop after backend update
-        let order = await pairContract.orders(0)
-        console.log(order)
-        let [owner, base4Quote, amt, existingAmt] = order
-        console.log(amt.toNumber())
-        console.log(Math.pow(10, 18))
-        console.log(owner, base, (amt.toNumber() / Math.pow(10, 18)).toFixed(8), existingAmt / Math.pow(10, 18))
-        console.log(library)
-        let test = [
-          {
+        const orderCount = await pairContract.ownerOrderCount(account)
+        console.log(parseInt(orderCount))
+
+        let orderList = []
+        for (let i = 0; i < orderCount; i++) {
+          let order = await pairContract.orders(i)
+          let [owner, base4Quote, amt, existingAmt] = order
+          orderList.push({
             owner,
             base4Quote,
             amt: (amt.toNumber() / Math.pow(10, 18)).toFixed(8).toString(),
-            existingAmt: (amt.toNumber() / Math.pow(10, 18)).toFixed(8),
-          },
-        ]
-        setOrderList(test)
+            existingAmt: (existingAmt.toNumber() / Math.pow(10, 18)).toFixed(8),
+          })
+        }
+        console.log(orderList)
+        setOrderList(orderList)
       }
     }
     getOrders()
-  }, []) // wallet address
+  }, [account]) // wallet address
 
   const switchBase = (switchTo) => {
-    console.log(switchTo)
     setBase(switchTo)
   }
 
   const add = async () => {
-    console.log('add')
-    console.log(account, base, amt * Math.pow(10, 18))
-    // console.log(await pairContract.baseAddress())
-    // console.log(await pairContract.baseDecimal())
-    // console.log(await pairContract.orderCount())
-    // let approveTx = await wethContract.approve('0xB3B994d44d11509f3f45A279A9B732e92cE0363F', amt * Math.pow(10, 18))
+    // console.log('add')
+    const weiAmt = parseFloat(window._ethers.utils.parseUnits(amt, 'ether'))
+    // console.log(account, base, weiAmt)
+    //TODO: automatically update apporve address (pair contract address)
+    let approveTx = await wethContract.approve('0x23a5258a20Aa8835E6193a9ecED36c1c201Ba06c', weiAmt)
     // console.log(approveTx)
-
-    // let tx = await pairContract.add(account, base, 10000000000) // 0.00000001 ETH in WEI
+    //TODO: Handle success & error
+    let tx = await pairContract.add(account, base, weiAmt)
     // console.log(tx)
+    //TODO: Handle success & error
   }
 
   const remove = async () => {
