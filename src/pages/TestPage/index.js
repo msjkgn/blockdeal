@@ -65,6 +65,20 @@ export default function TestPage() {
   }, [])
 
   React.useEffect(() => {
+    async function getFee() {
+      if (pairContract) {
+        try {
+          let fee = await pairContract.fee()
+          setFee(fee / 10000)
+        } catch (e) {
+          console.log(e)
+        }
+      }
+    }
+    getFee()
+  }, [])
+
+  React.useEffect(() => {
     async function _getFilledAmounts() {
       if (pairContract) {
         const fillAmount = await pairContract.getAmountAvailable(base)
@@ -84,11 +98,9 @@ export default function TestPage() {
           const order = await pairContract.orders(i)
           const pos = await pairContract.ownerOrderPos(account, i)
           const [cumulAmt, cumulAmtOut] = await pairContract.getFilledAmounts(pos.toString())
-          const [owner, base4Quote, amt, existingAmt] = order
           orderList.push({
-            base4Quote,
-            filledAmt: cumulAmt,
-            amt: window._ethers.utils.formatUnits(amt, 'ether'),
+            order,
+            pos,
             cumulAmt,
             cumulAmtOut,
           })
@@ -97,7 +109,7 @@ export default function TestPage() {
       }
     }
     getOrders()
-  }, [account]) // wallet address
+  }, [account])
 
   const switchBase = (switchTo) => {
     setBase(switchTo)
@@ -116,10 +128,11 @@ export default function TestPage() {
     //TODO: Handle success & error
   }
 
-  const remove = async () => {
-    console.log('remove')
-    //get pos from index.. need modal or popup to select cancel all or none - for now just cancel all
-    const tx = await pairContract.remove('0xTest', 2, true) // Can't test due to bug.. inputs: (address owner, uint pos, bool cancel)
+  const remove = async (pos) => {
+    console.log('remove - pos: ', pos.toNumber())
+    console.log('account: ', account)
+    //need modal or popup to select cancel all or none - for now just cancel all
+    const tx = await pairContract.remove(account, pos, true)
     console.log(tx)
   }
 
@@ -134,14 +147,20 @@ export default function TestPage() {
     const { orderList } = props
     return (
       <>
-        {orderList.map((order, index) => {
-          const { base4Quote, filledAmt, amt, cumulAmt, cumulAmtOut } = order
+        {orderList.map((_order, index) => {
+          const { order, pos, cumulAmt, cumulAmtOut } = _order
+          const [owner, base4Quote, amt, existingAmt] = order
+          console.log('Order: ', index)
+          console.log(pos.toNumber())
+          console.log(window._ethers.utils.formatUnits(amt, 'ether'))
           return (
             <div key={index}>
               <div style={{ display: 'flex', padding: '15px 0 5px 0' }}>
                 <div style={{ color: '#41CD01' }}>My order #{index + 1}</div>
                 <button
-                  onClick={testButton}
+                  onClick={() => {
+                    remove(pos)
+                  }}
                   style={{
                     marginLeft: 'auto',
                     padding: '5px 10px',
@@ -160,7 +179,8 @@ export default function TestPage() {
                 <div>
                   <div style={{ fontWeight: '600', fontSize: '14px' }}>Filled Amount</div>
                   <div>
-                    {parseFloat(filledAmt)} / {amt} {base4Quote ? baseCurrency : quoteCurrency}
+                    {parseFloat(cumulAmt)} / {window._ethers.utils.formatUnits(amt, 'ether')}{' '}
+                    {base4Quote ? baseCurrency : quoteCurrency}
                   </div>
                 </div>
                 <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
