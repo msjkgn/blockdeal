@@ -116,13 +116,12 @@ export default function TestPage() {
   }
 
   const add = async () => {
-    // console.log('add')
     console.log(window._ethers.constants.MaxUint256.toString())
     //TODO: Check allowances to check if approval needed
     //TODO: ERC20 addresses should not be hard-coded
     const weiAmt = parseFloat(window._ethers.utils.parseUnits(amt, 'ether'))
     let allowance = await wethContract.allowance(account, '0x23a5258a20Aa8835E6193a9ecED36c1c201Ba06c')
-    console.log('Allowance: ', allowance.toString(), '    weiAmt: ', weiAmt.toString())
+    // console.log('Allowance: ', allowance.toString(), '    weiAmt: ', weiAmt.toString())
     if (allowance.lt(weiAmt)) {
       // //TODO: Handle success & error
       let approveTx = await wethContract.approve(
