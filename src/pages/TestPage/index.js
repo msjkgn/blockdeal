@@ -117,15 +117,21 @@ export default function TestPage() {
 
   const add = async () => {
     // console.log('add')
+    console.log(window._ethers.constants.MaxUint256.toString())
+    //TODO: Check allowances to check if approval needed
+    //TODO: ERC20 addresses should not be hard-coded
     const weiAmt = parseFloat(window._ethers.utils.parseUnits(amt, 'ether'))
-    // console.log(account, base, weiAmt)
-    //TODO: automatically update apporve address (pair contract address)
-    let approveTx = await wethContract.approve('0x23a5258a20Aa8835E6193a9ecED36c1c201Ba06c', weiAmt)
-    // console.log(approveTx)
-    //TODO: Handle success & error
+    let allowance = await wethContract.allowance(account, '0x23a5258a20Aa8835E6193a9ecED36c1c201Ba06c')
+    console.log('Allowance: ', allowance.toString(), '    weiAmt: ', weiAmt.toString())
+    if (allowance.lt(weiAmt)) {
+      // //TODO: Handle success & error
+      let approveTx = await wethContract.approve(
+        '0x23a5258a20Aa8835E6193a9ecED36c1c201Ba06c',
+        window._ethers.constants.MaxUint256
+      )
+    }
+    // //TODO: Handle success & error
     let tx = await pairContract.add(account, base, weiAmt)
-    // console.log(tx)
-    //TODO: Handle success & error
   }
 
   const remove = async (pos) => {
@@ -134,13 +140,6 @@ export default function TestPage() {
     //need modal or popup to select cancel all or none - for now just cancel all
     const tx = await pairContract.remove(account, pos, true)
     console.log(tx)
-  }
-
-  const testButton = async () => {
-    if (factoryContract) {
-      const feeTo = await factoryContract.feeTo()
-      console.log('feeTo: ', feeTo)
-    }
   }
 
   const OrderList = (props) => {
