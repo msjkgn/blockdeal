@@ -1,11 +1,10 @@
 /* eslint-disable react/prop-types */
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { useFactoryContract, usePairContract2, useWETHTest } from 'hooks/useContract'
+import { usePairContract2, useWETHTest } from 'hooks/useContract'
 import React from 'react'
 import styled from 'styled-components/macro'
 
 export default function TestPage() {
-  const factoryContract = useFactoryContract()
   const pairContract = usePairContract2()
   // console.log('Pool/index: Factory Contract - ', factoryContract)
   // console.log('Pool/index: Pair Contract    - ', pairContract)
@@ -116,18 +115,13 @@ export default function TestPage() {
   }
 
   const add = async () => {
-    console.log(window._ethers.constants.MaxUint256.toString())
     //TODO: Check allowances to check if approval needed
     //TODO: ERC20 addresses should not be hard-coded
     const weiAmt = parseFloat(window._ethers.utils.parseUnits(amt, 'ether'))
-    let allowance = await wethContract.allowance(account, '0x23a5258a20Aa8835E6193a9ecED36c1c201Ba06c')
-    // console.log('Allowance: ', allowance.toString(), '    weiAmt: ', weiAmt.toString())
+    let allowance = await wethContract.allowance(account, pairContract.address)
     if (allowance.lt(weiAmt)) {
       // //TODO: Handle success & error
-      let approveTx = await wethContract.approve(
-        '0x23a5258a20Aa8835E6193a9ecED36c1c201Ba06c',
-        window._ethers.constants.MaxUint256
-      )
+      let approveTx = await wethContract.approve(pairContract.address, window._ethers.constants.MaxUint256)
     }
     // //TODO: Handle success & error
     let tx = await pairContract.add(account, base, weiAmt)
