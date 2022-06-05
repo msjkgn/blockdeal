@@ -1,8 +1,10 @@
 /* eslint-disable react/prop-types */
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useFactoryContract, usePairContract2, useWETHTest } from 'hooks/useContract'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
 import styled from 'styled-components/macro'
+
 interface Test {
   owner: string
   base4Quote: boolean
@@ -16,11 +18,12 @@ const Input = styled.input`
   background: ${({ theme }) => theme.bgCustom};
   border: none;
   text-align: right;
-  width:100%;
+  width: 100%;
 `
 export default function TestPage() {
   const factoryContract = useFactoryContract()
   const pairContract = usePairContract2()
+
   console.log('Pool/index: Factory Contract - ', factoryContract)
   console.log('Pool/index: Pair Contract    - ', pairContract)
 
@@ -61,17 +64,57 @@ export default function TestPage() {
   //     // setChainLinkPrice(price ? price : 0)
   //   }, [factoryContract]) // update every X seconds
 
-  useEffect(() => {
-    async function getChainlinkPrice() {
+  function useInterval(callback: () => void, delay: number) {
+    const savedCallback = useRef<any>() // 최근에 들어온 callback을 저장할 ref를 하나 만든다.
+
+    useEffect(() => {
+      savedCallback.current = callback // callback이 바뀔 때마다 ref를 업데이트 해준다.
+    }, [callback, pairContract])
+
+    useEffect(() => {
+      function tick() {
+        savedCallback.current() // tick이 실행되면 callback 함수를 실행시킨다.
+      }
+      if (delay !== null) {
+        // 만약 delay가 null이 아니라면
+        const id = setInterval(tick, delay) // delay에 맞추어 interval을 새로 실행시킨다.
+        return () => clearInterval(id) // unmount될 때 clearInterval을 해준다.
+      }
+      return
+    }, [delay]) // delay가 바뀔 때마다 새로 실행된다.
+  }
+
+  async function getChainlinkPrice() {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    try {
       if (pairContract) {
         const price = await pairContract.getPrice()
         //TODO: update every X seconds
         console.log(parseInt(price.toString()))
         setChainLinkPrice(String(price ? (parseInt(price.toString()) / 100000000).toFixed(2) : 0))
+        toast.success(' price fetch success ')
       }
+    } catch (e) {
+      toast.error(' price fetch error ')
+      setChainLinkPrice('0')
+      console.error(e)
     }
+  }
+  // toast.success('가격 불러오기 성공')
+
+  // const getChainLinkPriceInterval = setChainLinkPriceParam => new Promise((resolve, rej) => {
+  //   const interval = setInterval(() => {
+  //     setChainLinkPriceParam()
+  //   })
+  // })
+
+  useInterval(getChainlinkPrice, 5000)
+
+  useEffect(() => {
     getChainlinkPrice()
-  }, [pairContract])
+    // return () => clearIntervalAsync(interval)
+    // getChainlinkPrice()
+  }, [pairContract, chainLinkPrice])
 
   useEffect(() => {
     //TODO: get instant fill amount
@@ -94,6 +137,14 @@ export default function TestPage() {
         existingAddAmt: '1400.00',
       },
     ]
+
+    try {
+      // get order list
+      toast.success(' order list get success ')
+    } catch (e) {
+      toast.error(' fail in get order list')
+      console.error(e)
+    }
     setOrderList(test)
   }, []) // wallet address
 
@@ -103,28 +154,39 @@ export default function TestPage() {
   }
 
   const add = async () => {
-    console.log('add')
-    console.log(account, base, amt * Math.pow(10, 9))
-    const txn = {
-      to: pairContract?.address,
-      data: { owner: account, base4Quote: base, amt: amt * Math.pow(10, 18) },
-      value: '0x0',
-    }
-    console.log(await pairContract?.baseAddress())
-    console.log(await pairContract?.baseDecimal())
-    console.log(await pairContract?.orders(1))
-    const approveTx = await wethContract?.approve('0xB3B994d44d11509f3f45A279A9B732e92cE0363F', amt * Math.pow(10, 16))
-    console.log(approveTx)
+    try {
+      console.log('add')
+      console.log(account, base, amt * Math.pow(10, 9))
+      const txn = {
+        to: pairContract?.address,
+        data: { owner: account, base4Quote: base, amt: amt * Math.pow(10, 18) },
+        value: '0x0',
+      }
+      console.log(await pairContract?.baseAddress())
+      console.log(await pairContract?.baseDecimal())
+      console.log(await pairContract?.orders(1))
+      const approveTx = await wethContract?.approve(
+        '0xB3B994d44d11509f3f45A279A9B732e92cE0363F',
+        amt * Math.pow(10, 16)
+      )
+      console.log(approveTx)
 
-    const tx = await pairContract?.add(account, base, amt * Math.pow(10, 16))
-    console.log(tx)
+      const tx = await pairContract?.add(account, base, amt * Math.pow(10, 16))
+      console.log(tx)
+      toast.success(' success in convert to USDC')
+      // eslint-disable-next-line no-restricted-globals
+      location.href = location.href
+    } catch (e) {
+      toast.error(' error in convert to USDC')
+      console.error(e)
+    }
 
     // let contract = window.web3.eth.Contract(PAIR_ABI, '0xB3B994d44d11509f3f45A279A9B732e92cE0363F')
     // console.log(contract)
     // library
     //   .getSigner()
     //   .estimateGas(txn)
-    //   .then((estimate) => {
+    //   .then((estimate) => {~
     //     const newTxn = {
     //       ...txn,
     //       gasLimit: calculateGasMargin(estimate),
@@ -168,14 +230,27 @@ export default function TestPage() {
   const remove = async () => {
     console.log('remove')
     //get pos from index.. need modal or popup to select cancel all or none - for now just cancel all
-    const tx = await pairContract?.remove('0xTest', 2, true) // Can't test due to bug.. inputs: (address owner, uint pos, bool cancel)
-    console.log(tx)
+    try {
+      const tx = await pairContract?.remove('0xTest', 2, true) // Can't test due to bug.. inputs: (address owner, uint pos, bool cancel)
+      console.log(tx)
+      toast.success(' remove success ')
+    } catch (e) {
+      toast.error(' remove failed ')
+      console.error(e)
+    }
   }
 
   const testButton = async () => {
+    console.log(factoryContract)
     if (factoryContract) {
-      const feeTo = await factoryContract.feeTo()
-      console.log('feeTo: ', feeTo)
+      try {
+        const feeTo = await factoryContract.feeTo()
+        toast.success(' test button success ')
+        console.log('feeTo: ', feeTo)
+      } catch (e) {
+        toast.error('toast testButn fail')
+        console.error(e)
+      }
     }
   }
 
@@ -184,6 +259,10 @@ export default function TestPage() {
       <>
         {orderList.map((order, index) => {
           const { owner, base4Quote, amt, existingAddAmt } = order
+          console.log(owner, 'orderList owner')
+          console.log(base4Quote, 'orderList base4Quote')
+          console.log(amt, 'orderList amt')
+          console.log(existingAddAmt, 'orderList existingAddAmt')
           return (
             <div key={index}>
               <div style={{ display: 'flex', padding: '40px 0 5px 0' }}>
@@ -273,13 +352,12 @@ export default function TestPage() {
         }}
       >
         <Input type="number" value={amt} onChange={(e) => setAmount(parseInt(e.target.value))} />
-        <div style={{ padding: '0 10px 0 0', color:'white' }}>{base ? baseCurrency : quoteCurrency}</div>
+        <div style={{ padding: '0 10px 0 0', color: 'white' }}>{base ? baseCurrency : quoteCurrency}</div>
       </div>
       <div style={{ display: 'flex', padding: '5px 0', fontWeight: 300, fontSize: '14px' }}>
         <div style={{ padding: '5px 0 0' }}>Expected Total:</div>
         <div style={{ padding: '5px 0 0', marginLeft: 'auto' }}>
-          {base ? amt * parseInt(chainLinkPrice) : (amt / parseInt(chainLinkPrice))}{' '}
-          {base ? quoteCurrency : baseCurrency}
+          {base ? amt * parseInt(chainLinkPrice) : amt / parseInt(chainLinkPrice)} {base ? quoteCurrency : baseCurrency}
         </div>
       </div>
       <div style={{ display: 'flex', padding: '5px 0', fontWeight: 300, fontSize: '14px' }}>

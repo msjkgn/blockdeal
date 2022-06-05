@@ -1,6 +1,7 @@
 import Loader from 'components/Loader'
 import ApeModeQueryParamReader from 'hooks/useApeModeQueryParamReader'
 import { Suspense } from 'react'
+import { Toaster } from 'react-hot-toast'
 import { Route, Switch } from 'react-router-dom'
 import styled from 'styled-components/macro'
 
@@ -19,15 +20,10 @@ import { RedirectDuplicateTokenIds } from './AddLiquidity/redirects'
 import { RedirectDuplicateTokenIdsV2 } from './AddLiquidityV2/redirects'
 import MigrateV2 from './MigrateV2'
 import MigrateV2Pair from './MigrateV2/MigrateV2Pair'
-import Pool from './Pool'
-import { PositionPage } from './Pool/PositionPage'
-import { RedirectPathToPoolOnly } from './Pool/redirects'
-import PoolV2 from './Pool/v2'
-import PoolFinder from './PoolFinder'
-import Rebalance from './Rebalance'
 import RemoveLiquidity from './RemoveLiquidity'
 import RemoveLiquidityV3 from './RemoveLiquidity/V3'
 import TestPage from './TestPage'
+import { RedirectPathToTestOnly } from './TestPage/redirects'
 
 const AppWrapper = styled.div`
   display: flex;
@@ -82,16 +78,17 @@ export default function App() {
             <Header />
           </HeaderWrapper>
           <BodyWrapper>
+            <Toaster position="bottom-left" />
             <Popups />
             <Polling />
             <TopLevelModals />
             <Suspense fallback={<Loader />}>
               <Switch>
-                <Route strict path="/rebalance" component={Rebalance} />
+                {/* <Route strict path="/rebalance" component={Rebalance} />
                 <Route exact strict path="/pool/v2/find" component={PoolFinder} />
                 <Route exact strict path="/pool/v2" component={PoolV2} />
                 <Route exact strict path="/pool" component={Pool} />
-                <Route exact strict path="/pool/:tokenId" component={PositionPage} />
+                <Route exact strict path="/pool/:tokenId" component={PositionPage} /> */}
                 <Route exact strict path="/testpage" component={TestPage} />
                 <Route
                   exact
@@ -119,7 +116,7 @@ export default function App() {
                 <Route exact strict path="/migrate/v2" component={MigrateV2} />
                 <Route exact strict path="/migrate/v2/:address" component={MigrateV2Pair} />
 
-                <Route component={RedirectPathToPoolOnly} />
+                <Route component={RedirectPathToTestOnly} />
               </Switch>
             </Suspense>
             <Marginer />
