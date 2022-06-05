@@ -94,8 +94,8 @@ export default function TestPage() {
         const orderCount = await pairContract.ownerOrderCount(account)
         let orderList = []
         for (let i = 0; i < orderCount; i++) {
-          const order = await pairContract.orders(i)
           const pos = await pairContract.ownerOrderPos(account, i)
+          const order = await pairContract.orders(pos)
           const [cumulAmt, cumulAmtOut] = await pairContract.getFilledAmounts(pos.toString())
           orderList.push({
             order,
