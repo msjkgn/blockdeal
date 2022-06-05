@@ -110,11 +110,10 @@ export default function TestPage() {
 
   useInterval(getChainlinkPrice, 5000)
 
-  useEffect(() => {
-    getChainlinkPrice()
-    // return () => clearIntervalAsync(interval)
-    // getChainlinkPrice()
-  }, [pairContract, chainLinkPrice])
+  // useEffect(() => {
+  //   // return () => clearIntervalAsync(interval)
+  //   // getChainlinkPrice()
+  // }, [pairContract, chainLinkPrice])
 
   useEffect(() => {
     //TODO: get instant fill amount
