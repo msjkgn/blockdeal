@@ -239,7 +239,6 @@ const getChainNameFromId = (id: string | number) => {
 
 export default function NetworkSelector() {
   const { chainId, library } = useActiveWeb3React()
-  console.log(chainId)
   const parsedQs = useParsedQueryString()
   const { urlChain, urlChainId } = getParsedChainId(parsedQs)
   const prevChainId = usePrevious(chainId)

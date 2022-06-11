@@ -89,7 +89,7 @@ export default function App() {
                 <Route exact strict path="/pool/v2" component={PoolV2} />
                 <Route exact strict path="/pool" component={Pool} />
                 <Route exact strict path="/pool/:tokenId" component={PositionPage} /> */}
-                <Route exact strict path="/testpage" component={TestPage} />
+                <Route exact strict path="/app" component={TestPage} />
                 <Route
                   exact
                   strict

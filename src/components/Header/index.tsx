@@ -325,7 +325,6 @@ export default function Header() {
               <BalanceText style={{ flexShrink: 0, userSelect: 'none' }} pl="0.75rem" pr="0.5rem" fontWeight={500}>
                 <Trans>
                   {userEthBalance?.toSignificant(3)} {nativeCurrencySymbol}
-                  {console.log(nativeCurrencySymbol)}
                 </Trans>
               </BalanceText>
             ) : null}
