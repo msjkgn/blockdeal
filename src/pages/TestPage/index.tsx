@@ -36,7 +36,7 @@ export default function TestPage() {
   const [base, setBase] = useState<boolean>(true)
 
   //TODO: setBase & setQuote based on current chain & selected pair
-  const [baseCurrency, setBaseCurrency] = useState<string>('WETH')
+  const [baseCurrency, setBaseCurrency] = useState<string>('ETH')
   const [quoteCurrency, setQuoteCurrency] = useState<string>('USDC')
 
   //TODO: support 2 decimal points
@@ -92,7 +92,7 @@ export default function TestPage() {
         //TODO: update every X seconds
         console.log(parseInt(price.toString()))
         setChainLinkPrice(String(price ? (parseInt(price.toString()) / 100000000).toFixed(2) : 0))
-        toast.success(' price fetch success ')
+        // toast.success(' price fetch success ')
       }
     } catch (e) {
       toast.error(' price fetch error ')
@@ -110,18 +110,42 @@ export default function TestPage() {
 
   useInterval(getChainlinkPrice, 5000)
 
-  // useEffect(() => {
-  //   // return () => clearIntervalAsync(interval)
-  //   // getChainlinkPrice()
-  // }, [pairContract, chainLinkPrice])
-
   useEffect(() => {
     //TODO: get instant fill amount
     // setInstantFillAmount('50')
   }, [base])
 
+  const getOrders = async () => {
+    try {
+      if (pairContract) {
+        const orderCount = await pairContract?.orderCount()
+        const orders = []
+        console.log(orderCount, 'orders data fetch')
+        for (let i = 0; i < orderCount; i++) {
+          orders.push({ ...(await pairContract.orders(i)) })
+        }
+
+        console.log(orders)
+
+        // console.log(await pairContract.orders(orderCount))
+        // console.log(await pairContract.orders(0))
+        // console.log(await pairContract.orders(1))
+        // console.log(await pairContract.orders(2))
+        // console.log(await pairContract.orders(3))
+        // console.log(await pairContract.orders(4))
+        setOrderList(orders)
+      }
+      // get order list
+      toast.success(' order list get success ')
+    } catch (e) {
+      toast.error(' fail in get order list')
+      console.error(e)
+    }
+  }
+
   useEffect(() => {
     //TODO: get order list
+
     const test: Test[] = [
       {
         owner: '0xTest',
@@ -136,16 +160,21 @@ export default function TestPage() {
         existingAddAmt: '1400.00',
       },
     ]
-
-    try {
-      // get order list
-      toast.success(' order list get success ')
-    } catch (e) {
-      toast.error(' fail in get order list')
-      console.error(e)
+    if (orderList.length === 0) {
+      getOrders()
     }
-    setOrderList(test)
-  }, []) // wallet address
+    // try {
+    //   if(pairContract){
+    //     const data = await pairContract.orders()
+    //   }
+    //   // get order list
+    //   toast.success(' order list get success ')
+    // } catch (e) {
+    //   toast.error(' fail in get order list')
+    //   console.error(e)
+    // }
+    // setOrderList(test)
+  }, [pairContract, orderList]) // wallet address
 
   const switchBase = (switchTo: boolean) => {
     console.log(switchTo)
@@ -227,7 +256,7 @@ export default function TestPage() {
   }
 
   const remove = async () => {
-    console.log('remove')
+    toast.success('remove button clicked')
     //get pos from index.. need modal or popup to select cancel all or none - for now just cancel all
     try {
       const tx = await pairContract?.remove('0xTest', 2, true) // Can't test due to bug.. inputs: (address owner, uint pos, bool cancel)
@@ -254,6 +283,7 @@ export default function TestPage() {
   }
 
   const OrderList = ({ orderList }: { orderList: Test[] }) => {
+    console.log(orderList, 'orderList in component')
     return (
       <>
         {orderList.map((order, index) => {
@@ -267,7 +297,7 @@ export default function TestPage() {
               <div style={{ display: 'flex', padding: '40px 0 5px 0' }}>
                 <div style={{ color: `${base ? '#FF6534' : '#2EBD85'}` }}>My order #{index + 1}</div>
                 <button
-                  onClick={testButton}
+                  onClick={remove}
                   style={{
                     marginLeft: 'auto',
                     padding: '5px 10px',
@@ -286,7 +316,8 @@ export default function TestPage() {
                 <div>
                   <div style={{ fontWeight: 600, fontSize: '14px' }}>Filled Amount</div>
                   <div>
-                    {parseInt(amt) - parseInt(existingAddAmt)} / {amt} {base4Quote ? baseCurrency : quoteCurrency}
+                    {parseInt(amt) - parseInt(existingAddAmt)} / {parseInt(amt)}{' '}
+                    {base4Quote ? baseCurrency : quoteCurrency}
                   </div>
                 </div>
                 <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
@@ -350,7 +381,13 @@ export default function TestPage() {
           width: '100%',
         }}
       >
-        <Input type="number" value={amt} onChange={(e) => setAmount(parseInt(e.target.value))} />
+        <Input
+          type="number"
+          // value={amt}
+          onChange={(e) => setAmount(parseFloat(e.target.value))}
+          step={0.0001}
+          placeholder={'0'}
+        />
         <div style={{ padding: '0 10px 0 0', color: 'white' }}>{base ? baseCurrency : quoteCurrency}</div>
       </div>
       <div style={{ display: 'flex', padding: '5px 0', fontWeight: 300, fontSize: '14px' }}>

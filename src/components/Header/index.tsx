@@ -5,6 +5,7 @@ import { SupportedChainId } from 'constants/chains'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import useTheme from 'hooks/useTheme'
 import { darken } from 'polished'
+import { Circle } from 'react-feather'
 import { NavLink } from 'react-router-dom'
 import { Text } from 'rebass'
 import { useShowClaimPopup, useToggleSelfClaimModal } from 'state/application/hooks'
@@ -265,7 +266,7 @@ export default function Header() {
   const {
     infoLink,
     nativeCurrency: { symbol: nativeCurrencySymbol },
-  } = CHAIN_INFO[SupportedChainId.MAINNET]
+  } = CHAIN_INFO[chainId || SupportedChainId.MAINNET]
 
   return (
     <HeaderFrame showBackground={scrollY > 45}>
