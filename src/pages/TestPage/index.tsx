@@ -11,6 +11,24 @@ interface Test {
   amt: string
   existingAddAmt: string
 }
+
+const InputContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  padding: 10px 0;
+  background-color: #29313d;
+  border-radius: 8px;
+  width: 100%;
+  :focus-within {
+    div {
+      font-weight: 700;
+      margin-left: 10px;
+      transition-duration: 0.2s;
+    }
+  }
+`
+
 const Input = styled.input`
   color: white;
   font-size: 18px;
@@ -19,6 +37,13 @@ const Input = styled.input`
   border: none;
   text-align: right;
   width: 100%;
+  :focus {
+    outline: none;
+    + div {
+      font-size: 16px;
+    }
+    caret-color: gray;
+  }
 `
 export default function TestPage() {
   const factoryContract = useFactoryContract()
@@ -370,17 +395,7 @@ export default function TestPage() {
           {baseCurrency} {'>'} {quoteCurrency}
         </button>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyItems: 'center',
-          padding: '10px 0',
-          backgroundColor: '#29313D',
-          borderRadius: '8px',
-          width: '100%',
-        }}
-      >
+      <InputContainer>
         <Input
           type="number"
           // value={amt}
@@ -389,7 +404,7 @@ export default function TestPage() {
           placeholder={'0'}
         />
         <div style={{ padding: '0 10px 0 0', color: 'white' }}>{base ? baseCurrency : quoteCurrency}</div>
-      </div>
+      </InputContainer>
       <div style={{ display: 'flex', padding: '5px 0', fontWeight: 300, fontSize: '14px' }}>
         <div style={{ padding: '5px 0 0' }}>Expected Total:</div>
         <div style={{ padding: '5px 0 0', marginLeft: 'auto' }}>
