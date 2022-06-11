@@ -208,8 +208,8 @@ export default function TestPage() {
       },
     ]
     if (orderList.length === 0) {
-      setOrderList(test)
-      // getOrders()
+      // setOrderList(test)
+      getOrders()
     }
     // try {
     //   if(pairContract){
