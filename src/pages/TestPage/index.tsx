@@ -44,6 +44,16 @@ const Input = styled.input`
     }
     caret-color: gray;
   }
+  ::-webkit-outer-spin-button,
+  ::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  [type='number'] {
+    -moz-appearance: textfield;
+  }
 `
 export default function TestPage() {
   const factoryContract = useFactoryContract()
