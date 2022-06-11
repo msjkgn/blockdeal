@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import { AutoColumn } from 'components/Column'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useFactoryContract, usePairContract2, useWETHTest } from 'hooks/useContract'
 import React, { useEffect, useRef, useState } from 'react'
@@ -11,6 +12,12 @@ interface Test {
   amt: string
   existingAddAmt: string
 }
+
+const PageWrapper = styled(AutoColumn)`
+  padding: 0 10px;
+  width: 100%;
+  max-width: 540px;
+`
 
 const InputContainer = styled.div`
   display: flex;
@@ -54,6 +61,11 @@ const Input = styled.input`
   [type='number'] {
     -moz-appearance: textfield;
   }
+`
+
+const Order = styled.div`
+  height: 130px;
+  border-bottom: 1px solid #cccccc;
 `
 export default function TestPage() {
   const factoryContract = useFactoryContract()
@@ -196,7 +208,8 @@ export default function TestPage() {
       },
     ]
     if (orderList.length === 0) {
-      getOrders()
+      setOrderList(test)
+      // getOrders()
     }
     // try {
     //   if(pairContract){
@@ -320,7 +333,7 @@ export default function TestPage() {
   const OrderList = ({ orderList }: { orderList: Test[] }) => {
     console.log(orderList, 'orderList in component')
     return (
-      <>
+      <div style={{ borderTop: '1px solid #cccccc', marginTop: '20px' }}>
         {orderList.map((order, index) => {
           const { owner, base4Quote, amt, existingAddAmt } = order
           console.log(owner, 'orderList owner')
@@ -328,8 +341,8 @@ export default function TestPage() {
           console.log(amt, 'orderList amt')
           console.log(existingAddAmt, 'orderList existingAddAmt')
           return (
-            <div key={index}>
-              <div style={{ display: 'flex', padding: '40px 0 5px 0' }}>
+            <Order key={index}>
+              <div style={{ display: 'flex', padding: '30px 0 5px 0' }}>
                 <div style={{ color: `${base ? '#FF6534' : '#2EBD85'}` }}>My order #{index + 1}</div>
                 <button
                   onClick={remove}
@@ -360,15 +373,15 @@ export default function TestPage() {
                   <div>2800.82 {base4Quote ? baseCurrency : quoteCurrency}</div>
                 </div>
               </div>
-            </div>
+            </Order>
           )
         })}
-      </>
+      </div>
     )
   }
 
   return (
-    <div style={{ padding: '0px 10px', width: '100%', maxWidth: '400px' }}>
+    <PageWrapper>
       <div style={{ display: 'flex', padding: '10px 0px' }}>
         <div style={{ fontSize: '22px', fontWeight: 600 }}>
           {baseCurrency}/{quoteCurrency}
@@ -388,7 +401,7 @@ export default function TestPage() {
             border: '0px solid',
           }}
         >
-          {quoteCurrency} {'>'} {baseCurrency}
+          {quoteCurrency} {'➔'} {baseCurrency}
         </button>
         <button
           onClick={() => switchBase(true)}
@@ -402,7 +415,7 @@ export default function TestPage() {
             border: '0px solid',
           }}
         >
-          {baseCurrency} {'>'} {quoteCurrency}
+          {baseCurrency} {'➔'} {quoteCurrency}
         </button>
       </div>
       <InputContainer>
@@ -416,15 +429,16 @@ export default function TestPage() {
         <div style={{ padding: '0 10px 0 0', color: 'white' }}>{base ? baseCurrency : quoteCurrency}</div>
       </InputContainer>
       <div style={{ display: 'flex', padding: '5px 0', fontWeight: 300, fontSize: '14px' }}>
-        <div style={{ padding: '5px 0 0' }}>Expected Total:</div>
-        <div style={{ padding: '5px 0 0', marginLeft: 'auto' }}>
-          {base ? amt * parseInt(chainLinkPrice) : amt / parseInt(chainLinkPrice)} {base ? quoteCurrency : baseCurrency}
+        <div>Expected Current Output:</div>
+        <div style={{ marginLeft: 'auto' }}>
+          {Math.min(instantFillAmount, amt) || 0} {base ? quoteCurrency : baseCurrency}
         </div>
       </div>
       <div style={{ display: 'flex', padding: '5px 0', fontWeight: 300, fontSize: '14px' }}>
-        <div>Expected Total NOW:</div>
-        <div style={{ marginLeft: 'auto' }}>
-          {Math.min(instantFillAmount, amt)} {base ? quoteCurrency : baseCurrency}
+        <div style={{ padding: '5px 0 0' }}>Expected Final Output</div>
+        <div style={{ padding: '5px 0 0', marginLeft: 'auto' }}>
+          {(base ? amt * parseInt(chainLinkPrice) : amt / parseInt(chainLinkPrice)) || 0}{' '}
+          {base ? quoteCurrency : baseCurrency}
         </div>
       </div>
 
@@ -443,6 +457,6 @@ export default function TestPage() {
         Convert to {base ? quoteCurrency : baseCurrency}
       </button>
       <OrderList orderList={orderList} />
-    </div>
+    </PageWrapper>
   )
 }
