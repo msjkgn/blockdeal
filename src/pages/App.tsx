@@ -28,7 +28,8 @@ import { RedirectPathToTestOnly } from './TestPage/redirects'
 const AppWrapper = styled.div`
   display: flex;
   flex-flow: column;
-  width: 500px;
+
+  min-width: 350px;
   justify-content: center;
   align-items: center;
 `
