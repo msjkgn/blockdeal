@@ -16,7 +16,7 @@ interface Test {
 const PageWrapper = styled(AutoColumn)`
   padding: 0 10px;
   width: 100%;
-  max-width: 540px;
+  max-width: 350px;
 `
 
 const InputContainer = styled.div`
@@ -64,23 +64,22 @@ const Input = styled.input`
 `
 
 const Order = styled.div`
-  height: 130px;
-  border-bottom: 1px solid #cccccc;
+  border-top: 1px solid #cccccc;
 `
 export default function TestPage() {
   const factoryContract = useFactoryContract()
   const pairContract = usePairContract2()
 
-  console.log('Pool/index: Factory Contract - ', factoryContract)
-  console.log('Pool/index: Pair Contract    - ', pairContract)
+  // console.log('Pool/index: Factory Contract - ', factoryContract)
+  // console.log('Pool/index: Pair Contract    - ', pairContract)
 
   const wethContract = useWETHTest()
-  console.log('Pool/index: wethContract     - ', wethContract)
-  console.log(wethContract?.address)
+  // console.log('Pool/index: wethContract     - ', wethContract)
+  // console.log(wethContract?.address)
 
   const { library, account, chainId } = useActiveWeb3React() // web3 react
 
-  const [base, setBase] = useState<boolean>(true)
+  const [base, setBase] = useState<boolean>(false)
 
   //TODO: setBase & setQuote based on current chain & selected pair
   const [baseCurrency, setBaseCurrency] = useState<string>('ETH')
@@ -137,7 +136,7 @@ export default function TestPage() {
       if (pairContract) {
         const price = await pairContract.getPrice()
         //TODO: update every X seconds
-        console.log(parseInt(price.toString()))
+        // console.log(parseInt(price.toString()))
         setChainLinkPrice(String(price ? (parseInt(price.toString()) / 100000000).toFixed(2) : 0))
         // toast.success(' price fetch success ')
       }
@@ -155,7 +154,7 @@ export default function TestPage() {
   //   })
   // })
 
-  useInterval(getChainlinkPrice, 5000)
+  useInterval(getChainlinkPrice, 2000)
 
   useEffect(() => {
     //TODO: get instant fill amount
@@ -225,7 +224,7 @@ export default function TestPage() {
   }, [pairContract, orderList]) // wallet address
 
   const switchBase = (switchTo: boolean) => {
-    console.log(switchTo)
+    // console.log(switchTo)
     setBase(switchTo)
   }
 
@@ -258,7 +257,6 @@ export default function TestPage() {
     }
 
     // let contract = window.web3.eth.Contract(PAIR_ABI, '0xB3B994d44d11509f3f45A279A9B732e92cE0363F')
-    // console.log(contract)
     // library
     //   .getSigner()
     //   .estimateGas(txn)
@@ -316,61 +314,79 @@ export default function TestPage() {
     }
   }
 
-  const testButton = async () => {
-    console.log(factoryContract)
-    if (factoryContract) {
-      try {
-        const feeTo = await factoryContract.feeTo()
-        toast.success(' test button success ')
-        console.log('feeTo: ', feeTo)
-      } catch (e) {
-        toast.error('toast testButn fail')
-        console.error(e)
-      }
+  const removeWithoutCancel = async () => {
+    toast.success('removeWithoutCancel button clicked')
+    //get pos from index.. need modal or popup to select cancel all or none - for now just cancel all
+    try {
+      const tx = await pairContract?.remove('0xTest', 2, false) // Can't test due to bug.. inputs: (address owner, uint pos, bool cancel)
+      console.log(tx)
+      toast.success(' remove success ')
+    } catch (e) {
+      toast.error(' remove failed ')
+      console.error(e)
     }
   }
 
   const OrderList = ({ orderList }: { orderList: Test[] }) => {
-    console.log(orderList, 'orderList in component')
+    // console.log(orderList, 'orderList in component')
     return (
-      <div style={{ borderTop: '1px solid #cccccc', marginTop: '20px' }}>
+      <div style={{ marginTop: '20px', borderBottom: '1px solid #cccccc'}}>
         {orderList.map((order, index) => {
-          const { owner, base4Quote, amt, existingAddAmt } = order
-          console.log(owner, 'orderList owner')
-          console.log(base4Quote, 'orderList base4Quote')
-          console.log(amt, 'orderList amt')
-          console.log(existingAddAmt, 'orderList existingAddAmt')
+          const { /* owner, */ base4Quote, amt, existingAddAmt } = order
+          // console.log(owner, 'orderList owner')
+          // console.log(base4Quote, 'orderList base4Quote')
+          // console.log(amt, 'orderList amt')
+          // console.log(existingAddAmt, 'orderList existingAddAmt')
           return (
             <Order key={index}>
-              <div style={{ display: 'flex', padding: '30px 0 5px 0' }}>
-                <div style={{ color: `${base ? '#FF6534' : '#2EBD85'}` }}>My order #{index + 1}</div>
+              <div style={{ display: 'flex', padding: '15px 0 0 0' }}>
+                <div style={{ color: `${base4Quote ? '#FF6534' : '#2EBD85'}` }}>
+                  {base4Quote ? baseCurrency : quoteCurrency} {'➔'} {base4Quote ? quoteCurrency : baseCurrency}
+                </div>
                 <button
                   onClick={remove}
                   style={{
                     marginLeft: 'auto',
                     padding: '5px 10px',
-                    fontSize: '12px',
+                    fontSize: '14px',
                     fontWeight: 400,
                     backgroundColor: '#666666',
                     borderRadius: '4px',
                     border: 'none',
                     color: 'white',
+                    minWidth: '80px',
                   }}
                 >
-                  Cancel / Complete
+                  Cancel
+                </button>
+                <button
+                  onClick={removeWithoutCancel}
+                  style={{
+                    marginLeft: 'auto',
+                    padding: '5px 10px',
+                    fontSize: '14px',
+                    fontWeight: 400,
+                    backgroundColor: '#666666',
+                    borderRadius: '4px',
+                    border: 'none',
+                    color: 'white',
+                    minWidth: '80px',
+                  }}
+                >
+                  Withdraw
                 </button>
               </div>
-              <div style={{ display: 'flex' }}>
+              <div style={{ display: 'flex', padding: '15px 0 15px 0' }}>
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: '14px' }}>Filled Amount</div>
-                  <div>
-                    {parseInt(amt) - parseInt(existingAddAmt)} / {parseInt(amt)}{' '}
+                  <div style={{ fontWeight: 600, fontSize: '14px', padding: '0 0 5px 0' }}>Filled/Total Qty</div>
+                  <div style={{ fontSize: '14px' }}>
+                    {parseInt(amt) - parseInt(existingAddAmt)}/{parseInt(amt)}{' '}
                     {base4Quote ? baseCurrency : quoteCurrency}
                   </div>
                 </div>
                 <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
-                  <div style={{ fontWeight: 600, fontSize: '14px' }}>Filled Price</div>
-                  <div>2800.82 {base4Quote ? baseCurrency : quoteCurrency}</div>
+                  <div style={{ fontWeight: 600, fontSize: '14px', padding: '0 0 5px 0' }}>Filled Price</div>
+                  <div style={{ fontSize: '14px' }}>2800.82</div>
                 </div>
               </div>
             </Order>
@@ -386,7 +402,7 @@ export default function TestPage() {
         <div style={{ fontSize: '22px', fontWeight: 600 }}>
           {baseCurrency}/{quoteCurrency}
         </div>
-        <div style={{ color: '#E8435A', marginLeft: 'auto' }}>{chainLinkPrice}</div>
+        <div style={{ marginLeft: 'auto', height: 'auto', fontSize: '22px', fontWeight: 400 }}>{chainLinkPrice}</div>
       </div>
       <div style={{ display: 'flex', padding: '10px 0 20px' }}>
         <button
@@ -397,7 +413,7 @@ export default function TestPage() {
             fontWeight: 500,
             color: 'white',
             backgroundColor: `${base ? '#29313D' : '#2EBD85'}`,
-            borderRadius: '2px',
+            borderRadius: '0px',
             border: '0px solid',
           }}
         >
@@ -411,7 +427,7 @@ export default function TestPage() {
             fontWeight: 500,
             color: 'white',
             backgroundColor: `${base ? '#FF6534' : '#29313D'}`,
-            borderRadius: '2px',
+            borderRadius: '0px',
             border: '0px solid',
           }}
         >
@@ -428,16 +444,20 @@ export default function TestPage() {
         />
         <div style={{ padding: '0 10px 0 0', color: 'white' }}>{base ? baseCurrency : quoteCurrency}</div>
       </InputContainer>
-      <div style={{ display: 'flex', padding: '5px 0', fontWeight: 300, fontSize: '14px' }}>
-        <div>Expected Current Output:</div>
+      <div style={{ display: 'flex', padding: '10px 0', fontWeight: 300, fontSize: '14px' }}>
+        <div style={{ fontWeight: 600 }}>Expected Current</div>
         <div style={{ marginLeft: 'auto' }}>
           {Math.min(instantFillAmount, amt) || 0} {base ? quoteCurrency : baseCurrency}
         </div>
       </div>
-      <div style={{ display: 'flex', padding: '5px 0', fontWeight: 300, fontSize: '14px' }}>
-        <div style={{ padding: '5px 0 0' }}>Expected Final Output</div>
-        <div style={{ padding: '5px 0 0', marginLeft: 'auto' }}>
-          {(base ? amt * parseInt(chainLinkPrice) : amt / parseInt(chainLinkPrice)) || 0}{' '}
+      <div style={{ display: 'flex', padding: '0px 0', fontSize: '14px' }}>
+        <div style={{ padding: '0px 0 0', fontWeight: 600 }}>Expected Total</div>
+        <div style={{ padding: '0px 0 0', marginLeft: 'auto' }}>
+          {(parseInt(chainLinkPrice) === 0
+            ? 0
+            : base
+            ? amt * parseInt(chainLinkPrice)
+            : amt / parseInt(chainLinkPrice)) || 0}{' '}
           {base ? quoteCurrency : baseCurrency}
         </div>
       </div>
@@ -454,7 +474,7 @@ export default function TestPage() {
           color: 'white',
         }}
       >
-        Convert to {base ? quoteCurrency : baseCurrency}
+        Convert
       </button>
       <OrderList orderList={orderList} />
     </PageWrapper>
