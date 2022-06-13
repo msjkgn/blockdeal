@@ -1,7 +1,7 @@
 {
-  "name": "hedgeyourpool",
+  "name": "blockdeal",
   "version": "0.0.25-beta",
-  "description": "hedgeYourPool Interface",
+  "description": "blockdeal Interface",
   "homepage": ".",
   "files": [
     "dist"
