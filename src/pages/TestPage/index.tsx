@@ -141,7 +141,7 @@ export default function TestPage() {
         // toast.success(' price fetch success ')
       }
     } catch (e) {
-      toast.error(' price fetch error ')
+      // toast.error(' price fetch error ')
       setChainLinkPrice('0')
       console.error(e)
     }
@@ -180,9 +180,9 @@ export default function TestPage() {
         // console.log(await pairContract.orders(3))
         // console.log(await pairContract.orders(4))
         setOrderList(orders)
+        toast.success(' order list get success ')
       }
       // get order list
-      toast.success(' order list get success ')
     } catch (e) {
       toast.error(' fail in get order list')
       console.error(e)
