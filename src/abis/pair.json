@@ -64,6 +64,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "CleanOwnerOrders",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "owner",
@@ -154,7 +167,7 @@
   },
   {
     "inputs": [],
-    "name": "addBaseAmt",
+    "name": "addedBaseAmt",
     "outputs": [
       {
         "internalType": "uint256",
@@ -167,7 +180,7 @@
   },
   {
     "inputs": [],
-    "name": "addQuoteAmt",
+    "name": "addedQuoteAmt",
     "outputs": [
       {
         "internalType": "uint256",
@@ -356,7 +369,7 @@
   },
   {
     "inputs": [],
-    "name": "fillBaseAmt",
+    "name": "filledBaseAmt",
     "outputs": [
       {
         "internalType": "uint256",
@@ -369,7 +382,7 @@
   },
   {
     "inputs": [],
-    "name": "fillCount",
+    "name": "filledCount",
     "outputs": [
       {
         "internalType": "uint256",
@@ -382,7 +395,7 @@
   },
   {
     "inputs": [],
-    "name": "fillQuoteAmt",
+    "name": "filledQuoteAmt",
     "outputs": [
       {
         "internalType": "uint256",
@@ -410,12 +423,12 @@
       },
       {
         "internalType": "uint256",
-        "name": "fillBaseAmt",
+        "name": "baseAmt",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "fillQuoteAmt",
+        "name": "quoteAmt",
         "type": "uint256"
       }
     ],
@@ -445,7 +458,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "pos",
+        "name": "orderPos",
         "type": "uint256"
       }
     ],
@@ -567,6 +580,11 @@
         "type": "address"
       },
       {
+        "internalType": "uint256",
+        "name": "ownerOrderPos",
+        "type": "uint256"
+      },
+      {
         "internalType": "bool",
         "name": "base4Quote",
         "type": "bool"
@@ -578,7 +596,81 @@
       },
       {
         "internalType": "uint256",
-        "name": "existingAddAmt",
+        "name": "existingAmt",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "ownerOrderCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "ownerOrders",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "active",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "orderPos",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "paidBaseAmt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "paidQuoteAmt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
         "type": "uint256"
       }
     ],
@@ -627,19 +719,9 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
         "internalType": "uint256",
-        "name": "pos",
+        "name": "orderPos",
         "type": "uint256"
-      },
-      {
-        "internalType": "bool",
-        "name": "cancel",
-        "type": "bool"
       }
     ],
     "name": "remove",
@@ -649,7 +731,7 @@
   },
   {
     "inputs": [],
-    "name": "removeBaseAmt",
+    "name": "removedBaseAmt",
     "outputs": [
       {
         "internalType": "uint256",
@@ -662,7 +744,7 @@
   },
   {
     "inputs": [],
-    "name": "removeQuoteAmt",
+    "name": "removedQuoteAmt",
     "outputs": [
       {
         "internalType": "uint256",
@@ -674,33 +756,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "reserveBaseAmt",
-    "outputs": [
+    "inputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "orderPos",
         "type": "uint256"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "reserveQuoteAmt",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "settle",
     "outputs": [],
     "stateMutability": "nonpayable",
