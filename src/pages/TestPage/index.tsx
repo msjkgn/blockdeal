@@ -4,7 +4,7 @@ import { AutoColumn } from 'components/Column'
 import { useInterval } from 'hooks/perfectFund/useInterval'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { usePairContract2, useWETHTest } from 'hooks/useContract'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import styled from 'styled-components/macro'
 
@@ -191,11 +191,10 @@ export default function TestPage() {
     }
   }
 
-  const withdraw = async () => {
+  const withdraw = async (pos: number) => {
     toast.success('withdraw button clicked')
-    //get pos from index.. need modal or popup to select cancel all or none - for now just cancel all
     try {
-      const tx = await pairContract?.remove('0xTest', 2, false) // Can't test due to bug.. inputs: (address owner, uint pos, bool cancel)
+      const tx = await pairContract?.settle(pos)
       console.log(tx)
       toast.success(' remove success ')
     } catch (e) {
@@ -207,7 +206,7 @@ export default function TestPage() {
   const OrderList = ({ orderList }: { orderList: any[] }) => {
     // console.log(orderList, 'orderList in component')
     return (
-      <div style={{ marginTop: '20px', borderBottom: '1px solid #cccccc' }}>
+      <div style={{ marginTop: '20px', marginBottom: '20px', borderBottom: '1px solid #cccccc' }}>
         {orderList.map((_order, index) => {
           const { order, pos, cumulAmt, cumulAmtOut } = _order
           const { amt, base4Quote, existingAmt, owner, ownerOrderPos } = order
