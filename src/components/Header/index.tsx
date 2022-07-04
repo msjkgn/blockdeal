@@ -27,8 +27,7 @@ import HolidayOrnament from './HolidayOrnament'
 import NetworkSelector from './NetworkSelector'
 
 const HeaderFrame = styled.div<{ showBackground: boolean }>`
-  display: grid;
-  grid-template-columns: 120px 1fr 120px;
+  display: flex;
   align-items: center;
   justify-content: space-between;
   align-items: center;
@@ -36,7 +35,7 @@ const HeaderFrame = styled.div<{ showBackground: boolean }>`
   width: 100%;
   top: 0;
   position: relative;
-  padding: 1rem;
+  padding: 10px 0;
   z-index: 21;
   position: relative;
   /* Background slide effect on scroll. */
@@ -270,36 +269,10 @@ export default function Header() {
 
   return (
     <HeaderFrame showBackground={scrollY > 45}>
-      <ClaimModal />
-      <Title href=".">
-        <UniIcon>
-          {/* <Logo fill={darkMode ? white : black} width="24px" height="100%" title="logo" /> */}
-          <HolidayOrnament />
-        </UniIcon>
-      </Title>
-      <HeaderLinks>
-        {/* <StyledNavLink id={`swap-nav-link`} to={'/swap'}>
-          <Trans>Swap</Trans>
-        </StyledNavLink> */}
-        {/* <StyledNavLink
-          id={`pool-nav-link`}
-          to={'/pool'}
-          isActive={(match, { pathname }) =>
-            Boolean(match) ||
-            pathname.startsWith('/add') ||
-            pathname.startsWith('/remove') ||
-            pathname.startsWith('/increase') ||
-            pathname.startsWith('/find')
-          }
-        >
-          <Trans>Pool</Trans>
-        </StyledNavLink>
-        <StyledNavLink id={'rebalance-nav-lint'} to={'/rebalance'}>
-          <Trans>Rebalance</Trans>
-        </StyledNavLink> */}
-      </HeaderLinks>
-
       <HeaderControls>
+        <HeaderElement>
+          <Logo fill={darkMode ? white : black} width="28px" height="100%" title="logo" />
+        </HeaderElement>
         <HeaderElement>
           <NetworkSelector />
         </HeaderElement>
@@ -321,13 +294,6 @@ export default function Header() {
             </UNIWrapper>
           )}
           <AccountElement active={!!account}>
-            {account && userEthBalance ? (
-              <BalanceText style={{ flexShrink: 0, userSelect: 'none' }} pl="0.75rem" pr="0.5rem" fontWeight={500}>
-                <Trans>
-                  {userEthBalance?.toSignificant(3)} {nativeCurrencySymbol}
-                </Trans>
-              </BalanceText>
-            ) : null}
             <Web3Status />
           </AccountElement>
         </HeaderElement>

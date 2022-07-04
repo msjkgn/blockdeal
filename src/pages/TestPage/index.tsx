@@ -9,24 +9,26 @@ import toast from 'react-hot-toast'
 import styled from 'styled-components/macro'
 
 const PageWrapper = styled(AutoColumn)`
-  padding: 0 10px;
-  width: 100%;
-  max-width: 350px;
+  // padding: 15px;
+  // width: 100%;
+  // max-width: 350px;
+  // background-color: #212429 !important;
+  // border: 0 none;
+  // border-radius: 15px;
+  // box-shadow: 0 25px 50px #000;
 `
-
 const Button = styled.button`
   margin-left: 5px;
   padding: 5px 10px;
   fontsize: 14px;
   fontweight: 400;
   backgroundcolor: #b28e24;
-  borderradius: 4px;
+  border-radius: 4px;
   border: none;
   color: #212429;
   minwidth: 80px;
   cursor: pointer;
 `
-
 const InputContainer = styled.div`
   display: flex;
   align-items: center;
@@ -224,7 +226,7 @@ export default function TestPage() {
                   >
                     Cancel
                   </Button>
-                  <Button onClick={withdraw}>Withdraw</Button>
+                  <Button onClick={() => withdraw(pos)}>Withdraw</Button>
                 </div>
               </div>
               <div style={{ display: 'flex', padding: '15px 0 15px 0' }}>
@@ -273,7 +275,7 @@ export default function TestPage() {
             fontWeight: 500,
             color: 'white',
             backgroundColor: `${base ? '#29313D' : '#2EBD85'}`,
-            borderRadius: '0px',
+            borderRadius: '4px',
             border: '0px solid',
           }}
         >
@@ -287,7 +289,7 @@ export default function TestPage() {
             fontWeight: 500,
             color: 'white',
             backgroundColor: `${base ? '#FF6534' : '#29313D'}`,
-            borderRadius: '0px',
+            borderRadius: '4px',
             border: '0px solid',
           }}
         >
