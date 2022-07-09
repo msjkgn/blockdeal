@@ -254,7 +254,7 @@ export default function TestPage() {
       </div>
     )
   }
-  const chainLinkPriceFormatted: any = parseFloat(ethers.utils.formatUnits(chainLinkPrice, 8)).toFixed(2)
+  const chainLinkPriceFormatted: any = parseFloat(formatUnits(chainLinkPrice, 8)).toFixed(2)
 
   return (
     <PageWrapper>
