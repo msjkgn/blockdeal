@@ -122,18 +122,14 @@ export default function TestPage() {
   const getOrders = async () => {
     try {
       if (pairContract) {
-        console.log('Test')
         const orderCount = await pairContract.ownerOrderCount(account)
-        console.log('orderCount: ', orderCount)
         const orderList = []
         for (let i = 0; i < orderCount; i++) {
           const [active, pos] = await pairContract.ownerOrders(account, i)
-          console.log(active, pos)
           if (active) {
             const order = await pairContract.orders(pos)
             const { amt, base4Quote, existingAmt, owner, ownerOrderPos } = order
             const [cumulAmt, cumulAmtOut] = await pairContract.getFilledAmounts(pos)
-            console.log('Order: ', amt, base4Quote, existingAmt, owner, ownerOrderPos, cumulAmt, cumulAmtOut)
             orderList.push({
               order,
               pos,
@@ -181,10 +177,8 @@ export default function TestPage() {
   }
 
   const cancel = async (pos: any) => {
-    console.log(pos)
     try {
       const tx = await pairContract?.remove(pos)
-      console.log(tx)
       toast.success('Successfully Canceld')
     } catch (e) {
       toast.error(' remove failed ')
@@ -196,7 +190,6 @@ export default function TestPage() {
     toast.success('withdraw button clicked')
     try {
       const tx = await pairContract?.settle(pos)
-      console.log(tx)
       toast.success(' remove success ')
     } catch (e) {
       toast.error(' remove failed ')
