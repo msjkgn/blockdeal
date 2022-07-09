@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
-import { formatUnits } from '@ethersproject/units'
+import { MaxUint256, Zero } from '@ethersproject/constants'
+import { formatUnits, parseUnits } from '@ethersproject/units'
 import { AutoColumn } from 'components/Column'
 import { useInterval } from 'hooks/perfectFund/useInterval'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
@@ -79,8 +80,6 @@ const Order = styled.div`
 export default function TestPage() {
   const pairContract = usePairContract2()
   const wethContract = useWETHTest()
-  // @ts-ignore
-  const ethers = window._ethers
 
   const { library, account, chainId } = useActiveWeb3React() // web3 react
 
@@ -166,11 +165,11 @@ export default function TestPage() {
       if (wethContract && pairContract && account) {
         //TODO: Check allowances to check if approval needed
         //TODO: ERC20 addresses should not be hard-coded
-        const weiAmt = parseFloat(ethers.utils.parseUnits(amt.toString(), 'ether'))
+        const weiAmt = parseFloat(parseUnits(amt.toString(), 'ether').toString())
         const allowance = await wethContract.allowance(account, pairContract.address)
         if (allowance.lt(weiAmt)) {
           // //TODO: Handle success & error
-          const approveTx = await wethContract.approve(pairContract.address, ethers.constants.MaxUint256)
+          const approveTx = await wethContract.approve(pairContract.address, MaxUint256)
         }
         // //TODO: Handle success & error
         const tx = await pairContract.add(account, base, weiAmt)
@@ -233,14 +232,13 @@ export default function TestPage() {
                 <div>
                   <div style={{ fontWeight: 600, fontSize: '14px', padding: '0 0 5px 0' }}>Filled/Total Qty</div>
                   <div style={{ fontSize: '14px' }}>
-                    {parseFloat(cumulAmt)} / {ethers.utils.formatUnits(amt, 'ether')}{' '}
-                    {base4Quote ? baseCurrency : quoteCurrency}
+                    {parseFloat(cumulAmt)} / {formatUnits(amt, 'ether')} {base4Quote ? baseCurrency : quoteCurrency}
                   </div>
                 </div>
                 <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
                   <div style={{ fontWeight: 600, fontSize: '14px', padding: '0 0 5px 0' }}>Filled Price</div>
                   <div style={{ fontSize: '14px' }}>
-                    {ethers.constants.Zero.eq(cumulAmt)
+                    {Zero.eq(cumulAmt)
                       ? '-'
                       : base4Quote
                       ? `${cumulAmt.div(cumulAmtOut)} ${baseCurrency}`
