@@ -67,7 +67,6 @@ const Input = styled.input`
     -webkit-appearance: none;
     margin: 0;
   }
-
   /* Firefox */
   [type='number'] {
     -moz-appearance: textfield;
@@ -85,7 +84,7 @@ export default function TestPage() {
   const { library, account, chainId } = useActiveWeb3React() // web3 react
 
   const [base, setBase] = useState<boolean>(false)
-  const [fee, setFee] = React.useState(0.005) // TODO: Get fee from backend.
+  const [fee, setFee] = React.useState(0.0005) // TODO: ***Get from backend***
 
   //TODO: setBase & setQuote based on current chain & selected pair
   const [baseCurrency, setBaseCurrency] = useState<string>('ETH')
@@ -94,20 +93,44 @@ export default function TestPage() {
   //TODO: support 2 decimal points
   const [amt, setAmount] = useState(0)
   const [chainLinkPrice, setChainLinkPrice] = useState<number>(0)
-  const [instantFillAmount, setInstantFillAmount] = useState<number>(0)
+  const [instantFillAmount, setInstantFillAmount] = useState<number>(0) // TODO: ***Get from backend***
+  const [ownerOrderList, setOwnerOrderList] = useState<any[]>([])
 
-  const [orderList, setOrderList] = useState<any[]>([])
+  const baseDecimal = 18 // TODO: ***Get from backend***
+  // const [baseDecimal, setBaseDecimal] = useState<number>(0)
+  // async function getBaseDecimal() {
+  //   try {
+  //     if (pairContract) {
+  //       const decimal = await pairContract.baseDecimal()
+  //       setBaseDecimal(decimal)
+  //     }
+  //   } catch (e) {
+  //     setBaseDecimal(0)
+  //     console.error(e)
+  //   }
+  // }
+
+  const quoteDecimal = 6 // TODO: ***Get from backend***
+  // const [quoteDecimal, setQuoteDecimal] = useState<number>(0)
+  // async function getQuoteDecimal() {
+  //   try {
+  //     if (pairContract) {
+  //       const decimal = await pairContract.quoteDecimal()
+  //       setQuoteDecimal(decimal)
+  //     }
+  //   } catch (e) {
+  //     setQuoteDecimal(0)
+  //     console.error(e)
+  //   }
+  // }
 
   async function getChainlinkPrice() {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     try {
       if (pairContract) {
         const price = await pairContract.getPrice()
         setChainLinkPrice(price)
-        // toast.success(' price fetch success ')
       }
     } catch (e) {
-      // toast.error(' price fetch error ')
       setChainLinkPrice(0)
       console.error(e)
     }
@@ -120,26 +143,26 @@ export default function TestPage() {
     // setInstantFillAmount('50')
   }, [base])
 
-  const getOrders = async () => {
+  const getOwnerOrders = async () => {
     try {
       if (pairContract) {
-        const orderCount = await pairContract.ownerOrderCount(account)
-        const orderList = []
-        for (let i = 0; i < orderCount; i++) {
+        const ownerOrderCount = await pairContract.ownerOrderCount(account)
+        const ownerOrderList = []
+        for (let i = 0; i < ownerOrderCount; i++) {
           const [active, pos] = await pairContract.ownerOrders(account, i)
           if (active) {
             const order = await pairContract.orders(pos)
             const { amt, base4Quote, existingAmt, owner, ownerOrderPos } = order
-            const [cumulAmt, cumulAmtOut] = await pairContract.getFilledAmounts(pos)
-            orderList.push({
+            const [cumulAmtIn, cumulAmtOut] = await pairContract.getFilledAmounts(pos)
+            ownerOrderList.push({
               order,
               pos,
-              cumulAmt,
+              cumulAmtIn,
               cumulAmtOut,
             })
           }
         }
-        setOrderList(orderList)
+        setOwnerOrderList(ownerOrderList)
       }
     } catch (e) {
       toast.error(' fail in get order list')
@@ -148,8 +171,8 @@ export default function TestPage() {
   }
 
   useEffect(() => {
-    if (orderList.length === 0) {
-      getOrders()
+    if (ownerOrderList.length === 0) {
+      getOwnerOrders()
     }
   }, [account]) // wallet address
 
@@ -191,12 +214,13 @@ export default function TestPage() {
     }
   }
 
-  const cancel = async (pos: any) => {
+  const cancel = async (pos: number) => {
+    toast.success('cancel button clicked')
     try {
-      const tx = await pairContract?.remove(pos)
-      toast.success('Successfully Canceld')
+      await pairContract?.remove(pos)
+      toast.success(' Cancel success ')
     } catch (e) {
-      toast.error(' remove failed ')
+      toast.error(' Cancel fail ')
       console.error(e)
     }
   }
@@ -204,21 +228,20 @@ export default function TestPage() {
   const withdraw = async (pos: number) => {
     toast.success('withdraw button clicked')
     try {
-      const tx = await pairContract?.settle(pos)
-      toast.success(' remove success ')
+      await pairContract?.settle(pos)
+      toast.success(' withdraw success ')
     } catch (e) {
-      toast.error(' remove failed ')
+      toast.error(' withdraw fail ')
       console.error(e)
     }
   }
 
-  const OrderList = ({ orderList }: { orderList: any[] }) => {
-    // console.log(orderList, 'orderList in component')
+  const OwnerOrderList = ({ ownerOrderList }: { ownerOrderList: any[] }) => {
     return (
       <div style={{ marginTop: '20px', marginBottom: '20px', borderBottom: '1px solid #cccccc' }}>
-        {orderList.map((_order, index) => {
-          const { order, pos, cumulAmt, cumulAmtOut } = _order
-          const { amt, base4Quote, existingAmt, owner, ownerOrderPos } = order
+        {ownerOrderList.map((_order, index) => {
+          const { order, pos, cumulAmtIn, cumulAmtOut } = _order
+          const { amt, base4Quote /*, existingAmt, owner, ownerOrderPos */ } = order
           return (
             <Order key={index}>
               <div style={{ display: 'flex', padding: '15px 0 0 0' }}>
@@ -233,24 +256,36 @@ export default function TestPage() {
                   >
                     Cancel
                   </Button>
-                  <Button onClick={() => withdraw(pos)}>Withdraw</Button>
+                  <Button
+                    onClick={() => {
+                      withdraw(pos)
+                    }}
+                  >
+                    Withdraw
+                  </Button>
                 </div>
               </div>
               <div style={{ display: 'flex', padding: '15px 0 15px 0' }}>
                 <div>
                   <div style={{ fontWeight: 600, fontSize: '14px', padding: '0 0 5px 0' }}>Filled/Total Qty</div>
                   <div style={{ fontSize: '14px' }}>
-                    {parseFloat(cumulAmt)} / {formatUnits(amt, 'ether')} {base4Quote ? baseCurrency : quoteCurrency}
+                    {formatUnits(cumulAmtIn, base4Quote ? baseDecimal : quoteDecimal)} /
+                    {formatUnits(amt, base4Quote ? baseDecimal : quoteDecimal)}{' '}
+                    {base4Quote ? baseCurrency : quoteCurrency}
                   </div>
                 </div>
                 <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
                   <div style={{ fontWeight: 600, fontSize: '14px', padding: '0 0 5px 0' }}>Filled Price</div>
                   <div style={{ fontSize: '14px' }}>
-                    {Zero.eq(cumulAmt)
+                    {Zero.eq(cumulAmtIn)
                       ? '-'
                       : base4Quote
-                      ? `${cumulAmt.div(cumulAmtOut)} ${baseCurrency}`
-                      : `${cumulAmtOut.div(cumulAmt)} ${baseCurrency}`}
+                      ? `${
+                          (cumulAmtOut * Math.pow(10, baseDecimal)) / (cumulAmtIn * Math.pow(10, quoteDecimal))
+                        } ${quoteCurrency}`
+                      : `${
+                          (cumulAmtIn * Math.pow(10, quoteDecimal)) / (cumulAmtOut * Math.pow(10, baseDecimal))
+                        } ${quoteCurrency}`}
                   </div>
                 </div>
               </div>
@@ -305,7 +340,7 @@ export default function TestPage() {
       <InputContainer>
         <Input
           type="number"
-          // value={amt}
+          value={amt}
           onChange={(e) => setAmount(parseFloat(e.target.value))}
           step={0.0001}
           placeholder={'0'}
@@ -315,18 +350,18 @@ export default function TestPage() {
       <div style={{ display: 'flex', padding: '10px 0', fontWeight: 300, fontSize: '14px' }}>
         <div style={{ fontWeight: 600 }}>Expected Current</div>
         <div style={{ marginLeft: 'auto' }}>
-          {base ? amt * chainLinkPriceFormatted * (1 - fee) : (amt / chainLinkPriceFormatted) * (1 - fee)}{' '}
+          {Math.min(
+            parseFloat(formatUnits(instantFillAmount, base ? quoteDecimal : baseDecimal)),
+            base ? amt * chainLinkPriceFormatted : amt / chainLinkPriceFormatted
+          ) *
+            (1 - fee)}{' '}
           {base ? quoteCurrency : baseCurrency}
         </div>
       </div>
       <div style={{ display: 'flex', padding: '0px 0', fontSize: '14px' }}>
         <div style={{ padding: '0px 0 0', fontWeight: 600 }}>Expected Total</div>
         <div style={{ padding: '0px 0 0', marginLeft: 'auto' }}>
-          {Math.min(
-            parseFloat(formatUnits(instantFillAmount, 'ether')),
-            base ? amt * chainLinkPriceFormatted : amt / chainLinkPriceFormatted
-          ) *
-            (1 - fee)}{' '}
+          {(base ? amt * chainLinkPriceFormatted : amt / chainLinkPriceFormatted) * (1 - fee)}{' '}
           {base ? quoteCurrency : baseCurrency}
         </div>
       </div>
@@ -345,7 +380,7 @@ export default function TestPage() {
       >
         Convert to {base ? quoteCurrency : baseCurrency}
       </button>
-      <OrderList orderList={orderList} />
+      <OwnerOrderList ownerOrderList={ownerOrderList} />
     </PageWrapper>
   )
 }
