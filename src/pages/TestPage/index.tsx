@@ -90,39 +90,29 @@ export default function TestPage() {
   const [baseCurrency, setBaseCurrency] = useState<string>('ETH')
   const [quoteCurrency, setQuoteCurrency] = useState<string>('USDC')
 
-  //TODO: support 2 decimal points
   const [amt, setAmount] = useState(0)
   const [chainLinkPrice, setChainLinkPrice] = useState<number>(0)
   const [instantFillAmount, setInstantFillAmount] = useState<number>(0) // TODO: ***Get from backend***
   const [ownerOrderList, setOwnerOrderList] = useState<any[]>([])
 
-  const baseDecimal = 18 // TODO: ***Get from backend***
-  // const [baseDecimal, setBaseDecimal] = useState<number>(0)
-  // async function getBaseDecimal() {
-  //   try {
-  //     if (pairContract) {
-  //       const decimal = await pairContract.baseDecimal()
-  //       setBaseDecimal(decimal)
-  //     }
-  //   } catch (e) {
-  //     setBaseDecimal(0)
-  //     console.error(e)
-  //   }
-  // }
+  const [baseDecimal, setBaseDecimal] = useState<number>(18)
+  const [quoteDecimal, setQuoteDecimal] = useState<number>(6)
 
-  const quoteDecimal = 6 // TODO: ***Get from backend***
-  // const [quoteDecimal, setQuoteDecimal] = useState<number>(0)
-  // async function getQuoteDecimal() {
-  //   try {
-  //     if (pairContract) {
-  //       const decimal = await pairContract.quoteDecimal()
-  //       setQuoteDecimal(decimal)
-  //     }
-  //   } catch (e) {
-  //     setQuoteDecimal(0)
-  //     console.error(e)
-  //   }
-  // }
+  useEffect(() => {
+    async function getDecimals() {
+      try {
+        if (pairContract) {
+          const baseDecimal = await pairContract.baseDecimal()
+          setBaseDecimal(baseDecimal)
+          const quoteDecimal = await pairContract.quoteDecimal()
+          setQuoteDecimal(quoteDecimal)
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    getDecimals()
+  }, [pairContract])
 
   async function getChainlinkPrice() {
     try {
@@ -139,8 +129,18 @@ export default function TestPage() {
   useInterval(getChainlinkPrice, 2000)
 
   useEffect(() => {
-    //TODO: get instant fill amount
-    // setInstantFillAmount('50')
+    // async function getInstantFillAmount() {
+    //   try {
+    //     if (pairContract) {
+    //       const amountAvailable = await pairContract.getAmountAvailable(base)
+    //       console.log(amountAvailable.toString())
+    //       setInstantFillAmount(amountAvailable)
+    //     }
+    //   } catch (e) {
+    //     console.error(e)
+    //   }
+    // }
+    // getInstantFillAmount()
   }, [base])
 
   const getOwnerOrders = async () => {
