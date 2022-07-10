@@ -4,7 +4,7 @@ import { formatUnits, parseUnits } from '@ethersproject/units'
 import { AutoColumn } from 'components/Column'
 import { useInterval } from 'hooks/perfectFund/useInterval'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { usePairContract2, useWETHTest } from 'hooks/useContract'
+import { usePairContract2, useUSDCContract, useWETHTest } from 'hooks/useContract'
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import styled from 'styled-components/macro'
@@ -80,6 +80,7 @@ const Order = styled.div`
 export default function TestPage() {
   const pairContract = usePairContract2()
   const wethContract = useWETHTest()
+  const usdcContract = useUSDCContract()
 
   const { library, account, chainId } = useActiveWeb3React() // web3 react
 
@@ -158,17 +159,31 @@ export default function TestPage() {
 
   const add = async () => {
     try {
-      if (wethContract && pairContract && account) {
-        //TODO: Check allowances to check if approval needed
-        //TODO: ERC20 addresses should not be hard-coded
-        const weiAmt = parseFloat(parseUnits(amt.toString(), 'ether').toString())
-        const allowance = await wethContract.allowance(account, pairContract.address)
-        if (allowance.lt(weiAmt)) {
-          // //TODO: Handle success & error
-          const approveTx = await wethContract.approve(pairContract.address, MaxUint256)
+      //TODO: ERC20 addresses should not be hard-coded (get from pairContract)
+      //TODO: Handle success & error
+      if (pairContract && account) {
+        console.log(base)
+        if (base) {
+          if (wethContract) {
+            const weiAmt = parseFloat(parseUnits(amt.toString(), 'ether').toString())
+            const allowance = await wethContract.allowance(account, pairContract.address)
+            console.log(weiAmt, allowance)
+            if (allowance.lt(weiAmt)) {
+              const approveTx = await wethContract.approve(pairContract.address, MaxUint256)
+            }
+            const tx = await pairContract.add(account, base, weiAmt)
+          }
+        } else {
+          if (usdcContract) {
+            const ethAmt = parseFloat(parseUnits(amt.toString(), 6).toString())
+            const allowance = await usdcContract?.allowance(account, pairContract.address)
+            console.log(ethAmt, allowance)
+            if (allowance?.lt(ethAmt)) {
+              const approveTx = await usdcContract?.approve(pairContract.address, MaxUint256)
+            }
+            const tx = await pairContract.add(account, base, ethAmt)
+          }
         }
-        // //TODO: Handle success & error
-        const tx = await pairContract.add(account, base, weiAmt)
       }
     } catch (e) {
       toast.error(' error in convert to USDC')

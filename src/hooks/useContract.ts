@@ -92,6 +92,10 @@ export function useWETHTest() {
   return useContract<Weth>('0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619', WETH_ABI)
 }
 
+export function useUSDCContract() {
+  return useContract<Weth>('0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', WETH_ABI)
+}
+
 export function useV2MigratorContract() {
   return useContract<V3Migrator>(V3_MIGRATOR_ADDRESSES, V2MigratorABI, true)
 }
