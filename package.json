@@ -244,6 +244,7 @@
     "react-feather": "^2.0.8",
     "react-hot-toast": "^2.2.0",
     "react-popper": "^2.2.3",
+    "react-uikit3": "^0.14.0",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.5",
     "rebass": "^4.0.7",

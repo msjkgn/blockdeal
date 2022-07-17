@@ -1,0 +1,69 @@
+// 1. Your custom variables and variable overwrites.
+// $global-link-color: #da7d02;
+// $container-xlarge-max-width: 1900px;
+// $global-color: #f2bbbb !default;
+$global-primary-background: #ffde6f !default;
+$global-secondary-background: #000000 !default;
+$global-danger-background: #ff6b65 !default;
+
+$global-primary-color: #ffde6f !default;
+$global-secondary-color: #f2bbbb !default;
+$global-third-color: #00e8da !default;
+
+$label-color: #000000 !default;
+
+$dotnav-item-width: 26px;
+$dotnav-item-height: 5px;
+$dotnav-item-border-radius: 3px;
+$dotnav-item-background: rgba(#ffde6f, 0.5) !default;
+$dotnav-item-hover-background: rgba(#ffde6f, 0.9) !default;
+$dotnav-item-onclick-background: rgba(#ffde6f, 0.5) !default;
+$dotnav-item-active-background: rgba(#ffde6f, 0.9) !default;
+$inverse-dotnav-item-background: rgba(#ffde6f, 0.5) !default;
+$inverse-dotnav-item-hover-background: rgba(#ffde6f, 0.9) !default;
+$inverse-dotnav-item-onclick-background: rgba(#ffde6f, 0.5) !default;
+$inverse-dotnav-item-active-background: rgba(#ffde6f, 0.9) !default;
+
+// 2. Import default variables and available mixins.
+@import 'uikit/src/scss/variables.scss';
+@import 'uikit/src/scss/mixins-theme.scss';
+
+// 3. Your custom mixin overwrites.
+// @mixin hook-card() {
+//   color: #000;
+// }
+
+// 4. Import UIkit.
+@import 'uikit/src/scss/uikit-theme.scss';
+
+// 5. Custom css style goes here
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+html {
+  height: -webkit-fill-available;
+}
+
+h1,
+.uk-h1,
+h2,
+.uk-h2,
+h3,
+.uk-h3,
+h4,
+.uk-h4,
+h5,
+.uk-h5,
+h6,
+.uk-h6,
+.uk-heading-small,
+.uk-heading-medium,
+.uk-heading-large,
+.uk-heading-xlarge,
+.uk-heading-2xlarge {
+  font-family: 'Poppins';
+}
+.uk-section-secondary {
+  background: none;
+}

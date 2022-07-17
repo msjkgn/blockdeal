@@ -238,7 +238,7 @@ export default function TestPage() {
 
   const OwnerOrderList = ({ ownerOrderList }: { ownerOrderList: any[] }) => {
     return (
-      <div style={{ marginTop: '20px', marginBottom: '20px', borderBottom: '1px solid #cccccc' }}>
+      <div style={{ marginTop: '20px', marginBottom: '20px', borderBottom: '1px solid #e7e7e7' }}>
         {ownerOrderList.map((_order, index) => {
           const { order, pos, cumulAmtIn, cumulAmtOut } = _order
           const { amt, base4Quote /*, existingAmt, owner, ownerOrderPos */ } = order
@@ -378,7 +378,7 @@ export default function TestPage() {
           color: 'white',
         }}
       >
-        Convert to {base ? quoteCurrency : baseCurrency}
+        Convert
       </button>
       <OwnerOrderList ownerOrderList={ownerOrderList} />
     </PageWrapper>

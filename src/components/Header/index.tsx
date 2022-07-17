@@ -271,9 +271,6 @@ export default function Header() {
     <HeaderFrame showBackground={scrollY > 45}>
       <HeaderControls>
         <HeaderElement>
-          <Logo fill={darkMode ? white : black} width="28px" height="100%" title="logo" />
-        </HeaderElement>
-        <HeaderElement>
           <NetworkSelector />
         </HeaderElement>
         <HeaderElement>
