@@ -51,12 +51,10 @@ const HeaderFrame = styled.div<{ showBackground: boolean }>`
   `};
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
-    padding:  1rem;
     grid-template-columns: 1fr 1fr;
   `};
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    padding:  1rem;
     grid-template-columns: 36px 1fr;
   `};
 `

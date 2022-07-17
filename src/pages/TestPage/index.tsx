@@ -9,15 +9,6 @@ import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import styled from 'styled-components/macro'
 
-const PageWrapper = styled(AutoColumn)`
-  // padding: 15px;
-  // width: 100%;
-  // max-width: 350px;
-  // background-color: #212429 !important;
-  // border: 0 none;
-  // border-radius: 15px;
-  // box-shadow: 0 25px 50px #000;
-`
 const Button = styled.button`
   margin-left: 5px;
   padding: 5px 10px;
@@ -112,7 +103,7 @@ export default function TestPage() {
       }
     }
     getDecimals()
-  }, [pairContract])
+  }, [])
 
   async function getChainlinkPrice() {
     try {
@@ -238,7 +229,7 @@ export default function TestPage() {
 
   const OwnerOrderList = ({ ownerOrderList }: { ownerOrderList: any[] }) => {
     return (
-      <div style={{ marginTop: '20px', marginBottom: '20px', borderBottom: '1px solid #e7e7e7' }}>
+      <div style={{ marginTop: '20px', borderBottom: '1px solid #e7e7e7' }}>
         {ownerOrderList.map((_order, index) => {
           const { order, pos, cumulAmtIn, cumulAmtOut } = _order
           const { amt, base4Quote /*, existingAmt, owner, ownerOrderPos */ } = order
@@ -298,7 +289,7 @@ export default function TestPage() {
   const chainLinkPriceFormatted: any = parseFloat(formatUnits(chainLinkPrice, 8)).toFixed(2)
 
   return (
-    <PageWrapper>
+    <div>
       <div style={{ display: 'flex', padding: '10px 0px' }}>
         <div style={{ fontSize: '22px', fontWeight: 600 }}>
           {baseCurrency}/{quoteCurrency}
@@ -381,6 +372,6 @@ export default function TestPage() {
         Convert
       </button>
       <OwnerOrderList ownerOrderList={ownerOrderList} />
-    </PageWrapper>
+    </div>
   )
 }
