@@ -2,7 +2,7 @@ import 'styles/global.scss'
 
 import Footer from 'BlockDEX/components/Footer'
 import Section from 'BlockDEX/components/Section'
-import { Introduction } from 'BlockDEX/containers/Introduction'
+import { Benefits, BlockDEXStats, Introduction } from 'BlockDEX/containers/Introduction'
 import Loader from 'components/Loader'
 import ApeModeQueryParamReader from 'hooks/useApeModeQueryParamReader'
 import { Suspense, useEffect, useState } from 'react'
@@ -70,13 +70,18 @@ export default function App() {
 
   const textWrapper = (
     <div className="uk-flex uk-flex-column">
-      <div className="uk-h3 uk-margin-remove-bottom">#1 Trading protocol</div>
-      <div className="uk-p uk-margin-remove">No Slippage Guaranteed!</div>
-      <div className="uk-p uk-margin-remove">Lowest transaction fee</div>
-      <div className="uk-p uk-margin-remove">Execute large-size orders with minimal price impact!</div>
-      <div className="uk-p uk-margin-remove">Low cost and fully decentralized</div>
-      <div className="uk-p uk-margin-remove">Take large-size order at zero commission!</div>
-      <div className="uk-p uk-margin-remove">Stake $BDEX to save more on fee</div>
+      <div className="uk-h3 uk-margin-remove-bottom">Your access to crypto block </div>
+      <div className="uk-p uk-margin-remove">TRADE on the leading decentralized block trading protocol.</div>
+      <div className="uk-p uk-margin-remove">OWN the leading decentralized block trading protocol.</div>
+      <div className="uk-p uk-margin-remove">
+        Block DEX Protocol is a public good owned and governed by BDEX token holders.
+      </div>
+      <div className="uk-p uk-margin-remove">One-stop-shop decentralized block, large scale trading platform</div>
+      <div className="uk-divider-small" />
+      <div className="uk-p uk-margin-remove">Zero price impact to block order makers.</div>
+      <div className="uk-p uk-margin-remove">Zero commission to block order takers.</div>
+      <div className="uk-p uk-margin-remove">Most transparent price.</div>
+      <div className="uk-p uk-margin-remove">Tokens as ownership of the protocol.</div>
       <div className="uk-flex uk-flex-row uk-margin-large-top">
         <div
           style={{
@@ -129,6 +134,8 @@ export default function App() {
             </div>
           </Section>
           <Introduction />
+          <Benefits />
+          <BlockDEXStats />
           <Footer />
           <Toaster position="bottom-left" />
         </BackgroundWrapper>
