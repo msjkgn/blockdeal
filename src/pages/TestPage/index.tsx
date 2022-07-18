@@ -229,7 +229,7 @@ export default function TestPage() {
 
   const OwnerOrderList = ({ ownerOrderList }: { ownerOrderList: any[] }) => {
     return (
-      <div style={{ marginTop: '20px', borderBottom: '1px solid #e7e7e7' }}>
+      <div style={{ marginTop: '20px', borderBottom: '1px solid #e7e7e7'}}>
         {ownerOrderList.map((_order, index) => {
           const { order, pos, cumulAmtIn, cumulAmtOut } = _order
           const { amt, base4Quote /*, existingAmt, owner, ownerOrderPos */ } = order
@@ -332,7 +332,7 @@ export default function TestPage() {
         <Input
           type="number"
           value={amt}
-          onChange={(e) => setAmount(parseFloat(e.target.value))}
+          onChange={(e) => setAmount(parseFloat(e.target.value || '0'))}
           step={0.0001}
           placeholder={'0'}
         />
@@ -352,7 +352,7 @@ export default function TestPage() {
       <div style={{ display: 'flex', padding: '0px 0', fontSize: '14px' }}>
         <div style={{ padding: '0px 0 0', fontWeight: 600 }}>Expected Total</div>
         <div style={{ padding: '0px 0 0', marginLeft: 'auto' }}>
-          {(base ? amt * chainLinkPriceFormatted : amt / chainLinkPriceFormatted) * (1 - fee)}{' '}
+          {((base ? amt * chainLinkPriceFormatted : amt / chainLinkPriceFormatted) * (1 - fee)).toFixed(4)}{' '}
           {base ? quoteCurrency : baseCurrency}
         </div>
       </div>

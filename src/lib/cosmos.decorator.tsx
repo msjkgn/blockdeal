@@ -1,7 +1,7 @@
 import { JSXElementConstructor, ReactElement } from 'react'
 
 import Row from './components/Row'
-import Widget from './cosmos/components/Widget'
+// import Widget from './cosmos/components/Widget'
 
 export default function WidgetDecorator({
   children,
@@ -10,7 +10,7 @@ export default function WidgetDecorator({
 }) {
   return (
     <Row justify="center">
-      <Widget>{children}</Widget>
+      {/* <Widget>{children}</Widget> */}
     </Row>
   )
 }
