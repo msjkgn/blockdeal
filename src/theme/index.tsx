@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { ReactNode, useMemo } from 'react'
 import { Text, TextProps as TextPropsOriginal } from 'rebass'
 import styled, {
   createGlobalStyle,
@@ -142,8 +142,9 @@ function theme(darkMode: boolean): DefaultTheme {
   }
 }
 
-export default function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const darkMode = useIsDarkMode()
+export default function ThemeProvider({ children }: { children: ReactNode }) {
+  let darkMode = useIsDarkMode()
+  if (!darkMode) darkMode = true
 
   const themeObject = useMemo(() => theme(darkMode), [darkMode])
 

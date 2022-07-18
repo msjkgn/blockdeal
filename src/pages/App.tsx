@@ -26,16 +26,16 @@ import TestPage from './TestPage'
 import { RedirectPathToTestOnly } from './TestPage/redirects'
 
 const BackgroundWrapper = styled.div`
+  padding: 150px 0;
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
   align-content: center;
-  justify-content: center;
   width: 100%;
-  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(images/main.webp);
-  height: 100%;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(images/main.webp);
+  height: 100vh;
 `
 
 const BodyWrapper = styled.div`
