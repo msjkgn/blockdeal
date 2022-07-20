@@ -134,7 +134,6 @@ export default function TestPage() {
       try {
         if (pairContract) {
           const ownerOrderCount = await pairContract.ownerOrderCount(account)
-          console.log(ownerOrderCount > 0)
           const ownerOrderList = []
           for (let i = 0; i < ownerOrderCount; i++) {
             const pos = await pairContract.ownerOrders(account, i)
@@ -149,6 +148,7 @@ export default function TestPage() {
               cumulAmtIn,
               cumulAmtOut,
               pos,
+              ownerOrderPos: i,
             })
           }
           setOwnerOrderList(ownerOrderList)
@@ -203,6 +203,7 @@ export default function TestPage() {
     toast.success('cancel button clicked')
     try {
       await pairContract?.remove(pos)
+      console.log(pos)
       toast.success(' Cancel success ')
     } catch (e) {
       toast.error(' Cancel fail ')
@@ -222,10 +223,17 @@ export default function TestPage() {
   }
 
   const OwnerOrderList = ({ ownerOrderList }: { ownerOrderList: any[] }) => {
+    if (ownerOrderList.length === 0) {
+      return (
+        <div className="uk-flex uk-flex-middle uk-flex-center" style={{ height: '200px', overflow: 'scroll' }}>
+          <div style={{ color: '#575757' }}>Order book is empty</div>
+        </div>
+      )
+    }
     return (
-      <div style={{ maxHeight: '200px', overflow: 'scroll' }}>
+      <div style={{ height: '200px', overflow: 'scroll' }}>
         {ownerOrderList.map((_order, index) => {
-          const { owner, base4Quote, amtIn, existingAmt, cumulAmtIn, cumulAmtOut, pos } = _order
+          const { owner, base4Quote, amtIn, existingAmt, cumulAmtIn, cumulAmtOut, pos, ownerOrderPos } = _order
           return (
             <div className="uk-padding-small uk-padding-remove-horizontal" key={index}>
               <div className="uk-flex">
@@ -236,7 +244,7 @@ export default function TestPage() {
                   <button
                     className="uk-button uk-button-gray uk-text-small uk-button-small uk-border-rounded"
                     onClick={() => {
-                      cancel(pos)
+                      cancel(ownerOrderPos)
                     }}
                   >
                     Cancel
