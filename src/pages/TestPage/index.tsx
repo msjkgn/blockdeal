@@ -104,7 +104,7 @@ export default function TestPage() {
   async function getChainlinkPrice() {
     try {
       if (pairContract) {
-        const price = await pairContract.getPrice()
+        const price = await pairContract.getBasePrice()
         setChainLinkPrice(price)
       }
     } catch (e) {
