@@ -140,16 +140,18 @@ export default function TestPage() {
             const order = await pairContract.orders(pos)
             const { owner, base4Quote, amtIn, existingAmt } = order
             const [cumulAmtIn, cumulAmtOut] = await pairContract.getFilledAmounts(pos)
-            ownerOrderList.push({
-              owner,
-              base4Quote,
-              amtIn,
-              existingAmt,
-              cumulAmtIn,
-              cumulAmtOut,
-              pos,
-              ownerOrderPos: i,
-            })
+            if (owner !== '0x0000000000000000000000000000000000000000') {
+              ownerOrderList.push({
+                owner,
+                base4Quote,
+                amtIn,
+                existingAmt,
+                cumulAmtIn,
+                cumulAmtOut,
+                pos,
+                ownerOrderPos: i,
+              })
+            }
           }
           setOwnerOrderList(ownerOrderList)
         }
