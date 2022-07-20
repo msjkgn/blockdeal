@@ -2,7 +2,7 @@ import 'styles/global.scss'
 
 import Footer from 'BlockDEX/components/Footer'
 import Section from 'BlockDEX/components/Section'
-import { Benefits, BlockDEXStats, Introduction } from 'BlockDEX/containers/Introduction'
+import { AuditBy, Benefits, BlockDEXStats, Introduction } from 'BlockDEX/containers/Introduction'
 import Loader from 'components/Loader'
 import ApeModeQueryParamReader from 'hooks/useApeModeQueryParamReader'
 import { Suspense, useEffect, useState } from 'react'
@@ -16,7 +16,6 @@ import AddressClaimModal from '../components/claim/AddressClaimModal'
 import ErrorBoundary from '../components/ErrorBoundary'
 import Header from '../components/Header'
 import Polling from '../components/Header/Polling'
-import Popups from '../components/Popups'
 import Web3ReactManager from '../components/Web3ReactManager'
 import { useWindowSize } from '../hooks/perfectFund/useWindowSize'
 import { useModalOpen, useToggleModal } from '../state/application/hooks'
@@ -70,7 +69,7 @@ export default function App() {
 
   const textWrapper = (
     <div className="uk-flex uk-flex-column">
-      <div className="uk-h3 uk-margin-remove-bottom">Your access to crypto block </div>
+      <div className="uk-h3 uk-text-white uk-margin-remove-bottom">Your access to crypto block </div>
       <div className="uk-p uk-margin-remove">TRADE on the leading decentralized block trading protocol.</div>
       <div className="uk-p uk-margin-remove">OWN the leading decentralized block trading protocol.</div>
       <div className="uk-p uk-margin-remove">
@@ -136,6 +135,7 @@ export default function App() {
           <Introduction />
           <Benefits />
           <BlockDEXStats />
+          <AuditBy />
           <Footer />
           <Toaster position="bottom-left" />
         </BackgroundWrapper>

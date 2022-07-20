@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
+import { BigNumber } from '@ethersproject/bignumber'
 import { MaxUint256, Zero } from '@ethersproject/constants'
 import { formatUnits, parseUnits } from '@ethersproject/units'
-import { AutoColumn } from 'components/Column'
 import { useInterval } from 'hooks/perfectFund/useInterval'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { usePairContract2, useUSDCContract, useWETHTest } from 'hooks/useContract'
@@ -25,9 +25,8 @@ const InputContainer = styled.div`
   display: flex;
   align-items: center;
   justify-items: center;
-  padding: 10px 0;
   background-color: #29313d;
-  border-radius: 8px;
+  border-radius: 5px;
   width: 100%;
   :focus-within {
     div {
@@ -64,9 +63,6 @@ const Input = styled.input`
   }
 `
 
-const Order = styled.div`
-  border-top: 1px solid #cccccc;
-`
 export default function TestPage() {
   const pairContract = usePairContract2()
   const wethContract = useWETHTest()
@@ -120,48 +116,49 @@ export default function TestPage() {
   useInterval(getChainlinkPrice, 2000)
 
   useEffect(() => {
-    // async function getInstantFillAmount() {
-    //   try {
-    //     if (pairContract) {
-    //       const amountAvailable = await pairContract.getAmountAvailable(base)
-    //       console.log(amountAvailable.toString())
-    //       setInstantFillAmount(amountAvailable)
-    //     }
-    //   } catch (e) {
-    //     console.error(e)
-    //   }
-    // }
-    // getInstantFillAmount()
+    async function getInstantFillAmount() {
+      try {
+        if (pairContract) {
+          const amountAvailable = await pairContract.getAmountAvailable(base)
+          setInstantFillAmount(amountAvailable)
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    getInstantFillAmount()
   }, [base])
 
-  const getOwnerOrders = async () => {
-    try {
-      if (pairContract) {
-        const ownerOrderCount = await pairContract.ownerOrderCount(account)
-        const ownerOrderList = []
-        for (let i = 0; i < ownerOrderCount; i++) {
-          const [active, pos] = await pairContract.ownerOrders(account, i)
-          if (active) {
+  useEffect(() => {
+    const getOwnerOrders = async () => {
+      try {
+        if (pairContract) {
+          const ownerOrderCount = await pairContract.ownerOrderCount(account)
+          console.log(ownerOrderCount > 0)
+          const ownerOrderList = []
+          for (let i = 0; i < ownerOrderCount; i++) {
+            const pos = await pairContract.ownerOrders(account, i)
             const order = await pairContract.orders(pos)
-            const { amt, base4Quote, existingAmt, owner, ownerOrderPos } = order
+            const { owner, base4Quote, amtIn, existingAmt } = order
             const [cumulAmtIn, cumulAmtOut] = await pairContract.getFilledAmounts(pos)
             ownerOrderList.push({
-              order,
-              pos,
+              owner,
+              base4Quote,
+              amtIn,
+              existingAmt,
               cumulAmtIn,
               cumulAmtOut,
+              pos,
             })
           }
+          setOwnerOrderList(ownerOrderList)
         }
-        setOwnerOrderList(ownerOrderList)
+      } catch (e) {
+        toast.error(' fail in get order list')
+        console.error(e)
       }
-    } catch (e) {
-      toast.error(' fail in get order list')
-      console.error(e)
     }
-  }
 
-  useEffect(() => {
     if (ownerOrderList.length === 0) {
       getOwnerOrders()
     }
@@ -176,12 +173,10 @@ export default function TestPage() {
       //TODO: ERC20 addresses should not be hard-coded (get from pairContract)
       //TODO: Handle success & error
       if (pairContract && account) {
-        console.log(base)
         if (base) {
           if (wethContract) {
             const weiAmt = parseFloat(parseUnits(amt.toString(), 'ether').toString())
             const allowance = await wethContract.allowance(account, pairContract.address)
-            console.log(weiAmt, allowance)
             if (allowance.lt(weiAmt)) {
               const approveTx = await wethContract.approve(pairContract.address, MaxUint256)
             }
@@ -191,7 +186,6 @@ export default function TestPage() {
           if (usdcContract) {
             const ethAmt = parseFloat(parseUnits(amt.toString(), 6).toString())
             const allowance = await usdcContract?.allowance(account, pairContract.address)
-            console.log(ethAmt, allowance)
             if (allowance?.lt(ethAmt)) {
               const approveTx = await usdcContract?.approve(pairContract.address, MaxUint256)
             }
@@ -229,39 +223,32 @@ export default function TestPage() {
 
   const OwnerOrderList = ({ ownerOrderList }: { ownerOrderList: any[] }) => {
     return (
-      <div style={{ marginTop: '20px', borderBottom: '1px solid #e7e7e7' }}>
+      <div style={{ maxHeight: '200px', overflow: 'scroll' }}>
         {ownerOrderList.map((_order, index) => {
-          const { order, pos, cumulAmtIn, cumulAmtOut } = _order
-          const { amt, base4Quote /*, existingAmt, owner, ownerOrderPos */ } = order
+          const { owner, base4Quote, amtIn, existingAmt, cumulAmtIn, cumulAmtOut, pos } = _order
           return (
-            <Order key={index}>
-              <div style={{ display: 'flex', padding: '15px 0 0 0' }}>
+            <div className="uk-padding-small uk-padding-remove-horizontal" key={index}>
+              <div className="uk-flex">
                 <div style={{ color: `${base4Quote ? '#FF6534' : '#2EBD85'}` }}>
                   {base4Quote ? baseCurrency : quoteCurrency} {'➔'} {base4Quote ? quoteCurrency : baseCurrency}
                 </div>
                 <div style={{ display: 'flex', marginLeft: 'auto' }}>
-                  <Button
+                  <button
+                    className="uk-button uk-button-gray uk-text-small uk-button-small uk-border-rounded"
                     onClick={() => {
                       cancel(pos)
                     }}
                   >
                     Cancel
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      withdraw(pos)
-                    }}
-                  >
-                    Withdraw
-                  </Button>
+                  </button>
                 </div>
               </div>
-              <div style={{ display: 'flex', padding: '15px 0 15px 0' }}>
+              <div className="uk-flex uk-margin-small-top">
                 <div>
                   <div style={{ fontWeight: 600, fontSize: '14px', padding: '0 0 5px 0' }}>Filled/Total Qty</div>
                   <div style={{ fontSize: '14px' }}>
                     {formatUnits(cumulAmtIn, base4Quote ? baseDecimal : quoteDecimal)} /
-                    {formatUnits(amt, base4Quote ? baseDecimal : quoteDecimal)}{' '}
+                    {formatUnits(amtIn, base4Quote ? baseDecimal : quoteDecimal)}{' '}
                     {base4Quote ? baseCurrency : quoteCurrency}
                   </div>
                 </div>
@@ -280,7 +267,7 @@ export default function TestPage() {
                   </div>
                 </div>
               </div>
-            </Order>
+            </div>
           )
         })}
       </div>
@@ -289,41 +276,27 @@ export default function TestPage() {
   const chainLinkPriceFormatted: any = parseFloat(formatUnits(chainLinkPrice, 8)).toFixed(2)
 
   return (
-    <div>
-      <div style={{ display: 'flex', padding: '10px 0px' }}>
-        <div style={{ fontSize: '22px', fontWeight: 600 }}>
+    <>
+      <div className="uk-flex uk-flex-row uk-flex-between">
+        <div className="uk-h4 uk-text-white uk-text-bold uk-margin-remove">
           {baseCurrency}/{quoteCurrency}
         </div>
-        <div style={{ marginLeft: 'auto', height: 'auto', fontSize: '22px', fontWeight: 400 }}>
+        <div className="uk-h4 uk-text-white uk-margin-remove" style={{ marginLeft: 'auto', height: 'auto' }}>
           {chainLinkPriceFormatted}
         </div>
       </div>
-      <div style={{ display: 'flex', padding: '10px 0 20px' }}>
+      <div className="uk-flex uk-padding-small uk-padding-remove-horizontal">
         <button
+          className={`uk-button ${base ? 'uk-button-gray' : 'uk-button-primary'} uk-button-small`}
+          style={{ borderTopLeftRadius: '5px', borderBottomLeftRadius: '5px' }}
           onClick={() => switchBase(false)}
-          style={{
-            padding: '10px 10px',
-            fontSize: '16px',
-            fontWeight: 500,
-            color: 'white',
-            backgroundColor: `${base ? '#29313D' : '#2EBD85'}`,
-            borderRadius: '4px',
-            border: '0px solid',
-          }}
         >
           {quoteCurrency} {'➔'} {baseCurrency}
         </button>
         <button
+          className={`uk-button ${!base ? 'uk-button-gray' : 'uk-button-danger'} uk-button-small`}
+          style={{ borderTopRightRadius: '5px', borderBottomRightRadius: '5px' }}
           onClick={() => switchBase(true)}
-          style={{
-            padding: '10px 10px',
-            fontSize: '16px',
-            fontWeight: 500,
-            color: 'white',
-            backgroundColor: `${base ? '#FF6534' : '#29313D'}`,
-            borderRadius: '4px',
-            border: '0px solid',
-          }}
         >
           {baseCurrency} {'➔'} {quoteCurrency}
         </button>
@@ -356,22 +329,25 @@ export default function TestPage() {
           {base ? quoteCurrency : baseCurrency}
         </div>
       </div>
-
-      <button
-        onClick={add}
-        style={{
-          margin: '20px 0',
-          padding: '10px 20px',
-          fontSize: '18px',
-          backgroundColor: `${base ? '#FF6534' : '#2EBD85'}`,
-          borderRadius: '4px',
-          border: 'none',
-          color: 'white',
-        }}
+      <div className="uk-flex uk-flex-right uk-margin-small-top">
+        <button
+          className={`uk-button uk-button-small ${base ? 'uk-button-danger' : 'uk-button-primary'} uk-border-rounded`}
+          onClick={add}
+        >
+          Convert
+        </button>
+      </div>
+      <div
+        className="uk-margin-small-top uk-margin-small-bottom"
+        style={{ borderTop: '1px solid #343434', borderBottom: '1px solid #343434' }}
       >
-        Convert
-      </button>
-      <OwnerOrderList ownerOrderList={ownerOrderList} />
-    </div>
+        <OwnerOrderList ownerOrderList={ownerOrderList} />
+      </div>
+      <div className="uk-flex uk-flex-center uk-margin-small-top">
+        <button className="uk-button uk-button-gray uk-border-rounded" onClick={add}>
+          <span style={{ fontWeight: 500 }}>Withdraw All</span>
+        </button>
+      </div>
+    </>
   )
 }

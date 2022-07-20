@@ -39,50 +39,6 @@
         "type": "address"
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "Approval",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [],
-    "name": "Clean",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
-    ],
-    "name": "CleanOwnerOrders",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
         "indexed": false,
         "internalType": "bool",
         "name": "baseForQuote",
@@ -118,31 +74,6 @@
     "type": "event"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "Transfer",
-    "type": "event"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -156,7 +87,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "amt",
+        "name": "desiredAmtIn",
         "type": "uint256"
       }
     ],
@@ -192,19 +123,34 @@
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "base4QuoteFillHead",
+    "outputs": [
       {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
-    "name": "allowance",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "base4QuoteFillTail",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "base4QuoteFilledCount",
     "outputs": [
       {
         "internalType": "uint256",
@@ -218,40 +164,31 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
         "internalType": "uint256",
-        "name": "amount",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "name": "approve",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "balanceOf",
+    "name": "base4QuoteFills",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "next",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "prev",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "baseAmtIn",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "quoteAmtOut",
         "type": "uint256"
       }
     ],
@@ -286,58 +223,21 @@
   },
   {
     "inputs": [],
-    "name": "clean",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "decimal",
+    "name": "basePriceFeed",
     "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "decimals",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
       {
         "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "subtractedValue",
-        "type": "uint256"
-      }
-    ],
-    "name": "decreaseAllowance",
-    "outputs": [
-      {
-        "internalType": "bool",
         "name": "",
-        "type": "bool"
+        "type": "address"
       }
     ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "clean",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -382,53 +282,11 @@
   },
   {
     "inputs": [],
-    "name": "filledCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "filledQuoteAmt",
     "outputs": [
       {
         "internalType": "uint256",
         "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "fills",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "base4Quote",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint256",
-        "name": "baseAmt",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "quoteAmt",
         "type": "uint256"
       }
     ],
@@ -455,10 +313,23 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getBasePrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "orderPos",
+        "name": "ownerOrderPos",
         "type": "uint256"
       }
     ],
@@ -466,7 +337,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "cumulAmt",
+        "name": "cumulAmtIn",
         "type": "uint256"
       },
       {
@@ -480,7 +351,7 @@
   },
   {
     "inputs": [],
-    "name": "getPrice",
+    "name": "getQuotePrice",
     "outputs": [
       {
         "internalType": "uint256",
@@ -489,30 +360,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "addedValue",
-        "type": "uint256"
-      }
-    ],
-    "name": "increaseAllowance",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -529,7 +376,12 @@
       },
       {
         "internalType": "address",
-        "name": "_priceFeed",
+        "name": "_basePriceFeed",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_quotePriceFeed",
         "type": "address"
       }
     ],
@@ -540,12 +392,25 @@
   },
   {
     "inputs": [],
-    "name": "name",
+    "name": "oracleBaseDecimal",
     "outputs": [
       {
-        "internalType": "string",
+        "internalType": "uint256",
         "name": "",
-        "type": "string"
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "oracleQuoteDecimal",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -580,18 +445,13 @@
         "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "ownerOrderPos",
-        "type": "uint256"
-      },
-      {
         "internalType": "bool",
         "name": "base4Quote",
         "type": "bool"
       },
       {
         "internalType": "uint256",
-        "name": "amt",
+        "name": "amtIn",
         "type": "uint256"
       },
       {
@@ -638,13 +498,8 @@
     "name": "ownerOrders",
     "outputs": [
       {
-        "internalType": "bool",
-        "name": "active",
-        "type": "bool"
-      },
-      {
         "internalType": "uint256",
-        "name": "orderPos",
+        "name": "",
         "type": "uint256"
       }
     ],
@@ -679,12 +534,72 @@
   },
   {
     "inputs": [],
-    "name": "priceFeed",
+    "name": "quote4BaseFillHead",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "uint256",
         "name": "",
-        "type": "address"
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "quote4BaseFillTail",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "quote4BaseFilledCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "quote4BaseFills",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "next",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "prev",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "quoteAmtIn",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "baseAmtOut",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -717,10 +632,23 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "quotePriceFeed",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "orderPos",
+        "name": "ownerOrderPos",
         "type": "uint256"
       }
     ],
@@ -756,94 +684,9 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "orderPos",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [],
     "name": "settle",
     "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalSupply",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "transfer",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "transferFrom",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },

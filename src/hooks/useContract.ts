@@ -78,14 +78,14 @@ export function useContract<T extends Contract = Contract>(
 export function useFactoryContract() {
   const { library, account, chainId } = useActiveWeb3React() // web3 react
   if (!library || !chainId) return null
-  return getContract('0x2C31c67114A51e0e2393A3fA6337720C2bD51b26', FACTORY_ABI, library, account ? account : undefined)
+  return getContract('0x37095e263f632eF9296E2f5bC635138f65746aA2', FACTORY_ABI, library, account ? account : undefined)
 }
 
 export function usePairContract2() {
   const { library, account, chainId } = useActiveWeb3React() // web3 react
   if (!library || !chainId) return null
   // TODO: ADD ETH/USDT Pair address after creating from factory.
-  return getContract('0xde6de9e653b0a1c321e84e7512dab99b8d383c92', PAIR_ABI, library, account ? account : undefined)
+  return getContract('0x7d66c0fad51bf8e33f864b5b8ad5c6cc3a66ea1e', PAIR_ABI, library, account ? account : undefined)
 }
 
 export function useWETHTest() {

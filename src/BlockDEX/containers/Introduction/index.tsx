@@ -3,11 +3,17 @@ import Section from 'BlockDEX/components/Section'
 export const Introduction = () => {
   return (
     <>
-      <Section title={<span style={{ fontFamily: 'BaronNeue-Black' }}>Changing the block trading landscape</span>}>
+      <Section
+        title={
+          <span className="uk-text-white" style={{ fontFamily: 'BaronNeue-Black' }}>
+            Changing the block trading landscape
+          </span>
+        }
+      >
         <div className="uk-grid uk-grid-match uk-child-width-1-2@m">
           <div>
             <div className="uk-padding-small">
-              <div className="uk-h4 uk-margin-top">Ownership of of Block DEX to Order Makers</div>
+              <div className="uk-h4 uk-text-white uk-margin-top">Ownership of of Block DEX to Order Makers</div>
               <div className="uk-p uk-margin-remove-top">
                 When you make a large scale order, you can receive up to 80% of the commissions back in Block DEX
                 tokens. These tokens allow you to enjoy future commissions that constantly accrue to the Block DEX token
@@ -17,7 +23,9 @@ export const Introduction = () => {
           </div>
           <div>
             <div className="uk-padding-small">
-              <div className="uk-h4 uk-margin-top">Ownership of Block DEX to Partners who help grow the network</div>
+              <div className="uk-h4 uk-text-white uk-margin-top">
+                Ownership of Block DEX to Partners who help grow the network
+              </div>
               <div className="uk-p uk-margin-remove-top">
                 When users trade with your affiliate wallet address as referral address, you can earn to 20% of their
                 commissions in Block DEX tokens. These tokens allow you to enjoy future commissions that constantly
@@ -27,7 +35,7 @@ export const Introduction = () => {
           </div>
           <div>
             <div className="uk-padding-small">
-              <div className="uk-h4 uk-margin-top"> No fees for Order Takers</div>
+              <div className="uk-h4 uk-text-white uk-margin-top"> No fees for Order Takers</div>
               <div className="uk-p uk-margin-remove-top">
                 When you take a large scale order, you take it for free. There is no commission. There is no price
                 impact. There is no hidden fees.
@@ -36,7 +44,7 @@ export const Introduction = () => {
           </div>
           <div>
             <div className="uk-padding-small">
-              <div className="uk-h4 uk-margin-top">The most transparent price</div>
+              <div className="uk-h4 uk-text-white uk-margin-top">The most transparent price</div>
               <div className="uk-p uk-margin-remove-top">
                 You trade at price derived from Chainlink price oralce, which offers the most transparent price.
               </div>
@@ -44,7 +52,7 @@ export const Introduction = () => {
           </div>
           <div>
             <div className="uk-padding-small">
-              <div className="uk-h4 uk-margin-top">DEX aggregator Integrations</div>
+              <div className="uk-h4 uk-text-white uk-margin-top">DEX aggregator Integrations</div>
               <div className="uk-p uk-margin-remove-top">
                 You have access to DEX aggregators, which executes large scale orders with speed.
               </div>
@@ -59,10 +67,16 @@ export const Introduction = () => {
 export const Benefits = () => {
   return (
     <>
-      <Section title={<span style={{ fontFamily: 'BaronNeue-Black' }}>Advantages of BLOCKDEX</span>}>
+      <Section
+        title={
+          <span className="uk-text-white" style={{ fontFamily: 'BaronNeue-Black' }}>
+            Advantages of BLOCKDEX
+          </span>
+        }
+      >
         <div className="uk-grid uk-grid-match uk-child-width-1-1@m">
           <div>
-            <div className="uk-h5 uk-text-bold uk-margin-small-top uk-margin-small-bottom uk-padding-large uk-padding-remove-vertical">
+            <div className="uk-h5 uk-text-white uk-text-bold uk-margin-small-top uk-margin-small-bottom uk-padding-large uk-padding-remove-vertical">
               Using Block DEX for crypto transactions gives our users many advantages to their trades, including the
               following:
             </div>
@@ -101,18 +115,20 @@ export const Benefits = () => {
     </>
   )
 }
-export const BlockDEXStats = () => {
+export const AuditBy = () => {
   return (
     <Section
       title={
         <>
-          <span style={{ fontFamily: 'BaronNeue-Black' }}>BLOCKDEX Numbers</span>
+          <span className="uk-text-white" style={{ fontFamily: 'BaronNeue-Black' }}>
+            Security Audits
+          </span>
         </>
       }
     >
       <div className="uk-grid uk-grid-match uk-child-width-1-1@m">
         <div>
-          <div className="uk-h5 uk-text-bold uk-margin-small-top uk-margin-small-bottom uk-padding-large uk-padding-remove-vertical">
+          <div className="uk-h5 uk-text-white uk-text-bold uk-margin-small-top uk-margin-small-bottom uk-padding-large uk-padding-remove-vertical">
             SLOWMIST
           </div>
         </div>
@@ -121,12 +137,14 @@ export const BlockDEXStats = () => {
   )
 }
 
-export const AuditBy = () => {
+export const BlockDEXStats = () => {
   return (
     <Section
       title={
         <>
-          <span style={{ fontFamily: 'BaronNeue-Black' }}>Security Audits</span>
+          <span className="uk-text-white" style={{ fontFamily: 'BaronNeue-Black' }}>
+            BLOCKDEX Numbers
+          </span>
         </>
       }
     >
@@ -138,7 +156,9 @@ export const AuditBy = () => {
           >
             $121M
           </div>
-          <div className="uk-h6 uk-text-center uk-margin-remove">Highest Volume</div>
+          <div className="uk-h6 uk-text-center uk-margin-remove" style={{ color: '#d7d7d7' }}>
+            Highest Volume
+          </div>
         </div>
         <div className="uk-flex uk-flex-row uk-flex-center uk-margin-medium-bottom">
           <div
@@ -147,7 +167,9 @@ export const AuditBy = () => {
           >
             $1.2B
           </div>
-          <div className="uk-h6 uk-text-center uk-margin-remove">Total Trade Volume</div>
+          <div className="uk-h6 uk-text-center uk-margin-remove" style={{ color: '#d7d7d7' }}>
+            Total Trade Volume
+          </div>
         </div>
         <div className="uk-flex uk-flex-row uk-flex-center uk-margin-medium-bottom">
           <div
@@ -156,7 +178,9 @@ export const AuditBy = () => {
           >
             3
           </div>
-          <div className="uk-h6 uk-text-center uk-margin-remove">DEX Aggregators</div>
+          <div className="uk-h6 uk-text-center uk-margin-remove" style={{ color: '#d7d7d7' }}>
+            DEX Aggregators
+          </div>
         </div>
         <div className="uk-flex uk-flex-row uk-flex-center uk-margin-medium-bottom">
           <div
@@ -165,7 +189,9 @@ export const AuditBy = () => {
           >
             7
           </div>
-          <div className="uk-h6 uk-text-center uk-margin-remove">Investors</div>
+          <div className="uk-h6 uk-text-center uk-margin-remove" style={{ color: '#d7d7d7' }}>
+            Investors
+          </div>
         </div>
         <div className="uk-flex uk-flex-row uk-flex-center uk-margin-medium-bottom">
           <div
@@ -174,7 +200,9 @@ export const AuditBy = () => {
           >
             5
           </div>
-          <div className="uk-h6 uk-text-center uk-margin-remove">Exchanges</div>
+          <div className="uk-h6 uk-text-center uk-margin-remove" style={{ color: '#d7d7d7' }}>
+            Exchanges
+          </div>
         </div>
         <div className="uk-flex uk-flex-row uk-flex-center uk-margin-medium-bottom">
           <div
@@ -183,7 +211,9 @@ export const AuditBy = () => {
           >
             8,722
           </div>
-          <div className="uk-h6 uk-text-center uk-margin-remove">Holders</div>
+          <div className="uk-h6 uk-text-center uk-margin-remove" style={{ color: '#d7d7d7' }}>
+            Holders
+          </div>
         </div>
       </div>
     </Section>

@@ -7,7 +7,7 @@ type SectionProps = {
 
 const Section = ({ title, children }: SectionProps) => {
   return (
-    <div className="uk-section uk-section-secondary uk-section-xsmall uk-light">
+    <div className="uk-section uk-section-xsmall">
       <div className="uk-container uk-container-small">
         <div className="uk-padding-small">
           <div className="uk-text-center">
