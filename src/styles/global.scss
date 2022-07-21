@@ -28,6 +28,11 @@ $inverse-dotnav-item-active-background: rgba(#ffde6f, 0.9) !default;
 @import 'uikit/src/scss/variables.scss';
 @import 'uikit/src/scss/mixins-theme.scss';
 
+@font-face {
+  font-family: 'BaronNeue-Black';
+  src: url(./BaronNeue-Black.otf) format('opentype');
+}
+
 // 3. Your custom mixin overwrites.
 // @mixin hook-card() {
 //   color: #000;
